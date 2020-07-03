@@ -75,7 +75,7 @@
     <OutDir>$(SolutionDir)Bin\$(Configuration)_$(Platform)\$(ProjectName)\</OutDir>
     <IntDir>$(SolutionDir)Bin\$(Configuration)_$(Platform)_Intermediate\$(ProjectName)\</IntDir>
     <SourcePath>$(SolutionDir)$(ProjectName)\Src\</SourcePath>
-    <IncludePath>$(SolutionDir)$(ProjectName)\Includes\</IncludePath>
+    <IncludePath>$(SolutionDir)$(ProjectName)\Includes\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)$(ProjectName)\Libs\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -83,7 +83,7 @@
     <OutDir>$(SolutionDir)Bin\$(Configuration)_$(Platform)\$(ProjectName)\</OutDir>
     <IntDir>$(SolutionDir)Bin\$(Configuration)_$(Platform)_Intermediate\$(ProjectName)\</IntDir>
     <SourcePath>$(SolutionDir)$(ProjectName)\Src\</SourcePath>
-    <IncludePath>$(SolutionDir)$(ProjectName)\Includes\</IncludePath>
+    <IncludePath>$(SolutionDir)$(ProjectName)\Includes\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)$(ProjectName)\Libs\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -91,7 +91,7 @@
     <OutDir>$(SolutionDir)Bin\$(Configuration)_$(Platform)\$(ProjectName)\</OutDir>
     <IntDir>$(SolutionDir)Bin\$(Configuration)_$(Platform)_Intermediate\$(ProjectName)\</IntDir>
     <SourcePath>$(SolutionDir)$(ProjectName)\Src\</SourcePath>
-    <IncludePath>$(SolutionDir)$(ProjectName)\Includes\</IncludePath>
+    <IncludePath>$(SolutionDir)$(ProjectName)\Includes\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)$(ProjectName)\Libs\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -99,7 +99,7 @@
     <OutDir>$(SolutionDir)Bin\$(Configuration)_$(Platform)\$(ProjectName)\</OutDir>
     <IntDir>$(SolutionDir)Bin\$(Configuration)_$(Platform)_Intermediate\$(ProjectName)\</IntDir>
     <SourcePath>$(SolutionDir)$(ProjectName)\Src\</SourcePath>
-    <IncludePath>$(SolutionDir)$(ProjectName)\Includes\</IncludePath>
+    <IncludePath>$(SolutionDir)$(ProjectName)\Includes\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)$(ProjectName)\Libs\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -108,8 +108,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>
-      </AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Engine\Src\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -124,8 +123,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>
-      </AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Engine\Src\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -140,8 +138,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>
-      </AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Engine\Src\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -156,8 +153,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>
-      </AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Engine\Src\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
