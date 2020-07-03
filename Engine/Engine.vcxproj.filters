@@ -5,8 +5,11 @@
     <ClInclude Include="Src\Algs\Sorting.h" />
     <ClInclude Include="Src\Algs\Swapping.h" />
     <ClInclude Include="Src\Algs\Printing.h" />
+    <ClInclude Include="Src\Vendor\stb_image.h" />
+    <ClInclude Include="Src\Core.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\Engine.cpp" />
+    <ClCompile Include="Src\Vendor\glad.c" />
   </ItemGroup>
 </Project>
