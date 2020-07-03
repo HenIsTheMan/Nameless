@@ -172,7 +172,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Src\EntryPt.cpp" />
+    <ClCompile Include="Src\App\App.cpp" />
+    <ClCompile Include="Src\World.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Src\App\App.h" />
+    <ClInclude Include="Src\World.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -162,8 +162,12 @@
     <ClInclude Include="Src\Algs\Printing.h" />
     <ClInclude Include="Src\Algs\Sorting.h" />
     <ClInclude Include="Src\Algs\Swapping.h" />
+    <ClInclude Include="Src\App\API.h" />
+    <ClInclude Include="Src\App\Callback.h" />
+    <ClInclude Include="Src\App\Global.h" />
     <ClInclude Include="Src\Core.h" />
     <ClInclude Include="Src\Engine.h" />
+    <ClInclude Include="Src\SDPs\Singleton.h" />
     <ClInclude Include="Src\Vendor\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
