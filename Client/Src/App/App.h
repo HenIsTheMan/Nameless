@@ -15,6 +15,10 @@ public:
 	bool Init();
 	void Update();
 	void PreRender() const;
-	void Render() const;
+	void Render();
 	void PostRender() const;
+
+
+
+	Mesh mesh;
 };

@@ -11,17 +11,17 @@ enum struct PrintFormat{ //Can be extended
 template <class T>
 void PrintArrElements(T* arr, const int& start, const int& end, const PrintFormat& format){
 	for(int i = start; i <= end; ++i){
-		switch(int(format)){
-			case 0:
+		switch(format){
+			case PrintFormat::ListHoriz:
 				std::cout << arr[i] << (i == end ? "" : " ");
 				break;
-			case 1:
+			case PrintFormat::ListVert:
 				std::cout << arr[i] << (i == end ? "" : "\n");
 				break;
-			case 2:
+			case PrintFormat::CSListHoriz:
 				std::cout << arr[i] << (i == end ? "" : ", ");
 				break;
-			case 3:
+			case PrintFormat::CSListVert:
 				std::cout << arr[i] << (i == end ? "" : ",\n");
 				break;
 		}

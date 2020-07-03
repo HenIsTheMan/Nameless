@@ -25,5 +25,7 @@ public:
 	}
 };
 
+//virtual dtor??
+
 template <class T>
 T* Singleton<T>::objPtr = nullptr;

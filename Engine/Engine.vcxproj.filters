@@ -31,6 +31,12 @@
     <ClInclude Include="Src\App\Global.h">
       <Filter>Src\App</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Geo\Mesh.h">
+      <Filter>Src\Geo</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Geo\Vertex.h">
+      <Filter>Src\Geo</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\Vendor\glad.c">
@@ -38,6 +44,9 @@
     </ClCompile>
     <ClCompile Include="Src\Engine.cpp">
       <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Geo\Mesh.cpp">
+      <Filter>Src\Geo</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -55,6 +64,9 @@
     </Filter>
     <Filter Include="Src\App">
       <UniqueIdentifier>{d4243796-2158-49dd-a518-037a5a1dc40c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Geo">
+      <UniqueIdentifier>{67474d72-37b5-46a9-a06f-9bdb25e432b6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

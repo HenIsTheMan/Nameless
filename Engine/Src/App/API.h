@@ -13,7 +13,7 @@ inline bool InitAPI(GLFWwindow*& win){
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); //For Mac OS X
     #endif
 
-    win = glfwCreateWindow(800, 600, "Nameless (Game Engine)", 0, 0);
+    win = glfwCreateWindow(800, 600, "Nameless Game Engine", 0, 0);
     if(win == 0){ //Get a handle to the created window obj
         printf("Failed to create GLFW window\n");
         return false;

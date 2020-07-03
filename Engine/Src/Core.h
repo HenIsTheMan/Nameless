@@ -12,5 +12,6 @@
 #include "Vendor/stb_image.h"
 
 #include <thread>
+#include <vector>
 
 typedef unsigned int uint;

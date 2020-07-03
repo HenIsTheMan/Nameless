@@ -117,20 +117,20 @@ void SortingAlgs::MergeSortArr(T* arr, const int& start, const int& end, const S
 
 template <class T>
 void SortArr(T* arr, const int& start, const int& end, const SortOrder& order, const SortingAlgType& algType){
-	switch(int(algType)){
-		case 0:
+	switch(algType){
+		case SortingAlgType::Bubble:
 			SortingAlgs::BubbleSortArr(arr, start, end, order);
 			break;
-		case 1:
+		case SortingAlgType::Selection:
 			SortingAlgs::SelectionSortArr(arr, start, end, order);
 			break;
-		case 2:
+		case SortingAlgType::Insertion:
 			SortingAlgs::InsertionSortArr(arr, start, end, order);
 			break;
-		case 3:
+		case SortingAlgType::Quick:
 			SortingAlgs::QuickSortArr(arr, start, end, order);
 			break;
-		case 4:
+		case SortingAlgType::Merge:
 			SortingAlgs::MergeSortArr(arr, start, end, order);
 			break;
 	}

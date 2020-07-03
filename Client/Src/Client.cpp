@@ -1,4 +1,4 @@
-#include "World.h"
+#include "Client.h"
 
 bool endLoop = false;
 
@@ -35,13 +35,25 @@ BOOL ConsoleEventHandler(const DWORD event){
 
 int main(){
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-	system("Color 0A");
+	SetConsoleTitleA("Nameless Console");
 	srand(uint(glfwGetTime()));
+	system("Color 0A");
+
+	HANDLE StdHandle = GetStdHandle(DWORD(-11));
+	CONSOLE_CURSOR_INFO cursorInfo;
+	GetConsoleCursorInfo(StdHandle, &cursorInfo);
+	cursorInfo.bVisible = 0;
+	SetConsoleCursorInfo(StdHandle, &cursorInfo);
+
 	::ShowWindow(::GetConsoleWindow(), SW_SHOW);
 	if(!SetConsoleCtrlHandler((PHANDLER_ROUTINE)ConsoleEventHandler, TRUE)){
 		printf("Failed to install console event handler!\n");
 		return -1;
 	}
+
+	double list[]{3.4, 2.1, 5.4};
+	SortArr(list, 0, 2, SortOrder::Ascending, SortingAlgType::Bubble);
+	PrintArrElements(list, 0, 2, PrintFormat::CSListHoriz);
 
 	std::thread worker(&MainProcess);
 	while(!endLoop){
