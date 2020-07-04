@@ -1,5 +1,5 @@
-#include "Client.h"
-#include "App/Global.h"
+#include <Core.h>
+#include "Admin/App.h"
 
 bool endLoop = false;
 

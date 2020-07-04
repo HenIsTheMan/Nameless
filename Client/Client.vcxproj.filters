@@ -35,9 +35,6 @@
     <ClInclude Include="Src\World\Scene.h">
       <Filter>Src\World</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Client.h">
-      <Filter>Src</Filter>
-    </ClInclude>
     <ClInclude Include="Src\Admin\App.h">
       <Filter>Src\Admin</Filter>
     </ClInclude>

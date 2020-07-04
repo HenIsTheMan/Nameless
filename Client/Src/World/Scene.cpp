@@ -1,5 +1,6 @@
 #include "Scene.h"
-#include "App/Global.h"
+
+extern float angularFOV;
 
 Scene::Scene():
 	cam(glm::vec3(0.f, 0.f, 2.f), glm::vec3(0.f), glm::vec3(0.f, 1.f, 0.f), 800.f / 600.f, 150.f),
@@ -13,7 +14,7 @@ Scene::~Scene(){
 
 void Scene::Update(){
 	cam.Update(GLFW_KEY_Q, GLFW_KEY_E, GLFW_KEY_A, GLFW_KEY_D, GLFW_KEY_W, GLFW_KEY_S);
-	mesh.Update(glm::scale(glm::mat4(1.f), glm::vec3(.5f, .5f, 1.f)), cam.LookAt(), glm::perspective(glm::radians(angularFOV), 800.f / 600.f, .1f, 100.f));
+	mesh.Update(glm::scale(glm::mat4(1.f), glm::vec3(.5f, .5f, 1.f)), cam.LookAt(), glm::perspective(glm::radians(angularFOV), cam.GetAspectRatio(), .1f, 100.f));
 }
 
 void Scene::PreRender() const{

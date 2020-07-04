@@ -14,7 +14,6 @@
 #include <fstream>
 #include <thread>
 #include <unordered_map>
-#include <variant>
 #include <vector>
 
 typedef const char* cstr;

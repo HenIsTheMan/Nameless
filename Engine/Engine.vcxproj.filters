@@ -22,15 +22,6 @@
     <ClInclude Include="Src\SDPs\Singleton.h">
       <Filter>Src\SDPs</Filter>
     </ClInclude>
-    <ClInclude Include="Src\App\API.h">
-      <Filter>Src\App</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\App\Callback.h">
-      <Filter>Src\App</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\App\Global.h">
-      <Filter>Src\App</Filter>
-    </ClInclude>
     <ClInclude Include="Src\Geo\Mesh.h">
       <Filter>Src\Geo</Filter>
     </ClInclude>
@@ -42,6 +33,12 @@
     </ClInclude>
     <ClInclude Include="Src\Graphics\ShaderProg.h">
       <Filter>Src\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Global\GlobalFuncs.h">
+      <Filter>Src\Global</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Global\GlobalVars.h">
+      <Filter>Src\Global</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -60,6 +57,9 @@
     <ClCompile Include="Src\Graphics\ShaderProg.cpp">
       <Filter>Src\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Global\GlobalFuncs.cpp">
+      <Filter>Src\Global</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Src">
@@ -74,14 +74,14 @@
     <Filter Include="Src\SDPs">
       <UniqueIdentifier>{065defeb-f547-47eb-a7aa-0dab2e912e15}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Src\App">
-      <UniqueIdentifier>{d4243796-2158-49dd-a518-037a5a1dc40c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Src\Geo">
       <UniqueIdentifier>{67474d72-37b5-46a9-a06f-9bdb25e432b6}</UniqueIdentifier>
     </Filter>
     <Filter Include="Src\Graphics">
       <UniqueIdentifier>{8317eae2-4bb2-4e83-903a-b9ad9224d5f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Global">
+      <UniqueIdentifier>{80733b05-9865-432a-a105-7d15b50cc595}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

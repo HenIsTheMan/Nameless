@@ -108,7 +108,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>Default</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir)Client\Src\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -124,7 +124,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>Default</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir)Client\Src\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -140,7 +140,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>Default</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir)Client\Src\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -156,7 +156,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>Default</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir)Client\Src\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -170,9 +170,8 @@
     <ClInclude Include="Src\Algs\Printing.h" />
     <ClInclude Include="Src\Algs\Sorting.h" />
     <ClInclude Include="Src\Algs\Swapping.h" />
-    <ClInclude Include="Src\App\API.h" />
-    <ClInclude Include="Src\App\Callback.h" />
-    <ClInclude Include="Src\App\Global.h" />
+    <ClInclude Include="Src\Global\GlobalFuncs.h" />
+    <ClInclude Include="Src\Global\GlobalVars.h" />
     <ClInclude Include="Src\Core.h" />
     <ClInclude Include="Src\Engine.h" />
     <ClInclude Include="Src\Geo\Mesh.h" />
@@ -183,6 +182,7 @@
     <ClInclude Include="Src\Vendor\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Global\GlobalFuncs.cpp" />
     <ClCompile Include="Src\Engine.cpp" />
     <ClCompile Include="Src\Geo\Mesh.cpp" />
     <ClCompile Include="Src\Graphics\Light.cpp" />

@@ -14,19 +14,6 @@ class Cam final{
 	glm::vec3 defaultTarget;
 	glm::vec3 defaultUp;
 public:
-	enum struct CamAttrib{
-		AspectRatio = 0,
-		Spd = 1,
-		Pos = 2,
-		Target = 3,
-		Up = 4,
-		DefaultAspectRatio = 5,
-		DefaultSpd = 6,
-		DefaultPos = 7,
-		DefaultTarget = 8,
-		DefaultUp = 9,
-	};
-
 	Cam();
 	Cam(const glm::vec3& myPos, const glm::vec3& myTarget, const glm::vec3& myUp, const float& myAspectRatio, const float& mySpd);
 	~Cam() = default;
@@ -35,20 +22,35 @@ public:
 	glm::vec3 CalcUp() const;
 	glm::mat4 LookAt() const;
 	void Update(const int& up, const int& down, const int& left, const int& right, const int& front, const int& back);
+	
 	void Reset();
+	void ResetAspectRatio();
+	void ResetSpd();
+	void ResetPos();
+	void ResetTarget();
+	void ResetUp();
 
-	inline const std::variant<float, glm::vec3>& Get(const CamAttrib& attrib) const;
+	///Getters
+	const float& GetAspectRatio() const;
+	const float& GetSpd() const;
+	const glm::vec3& GetPos() const;
+	const glm::vec3& GetTarget() const;
+	const glm::vec3& GetUp() const;
+	const float& GetDefaultAspectRatio() const;
+	const float& GetDefaultSpd() const;
+	const glm::vec3& GetDefaultPos() const;
+	const glm::vec3& GetDefaultTarget() const;
+	const glm::vec3& GetDefaultUp() const;
 
 	///Setters
-	//void SetPos(const glm::vec3& pos);
-	//void SetTarget(const glm::vec3& target);
-	//void SetUp(const glm::vec3& up);
-	//void SetDefaultPos(const glm::vec3& defaultPos);
-	//void SetDefaultTarget(const glm::vec3& defaultTarget));
-	//void SetDefaultUp(const glm::vec3& defaultUp);
-
-
-
-
-
+	void SetAspectRatio(const float& aspectRatio);
+	void SetSpd(const float& spd);
+	void SetPos(const glm::vec3& pos);
+	void SetTarget(const glm::vec3& target);
+	void SetUp(const glm::vec3& up);
+	void SetDefaultAspectRatio(const float& defaultAspectRatio);
+	void SetDefaultSpd(const float& defaultSpd);
+	void SetDefaultPos(const glm::vec3& defaultPos);
+	void SetDefaultTarget(const glm::vec3& defaultTarget);
+	void SetDefaultUp(const glm::vec3& defaultUp);
 };

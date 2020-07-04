@@ -1,5 +1,6 @@
 #include "Cam.h"
-#include "App/Global.h"
+#include <Engine.h>
+#include "Global/GlobalVars.h"
 
 Cam::Cam():
 	aspectRatio(800.f / 600.f),
@@ -86,74 +87,102 @@ void Cam::Reset(){
 	up = defaultUp;
 }
 
-const std::variant<float, glm::vec3>& Cam::Get(const CamAttrib& attrib) const{
-	switch(attrib){
-		case CamAttrib::AspectRatio:
-			return aspectRatio;
-		case CamAttrib::Spd:
-			return spd;
-		case CamAttrib::Pos:
-			return pos;
-		case CamAttrib::Target:
-			return target;
-		case CamAttrib::Up:
-			return up;
-		case CamAttrib::DefaultAspectRatio:
-			return defaultAspectRatio;
-		case CamAttrib::DefaultSpd:
-			return defaultSpd;
-		case CamAttrib::DefaultPos:
-			return defaultPos;
-		case CamAttrib::DefaultTarget:
-			return defaultTarget;
-		case CamAttrib::DefaultUp:
-			return defaultUp;
-	}
+void Cam::ResetAspectRatio(){
+	aspectRatio = defaultAspectRatio;
 }
 
-//const float& Cam::GetAspectRatio() const{
-//	return aspectRatio;
-//}
-//
-//const float& Cam::GetSpd() const{
-//	return spd;
-//}
-//
-//const glm::vec3& Cam::GetPos() const{
-//	return pos;
-//}
-//
-//const glm::vec3& Cam::GetTarget() const{
-//	return target;
-//}
-//
-//const glm::vec3& Cam::GetUp() const{
-//	return up;
-//}
-//
-//const float& Cam::GetDefaultAspectRatio() const{
-//	return defaultAspectRatio;
-//}
-//
-//const float& Cam::GetDefaultSpd() const{
-//	return defaultSpd;
-//}
-//
-//const glm::vec3& Cam::GetDefaultPos() const{
-//	return defaultPos;
-//}
-//
-//const glm::vec3& Cam::GetDefaultTarget() const{
-//	return defaultTarget;
-//}
-//
-//const glm::vec3& Cam::GetDefaultUp() const{
-//	return defaultUp;
-//}
+void Cam::ResetSpd(){
+	spd = defaultSpd;
+}
 
-//void Cam::SetPos(const glm::vec3& pos);
-//void Cam::SetTarget(const glm::vec3& target);
-//void Cam::SetUp(const glm::vec3& up);
-//void Cam::SetDefaultPos(const glm::vec3& defaultPos);
-//void Cam::SetDefaultTarget(const glm::vec3& defaultTarget);
-//void Cam::SetDefaultUp(const glm::vec3& defaultUp);
+void Cam::ResetPos(){
+	pos = defaultPos;
+}
+
+void Cam::ResetTarget(){
+	target = defaultTarget;
+}
+
+void Cam::ResetUp(){
+	up = defaultUp;
+}
+
+const float& Cam::GetAspectRatio() const{
+	return aspectRatio;
+}
+
+const float& Cam::GetSpd() const{
+	return spd;
+}
+
+const glm::vec3& Cam::GetPos() const{
+	return pos;
+}
+
+const glm::vec3& Cam::GetTarget() const{
+	return target;
+}
+
+const glm::vec3& Cam::GetUp() const{
+	return up;
+}
+
+const float& Cam::GetDefaultAspectRatio() const{
+	return defaultAspectRatio;
+}
+
+const float& Cam::GetDefaultSpd() const{
+	return defaultSpd;
+}
+
+const glm::vec3& Cam::GetDefaultPos() const{
+	return defaultPos;
+}
+
+const glm::vec3& Cam::GetDefaultTarget() const{
+	return defaultTarget;
+}
+
+const glm::vec3& Cam::GetDefaultUp() const{
+	return defaultUp;
+}
+
+void Cam::SetAspectRatio(const float& aspectRatio){
+	this->aspectRatio = aspectRatio;
+}
+
+void Cam::SetSpd(const float& spd){
+	this->spd = spd;
+}
+
+void Cam::SetPos(const glm::vec3& pos){
+	this->pos = pos;
+}
+
+void Cam::SetTarget(const glm::vec3& target){
+	this->target = target;
+}
+
+void Cam::SetUp(const glm::vec3& up){
+	this->up = up;
+}
+
+void Cam::SetDefaultAspectRatio(const float& defaultAspectRatio){
+	this->defaultAspectRatio = defaultAspectRatio;
+}
+
+void Cam::SetDefaultSpd(const float& defaultSpd){
+	this->defaultSpd = defaultSpd;
+}
+
+void Cam::SetDefaultPos(const glm::vec3& defaultPos){
+	this->defaultPos = defaultPos;
+}
+
+void Cam::SetDefaultTarget(const glm::vec3& defaultTarget){
+	this->defaultTarget = defaultTarget;
+}
+
+void Cam::SetDefaultUp(const glm::vec3& defaultUp){
+	this->defaultUp = defaultUp;
+}
