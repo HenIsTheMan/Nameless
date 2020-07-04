@@ -172,20 +172,25 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\World\Light.cpp" />
+    <ClCompile Include="Src\World\ShaderProg.cpp" />
     <ClCompile Include="Src\App\App.cpp" />
     <ClCompile Include="Src\Client.cpp" />
     <ClCompile Include="Src\World\Cam.cpp" />
-    <ClCompile Include="Src\World\CamChief.cpp" />
     <ClCompile Include="Src\World\Scene.cpp" />
-    <ClCompile Include="Src\World\SceneChief.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\World\Light.h" />
+    <ClInclude Include="Src\World\Manager.h" />
+    <ClInclude Include="Src\World\ShaderProg.h" />
     <ClInclude Include="Src\App\App.h" />
     <ClInclude Include="Src\Client.h" />
     <ClInclude Include="Src\World\Cam.h" />
-    <ClInclude Include="Src\World\CamChief.h" />
     <ClInclude Include="Src\World\Scene.h" />
-    <ClInclude Include="Src\World\SceneChief.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\Basic.fs" />
+    <None Include="Shaders\Basic.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

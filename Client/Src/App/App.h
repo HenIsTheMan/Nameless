@@ -1,5 +1,6 @@
 #pragma once
 #include <Engine.h>
+#include "../World/ShaderProg.h" //??
 
 class App final: public Singleton<App>{
 	App(const App&) = delete;
@@ -20,5 +21,6 @@ public:
 
 
 
+	ShaderProg shaderProg;
 	Mesh mesh;
 };

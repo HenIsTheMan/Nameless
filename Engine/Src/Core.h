@@ -11,7 +11,11 @@
 #include <GLM/gtc/type_ptr.hpp>
 #include "Vendor/stb_image.h"
 
+#include <fstream>
 #include <thread>
+#include <unordered_map>
 #include <vector>
 
+typedef const char* cstr;
 typedef unsigned int uint;
+typedef std::string str;

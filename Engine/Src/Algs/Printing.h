@@ -1,6 +1,8 @@
 #pragma once
 #include <iostream>
 
+//Logger??
+
 enum struct PrintFormat{ //Can be extended
 	ListHoriz = 0,
 	ListVert = 1,
@@ -13,16 +15,16 @@ void PrintArrElements(T* arr, const int& start, const int& end, const PrintForma
 	for(int i = start; i <= end; ++i){
 		switch(format){
 			case PrintFormat::ListHoriz:
-				std::cout << arr[i] << (i == end ? "" : " ");
+				std::cout << arr[i] << (i == end ? "\n" : " ");
 				break;
 			case PrintFormat::ListVert:
-				std::cout << arr[i] << (i == end ? "" : "\n");
+				std::cout << arr[i] << "\n";
 				break;
 			case PrintFormat::CSListHoriz:
-				std::cout << arr[i] << (i == end ? "" : ", ");
+				std::cout << arr[i] << (i == end ? "\n" : ", ");
 				break;
 			case PrintFormat::CSListVert:
-				std::cout << arr[i] << (i == end ? "" : ",\n");
+				std::cout << arr[i] << (i == end ? "" : ",") << std::endl;
 				break;
 		}
 	}

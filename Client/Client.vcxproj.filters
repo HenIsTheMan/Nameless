@@ -21,17 +21,17 @@
     <ClCompile Include="Src\World\Cam.cpp">
       <Filter>Src\World</Filter>
     </ClCompile>
-    <ClCompile Include="Src\World\CamChief.cpp">
-      <Filter>Src\World</Filter>
-    </ClCompile>
     <ClCompile Include="Src\World\Scene.cpp">
-      <Filter>Src\World</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\World\SceneChief.cpp">
       <Filter>Src\World</Filter>
     </ClCompile>
     <ClCompile Include="Src\Client.cpp">
       <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\World\Light.cpp">
+      <Filter>Src\World</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\World\ShaderProg.cpp">
+      <Filter>Src\World</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -41,17 +41,28 @@
     <ClInclude Include="Src\World\Cam.h">
       <Filter>Src\World</Filter>
     </ClInclude>
-    <ClInclude Include="Src\World\CamChief.h">
-      <Filter>Src\World</Filter>
-    </ClInclude>
     <ClInclude Include="Src\World\Scene.h">
-      <Filter>Src\World</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\World\SceneChief.h">
       <Filter>Src\World</Filter>
     </ClInclude>
     <ClInclude Include="Src\Client.h">
       <Filter>Src</Filter>
     </ClInclude>
+    <ClInclude Include="Src\World\Light.h">
+      <Filter>Src\World</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\World\Manager.h">
+      <Filter>Src\World</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\World\ShaderProg.h">
+      <Filter>Src\World</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\Basic.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\Basic.vs">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

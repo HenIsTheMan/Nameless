@@ -56,8 +56,62 @@ void Mesh::Render(){
 			CreateQuad();
 			break;
 	}
-	//??
-	indices ? glDrawElements(primitive, (int)indices->size(), GL_UNSIGNED_INT, 0) : glDrawArrays(primitive, 0, (int)vertices->size()); //Draw/Render call/command
+
+	//float vertices[] = {
+	//	-1.f, 1.f, 0.f,
+	//	-1.f, -1.f, 0.f,
+	//	1.f, -1.f, 0.f,
+	//	1.f, 1.f, 0.f,
+	//};
+
+	//unsigned int indices[] = {
+	//	0, 1, 2, 0, 2, 3,
+	//};
+
+	//glGenVertexArrays(1, &VAO);
+	//glBindVertexArray(VAO);
+
+	//glGenBuffers(1, &VBO); //Gen VBO and get ref ID of it
+	//glBindBuffer(GL_ARRAY_BUFFER, VBO); //Makes VBO the buffer currently bound to the GL_ARRAY_BUFFER target, GL_ARRAY_BUFFER is VBO's type
+	//glBufferData(GL_ARRAY_BUFFER, vertices->size() * sizeof(Vertex), &(*vertices)[0], GL_STATIC_DRAW); //Copies vertex data stored in 'vertices' into VBO's mem //diff types??
+
+	//glGenBuffers(1, &EBO);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO); //GL_ELEMENT_ARRAY_BUFFER is the buffer target
+	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices->size() * sizeof(uint), &(*indices)[0], GL_STATIC_DRAW);
+
+	//glEnableVertexAttribArray(0);
+	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, pos));
+
+	//glDrawElements(primitive, (int)indices->size(), GL_UNSIGNED_INT, 0);
+	//glBindVertexArray(0); //
+	
+	if(!VAO){
+		glGenVertexArrays(1, &VAO);
+	}
+	glBindVertexArray(VAO);
+		if(!VBO){
+			glGenBuffers(1, &VBO); //A buffer manages a certain piece of GPU mem
+			glBindBuffer(GL_ARRAY_BUFFER, VBO); //Makes VBO the buffer currently bound to the GL_ARRAY_BUFFER target, GL_ARRAY_BUFFER is VBO's type
+			glBufferData(GL_ARRAY_BUFFER, vertices->size() * sizeof(Vertex), NULL, GL_DYNAMIC_DRAW); //Can combine vertex attrib data into 1 arr or vec and fill VBO's mem with glBufferData
+
+			glEnableVertexAttribArray(0);
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, pos));
+		} else{
+			glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		}
+		glBufferSubData(GL_ARRAY_BUFFER, 0, vertices->size() * sizeof(Vertex), &(*vertices)[0]);
+
+		if(!EBO && indices){
+			glGenBuffers(1, &EBO); //Element index buffer
+		}
+		if(EBO){
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices->size() * sizeof(uint), &(*indices)[0], GL_STATIC_DRAW); //Alloc/Reserve a piece of GPU mem and add data into it
+			glDrawElements(primitive, (int)indices->size(), GL_UNSIGNED_INT, 0);
+		} else{
+			glDrawArrays(primitive, 0, (int)vertices->size()); //Draw/Render call/command
+		}
+	glBindVertexArray(0);
 }
 
 void Mesh::CreateQuad(){
@@ -79,6 +133,10 @@ void Mesh::CreateQuad(){
 		//bitangent[i].x = reciprocal * (-deltaUVs[1].x * edges[0].x + deltaUVs[0].x * edges[1].x);
 		//bitangent[i].y = reciprocal * (-deltaUVs[1].x * edges[0].y + deltaUVs[0].x * edges[1].y);
 		//bitangent[i].z = reciprocal * (-deltaUVs[1].x * edges[0].z + deltaUVs[0].x * edges[1].z);
+	}
+
+	for(short i = 0; i < 4; ++i){
+		pos[i] = glm::vec3(projection * view * model * glm::vec4(pos[i], 1.f));
 	}
 
 	if(vertices && vertices->size() != 4){
