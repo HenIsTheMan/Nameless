@@ -45,7 +45,7 @@ void Mesh::Update(const glm::mat4& model, const glm::mat4& view, const glm::mat4
 	this->projection = projection;
 }
 
-void Mesh::Render(){
+void Mesh::Render(ShaderProg& shaderProg){
 	if(primitive < 0){
 		return;
 	}
@@ -57,33 +57,9 @@ void Mesh::Render(){
 			break;
 	}
 
-	//float vertices[] = {
-	//	-1.f, 1.f, 0.f,
-	//	-1.f, -1.f, 0.f,
-	//	1.f, -1.f, 0.f,
-	//	1.f, 1.f, 0.f,
-	//};
-
-	//unsigned int indices[] = {
-	//	0, 1, 2, 0, 2, 3,
-	//};
-
-	//glGenVertexArrays(1, &VAO);
-	//glBindVertexArray(VAO);
-
-	//glGenBuffers(1, &VBO); //Gen VBO and get ref ID of it
-	//glBindBuffer(GL_ARRAY_BUFFER, VBO); //Makes VBO the buffer currently bound to the GL_ARRAY_BUFFER target, GL_ARRAY_BUFFER is VBO's type
-	//glBufferData(GL_ARRAY_BUFFER, vertices->size() * sizeof(Vertex), &(*vertices)[0], GL_STATIC_DRAW); //Copies vertex data stored in 'vertices' into VBO's mem //diff types??
-
-	//glGenBuffers(1, &EBO);
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO); //GL_ELEMENT_ARRAY_BUFFER is the buffer target
-	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices->size() * sizeof(uint), &(*indices)[0], GL_STATIC_DRAW);
-
-	//glEnableVertexAttribArray(0);
-	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, pos));
-
-	//glDrawElements(primitive, (int)indices->size(), GL_UNSIGNED_INT, 0);
-	//glBindVertexArray(0); //
+	shaderProg.Use();
+	shaderProg.SetMat4fv("view", &(view)[0][0]);
+	shaderProg.SetMat4fv("projection", &(projection)[0][0]);
 	
 	if(!VAO){
 		glGenVertexArrays(1, &VAO);
@@ -136,7 +112,7 @@ void Mesh::CreateQuad(){
 	}
 
 	for(short i = 0; i < 4; ++i){
-		pos[i] = glm::vec3(projection * view * model * glm::vec4(pos[i], 1.f));
+		pos[i] = glm::vec3(model * glm::vec4(pos[i], 1.f));
 	}
 
 	if(vertices && vertices->size() != 4){

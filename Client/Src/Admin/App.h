@@ -1,6 +1,6 @@
 #pragma once
 #include <Engine.h>
-#include "../World/ShaderProg.h" //??
+#include "../World/Scene.h"
 
 class App final: public Singleton<App>{
 	App(const App&) = delete;
@@ -10,6 +10,8 @@ class App final: public Singleton<App>{
 
 	friend Singleton<App>;
 	App() = default;
+	float lastFrameTime;
+	Scene scene;
 	static GLFWwindow* win;
 public:
 	~App();
@@ -18,9 +20,4 @@ public:
 	void PreRender() const;
 	void Render();
 	void PostRender() const;
-
-
-
-	ShaderProg shaderProg;
-	Mesh mesh;
 };

@@ -1,10 +1,7 @@
 #include "Client.h"
+#include "App/Global.h"
 
 bool endLoop = false;
-
-static inline const bool Key(const char& key){
-	return GetAsyncKeyState((unsigned short)key) & 0x8000;
-}
 
 void MainProcess(){
 	App* app = App::GetObjPtr();

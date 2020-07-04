@@ -7,17 +7,14 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{1db22702-d230-4602-bf5c-98be7c874614}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Src\App">
-      <UniqueIdentifier>{f538d115-7fd3-4fa1-96ec-7883b734805d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Src\World">
       <UniqueIdentifier>{ab00755a-6559-44f7-a3ff-124ee77c37c6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Admin">
+      <UniqueIdentifier>{f538d115-7fd3-4fa1-96ec-7883b734805d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Src\App\App.cpp">
-      <Filter>Src\App</Filter>
-    </ClCompile>
     <ClCompile Include="Src\World\Cam.cpp">
       <Filter>Src\World</Filter>
     </ClCompile>
@@ -27,17 +24,11 @@
     <ClCompile Include="Src\Client.cpp">
       <Filter>Src</Filter>
     </ClCompile>
-    <ClCompile Include="Src\World\Light.cpp">
-      <Filter>Src\World</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\World\ShaderProg.cpp">
-      <Filter>Src\World</Filter>
+    <ClCompile Include="Src\Admin\App.cpp">
+      <Filter>Src\Admin</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Src\App\App.h">
-      <Filter>Src\App</Filter>
-    </ClInclude>
     <ClInclude Include="Src\World\Cam.h">
       <Filter>Src\World</Filter>
     </ClInclude>
@@ -47,14 +38,11 @@
     <ClInclude Include="Src\Client.h">
       <Filter>Src</Filter>
     </ClInclude>
-    <ClInclude Include="Src\World\Light.h">
-      <Filter>Src\World</Filter>
+    <ClInclude Include="Src\Admin\App.h">
+      <Filter>Src\Admin</Filter>
     </ClInclude>
-    <ClInclude Include="Src\World\Manager.h">
-      <Filter>Src\World</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\World\ShaderProg.h">
-      <Filter>Src\World</Filter>
+    <ClInclude Include="Src\Admin\Manager.h">
+      <Filter>Src\Admin</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

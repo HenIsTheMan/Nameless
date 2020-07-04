@@ -1,5 +1,6 @@
 #pragma once
 #include "../Core.h"
+#include "../Graphics/ShaderProg.h"
 #include "Vertex.h"
 
 class Mesh{ //Single drawable geo
@@ -15,7 +16,7 @@ public:
 	Mesh(const MeshType& myType, const int& myPrimitive);
 	virtual ~Mesh();
 	void Update(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection);
-	void Render();
+	void Render(ShaderProg& shaderProg);
 protected:
 	MeshType type;
 	int primitive;
@@ -27,6 +28,7 @@ protected:
 	glm::mat4 model;
 	glm::mat4 view;
 	glm::mat4 projection;
+
 	void CreateQuad();
 };
 

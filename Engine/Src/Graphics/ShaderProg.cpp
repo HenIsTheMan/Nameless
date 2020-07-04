@@ -27,7 +27,7 @@ ShaderProg::~ShaderProg(){
 
 int ShaderProg::GetUniLocation(cstr const& uniName){
 	if(!uniLocationCache.count(str{uniName})){ //If not cached...
-		uniLocationCache.at(str{uniName}) = glGetUniformLocation(refID, uniName); //Query location of uni
+		uniLocationCache[str{uniName}] = glGetUniformLocation(refID, uniName); //Query location of uni
 		if(uniLocationCache[str{uniName}] == -1){
 			printf("%u: Failed to find uni '%s'\n", this->refID, uniName);
 		}
