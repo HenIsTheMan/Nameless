@@ -45,9 +45,6 @@
     <ClCompile Include="Src\Vendor\glad.c">
       <Filter>Src\Vendor</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Engine.cpp">
-      <Filter>Src</Filter>
-    </ClCompile>
     <ClCompile Include="Src\Geo\Mesh.cpp">
       <Filter>Src\Geo</Filter>
     </ClCompile>

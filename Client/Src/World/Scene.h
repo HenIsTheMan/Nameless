@@ -1,7 +1,6 @@
 #pragma once
 #include <Engine.h>
-#include "../World/Cam.h"
-#include "Graphics/ShaderProg.h"
+#include "Cam.h"
 
 class Scene final{
 	Cam cam;

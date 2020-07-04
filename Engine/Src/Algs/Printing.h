@@ -1,8 +1,6 @@
 #pragma once
 #include <iostream>
 
-//Logger??
-
 enum struct PrintFormat{ //Can be extended
 	ListHoriz = 0,
 	ListVert = 1,

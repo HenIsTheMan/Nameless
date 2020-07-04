@@ -1,20 +1,19 @@
 #include "App.h"
-#include <Engine.h>
 
 extern float dt;
 
 GLFWwindow* App::win = nullptr;
 
-App::~App(){
-	glfwTerminate(); //Clean/Del all GLFW's resources that were allocated
+App::App():
+	lastFrameTime(0.f)
+{
+	if(!InitAPI(win)){
+		printf("Failed to init API\n");
+	}
 }
 
-bool App::Init(){
-	if(!InitAPI(win)){
-		return false;
-	}
-	lastFrameTime = 0.f; //??
-	return true;
+App::~App(){
+	glfwTerminate(); //Clean/Del all GLFW's resources that were allocated
 }
 
 void App::Update(){

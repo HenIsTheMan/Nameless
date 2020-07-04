@@ -1,6 +1,6 @@
 #include "Cam.h"
-#include <Engine.h>
-#include "Global/GlobalVars.h"
+#include <Global/GlobalFuncs.h>
+#include <Global/GlobalVars.h>
 
 Cam::Cam():
 	aspectRatio(800.f / 600.f),

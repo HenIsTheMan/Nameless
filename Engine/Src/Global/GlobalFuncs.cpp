@@ -27,7 +27,7 @@ bool InitAPI(GLFWwindow*& win){
 
     win = glfwCreateWindow(800, 600, "Nameless Game Engine", 0, 0);
     if(win == 0){ //Get a handle to the created window obj
-        printf("Failed to create GLFW window\n");
+        printf("Failed to create GLFW win\n");
         return false;
     }
     glfwMakeContextCurrent(win); //Make context of the window the main context on the curr thread
