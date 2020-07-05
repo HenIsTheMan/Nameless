@@ -8,4 +8,3 @@
 #include "Graphics/Light.h"
 #include "Graphics/ShaderProg.h"
 #include "SDPs/Singleton.h"
-#include "Vendor/stb_image.h"
