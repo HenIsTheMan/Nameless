@@ -1,6 +1,7 @@
 #include "App.h"
 
 extern float dt;
+extern bool endLoop;
 
 GLFWwindow* App::win = nullptr;
 
@@ -9,6 +10,7 @@ App::App():
 {
 	if(!InitAPI(win)){
 		printf("Failed to init API\n");
+		endLoop = true;
 	}
 }
 

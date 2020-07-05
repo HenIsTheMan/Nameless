@@ -31,5 +31,4 @@ protected:
 	void CreateQuad();
 };
 
-//texIDs??
 //UpdateMat(...) and UpdateType(...)

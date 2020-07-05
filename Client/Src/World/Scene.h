@@ -4,6 +4,7 @@
 
 class Scene final{
 	Cam cam;
+	ISoundEngine* soundEngine = createIrrKlangDevice();
 	Mesh mesh;
 	ShaderProg shaderProg;
 public:

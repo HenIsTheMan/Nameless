@@ -7,9 +7,19 @@ Scene::Scene():
 	mesh(Mesh::MeshType::Quad, GL_TRIANGLES),
 	shaderProg(ShaderProg("Shaders/Basic.vs", "Shaders/Basic.fs"))
 {
+	//soundEngine->play2D("Audio/Music/YellowCafe.mp3", true);
+	ISound* music = soundEngine->play3D("Audio/Music/YellowCafe.mp3", vec3df(0,0,0), true, false, true);
+	if(music){
+		music->setMinDistance(5.f);
+	}
+	soundEngine->setListenerPosition(vec3df(0, 0, 0), vec3df(0, 0, 1));
+	if(music){
+		music->setPosition(vec3df(0, 0, 0));
+	}
 }
 
 Scene::~Scene(){
+	soundEngine->drop();
 }
 
 void Scene::Update(){

@@ -5,9 +5,6 @@ bool endLoop = false;
 
 void MainProcess(){
 	App* app = App::GetObjPtr();
-	if(!app->Init()){
-		endLoop = true;
-	}
 	while(!endLoop){
 		app->Update();
 		app->PreRender();
