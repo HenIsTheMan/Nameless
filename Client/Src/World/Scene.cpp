@@ -7,15 +7,16 @@ Scene::Scene():
 	mesh(Mesh::MeshType::Quad, GL_TRIANGLES),
 	shaderProg(ShaderProg("Shaders/Basic.vs", "Shaders/Basic.fs"))
 {
+	soundEngine = createIrrKlangDevice(ESOD_AUTO_DETECT, ESEO_MULTI_THREADED | ESEO_LOAD_PLUGINS | ESEO_USE_3D_BUFFERS | ESEO_PRINT_DEBUG_INFO_TO_DEBUGGER);
 	//soundEngine->play2D("Audio/Music/YellowCafe.mp3", true);
-	ISound* music = soundEngine->play3D("Audio/Music/YellowCafe.mp3", vec3df(0,0,0), true, false, true);
-	if(music){
-		music->setMinDistance(5.f);
-	}
-	soundEngine->setListenerPosition(vec3df(0, 0, 0), vec3df(0, 0, 1));
-	if(music){
-		music->setPosition(vec3df(0, 0, 0));
-	}
+	//ISound* music = soundEngine->play3D("Audio/Music/YellowCafe.mp3", vec3df(0,0,0), true, false, true);
+	//if(music){
+	//	music->setMinDistance(5.f);
+	//}
+	//soundEngine->setListenerPosition(vec3df(0, 0, 0), vec3df(0, 0, 1));
+	//if(music){
+	//	music->setPosition(vec3df(0, 0, 0));
+	//}
 }
 
 Scene::~Scene(){
@@ -24,7 +25,7 @@ Scene::~Scene(){
 
 void Scene::Update(){
 	cam.Update(GLFW_KEY_Q, GLFW_KEY_E, GLFW_KEY_A, GLFW_KEY_D, GLFW_KEY_W, GLFW_KEY_S);
-	mesh.Update(glm::scale(glm::mat4(1.f), glm::vec3(.5f, .5f, 1.f)), cam.LookAt(), glm::perspective(glm::radians(angularFOV), cam.GetAspectRatio(), .1f, 100.f));
+	mesh.Update(glm::scale(glm::mat4(1.f), glm::vec3(.5f, .5f, 1.f)), cam.LookAt(), glm::perspective(glm::radians(angularFOV), cam.GetAspectRatio(), .1f, 100.f)); //??
 }
 
 void Scene::PreRender() const{
@@ -52,7 +53,13 @@ void Scene::PreRender() const{
 }
 
 void Scene::Render(){
-	mesh.Render(shaderProg);
+	std::vector<glm::mat4> modelMats{
+		CreateModelMat(glm::vec3(0.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)),
+		CreateModelMat(glm::vec3(0.f, 5.f, 0.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)),
+		CreateModelMat(glm::vec3(0.f, -5.f, 0.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)),
+	};
+	//mesh.Render(shaderProg);
+	mesh.BatchRender(shaderProg, modelMats);
 }
 
 void Scene::PostRender() const{

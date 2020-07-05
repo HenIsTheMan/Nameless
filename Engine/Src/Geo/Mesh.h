@@ -15,7 +15,12 @@ public:
 	Mesh(const MeshType& myType, const int& myPrimitive);
 	virtual ~Mesh();
 	void Update(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection);
+	void BatchRender(ShaderProg& shaderProg, const std::vector<glm::mat4>& modelMats);
 	void Render(ShaderProg& shaderProg);
+
+
+	void SetType(const MeshType& type);
+
 protected:
 	MeshType type;
 	int primitive;
@@ -27,8 +32,5 @@ protected:
 	glm::mat4 model;
 	glm::mat4 view;
 	glm::mat4 projection;
-
 	void CreateQuad();
 };
-
-//UpdateMat(...) and UpdateType(...)
