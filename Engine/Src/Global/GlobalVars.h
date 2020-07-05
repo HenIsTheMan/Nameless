@@ -1,5 +1,6 @@
 #pragma once
 
+bool endLoop = false;
 bool firstCall = 1;
 float dt = 0.f;
 float leftRightMB = 0.f;

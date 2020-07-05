@@ -45,6 +45,39 @@ bool InitAPI(GLFWwindow*& win){
     return true;
 }
 
+bool InitConsole(){
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+    SetConsoleTitleA("Nameless Console");
+    srand(uint(glfwGetTime()));
+    system("Color 0A");
+
+    HANDLE StdHandle = GetStdHandle(DWORD(-11));
+    CONSOLE_CURSOR_INFO cursorInfo;
+    GetConsoleCursorInfo(StdHandle, &cursorInfo);
+    cursorInfo.bVisible = 0;
+    SetConsoleCursorInfo(StdHandle, &cursorInfo);
+
+    auto ConsoleEventHandler = [](const DWORD event){
+        LPCWSTR msg;
+        switch(event){
+            case CTRL_C_EVENT: msg = L"Ctrl + C"; break;
+            case CTRL_BREAK_EVENT: msg = L"Ctrl + BREAK"; break;
+            case CTRL_CLOSE_EVENT: msg = L"Closing prog..."; break;
+            case CTRL_LOGOFF_EVENT: case CTRL_SHUTDOWN_EVENT: msg = L"User is logging off..."; break;
+            default: msg = L"???";
+        }
+        MessageBox(NULL, msg, L"Nameless", MB_OK);
+        return TRUE;
+    };
+
+    ::ShowWindow(::GetConsoleWindow(), SW_SHOW);
+    if(!SetConsoleCtrlHandler((PHANDLER_ROUTINE)ConsoleEventHandler, TRUE)){
+        printf("Failed to install console event handler!\n");
+        return false;
+    }
+    return true;
+}
+
 static void FramebufferSizeCallback(GLFWwindow*, int width, int height){ //Resize callback
     glViewport(0, 0, width, height); //For viewport transform
 } //Aspect ratio??
