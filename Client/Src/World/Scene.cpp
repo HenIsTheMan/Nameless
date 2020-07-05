@@ -53,13 +53,16 @@ void Scene::PreRender() const{
 }
 
 void Scene::Render(){
-	std::vector<glm::mat4> modelMats{
-		CreateModelMat(glm::vec3(0.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)),
-		CreateModelMat(glm::vec3(0.f, 5.f, 0.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)),
-		CreateModelMat(glm::vec3(0.f, -5.f, 0.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)),
+	std::vector<Mesh::BatchRenderParams> params;
+	for(short i = 0; i < 1000; ++i){
+		params.push_back({
+			CreateModelMat(glm::vec3(-100.f + float(rand()) / (float(RAND_MAX / (100.f - (-100.f))))), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)),
+			glm::vec4(float(rand() % 101) / 100.f, float(rand() % 101) / 100.f, float(rand() % 101) / 100.f, 1.f),
+			0.f
+		});
 	};
 	//mesh.Render(shaderProg);
-	mesh.BatchRender(shaderProg, modelMats);
+	mesh.BatchRender(shaderProg, params);
 }
 
 void Scene::PostRender() const{

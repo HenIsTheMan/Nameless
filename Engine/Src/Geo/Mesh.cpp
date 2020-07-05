@@ -62,7 +62,7 @@ void Mesh::Update(const glm::mat4& model, const glm::mat4& view, const glm::mat4
 	this->projection = projection;
 }
 
-void Mesh::BatchRender(ShaderProg& shaderProg, const std::vector<glm::mat4>& modelMats){
+void Mesh::BatchRender(ShaderProg& shaderProg, const std::vector<BatchRenderParams>& params){
 	if(primitive < 0){
 		return;
 	}
@@ -78,11 +78,13 @@ void Mesh::BatchRender(ShaderProg& shaderProg, const std::vector<glm::mat4>& mod
 	shaderProg.SetMat4fv("view", &(view)[0][0]);
 	shaderProg.SetMat4fv("projection", &(projection)[0][0]);
 
-	std::vector<Vertex> allVertices(modelMats.size() * vertices->size());
-	for(size_t i = 0; i < modelMats.size(); ++i){
+	std::vector<Vertex> allVertices(params.size() * vertices->size());
+	for(size_t i = 0; i < params.size(); ++i){
 		for(size_t j = 0; j < vertices->size(); ++j){
 			allVertices[i * vertices->size() + j] = (*vertices)[j];
-			allVertices[i * vertices->size() + j].pos = glm::vec3(modelMats[i] * glm::vec4((*vertices)[j].pos, 1.f));
+			allVertices[i * vertices->size() + j].pos = glm::vec3(params[i].modelMat * glm::vec4((*vertices)[j].pos, 1.f));
+			allVertices[i * vertices->size() + j].colour = params[i].colour;
+			allVertices[i * vertices->size() + j].process = params[i].process;
 		}
 	}
 	if(!VAO){
@@ -92,28 +94,38 @@ void Mesh::BatchRender(ShaderProg& shaderProg, const std::vector<glm::mat4>& mod
 	if(!VBO){
 		glGenBuffers(1, &VBO); //A buffer manages a certain piece of GPU mem
 		glBindBuffer(GL_ARRAY_BUFFER, VBO); //Makes VBO the buffer currently bound to the GL_ARRAY_BUFFER target, GL_ARRAY_BUFFER is VBO's type
-		glBufferData(GL_ARRAY_BUFFER, modelMats.size() * vertices->size() * sizeof(Vertex), NULL, GL_DYNAMIC_DRAW); //Can combine vertex attrib data into 1 arr or vec and fill VBO's mem with glBufferData
+		glBufferData(GL_ARRAY_BUFFER, params.size() * vertices->size() * sizeof(Vertex), NULL, GL_DYNAMIC_DRAW); //Can combine vertex attrib data into 1 arr or vec and fill VBO's mem with glBufferData
 
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, pos));
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, colour));
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, texCoords));
+		glEnableVertexAttribArray(3);
+		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, normal));
+		glEnableVertexAttribArray(4);
+		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, tangent));
+		glEnableVertexAttribArray(5);
+		glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, process));
 	} else{
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	}
-	glBufferSubData(GL_ARRAY_BUFFER, 0, modelMats.size() * vertices->size() * sizeof(Vertex), &allVertices[0]);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, params.size() * vertices->size() * sizeof(Vertex), &allVertices[0]);
 
 	if(!EBO && indices){
 		glGenBuffers(1, &EBO); //Element index buffer
 	}
 	if(EBO){
-		std::vector<uint> allIndices(modelMats.size() * indices->size());
-		for(size_t i = 0; i < modelMats.size(); ++i){
+		std::vector<uint> allIndices(params.size() * indices->size());
+		for(size_t i = 0; i < params.size(); ++i){
 			for(size_t j = 0; j < indices->size(); ++j){
 				allIndices[i * indices->size() + j] = uint((*indices)[j] + vertices->size() * i);
 			}
 		}
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, modelMats.size() * indices->size() * sizeof(uint), &allIndices[0], GL_STATIC_DRAW); //Alloc/Reserve a piece of GPU mem and add data into it
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, params.size() * indices->size() * sizeof(uint), &allIndices[0], GL_STATIC_DRAW); //Alloc/Reserve a piece of GPU mem and add data into it
 		glDrawElements(primitive, (int)allIndices.size(), GL_UNSIGNED_INT, 0); //Draw/Render call/command
 	} else{
 		glDrawArrays(primitive, 0, (int)allVertices.size()); //...
@@ -191,7 +203,7 @@ void Mesh::CreateQuad(){
 
 		vertices = new std::vector<Vertex>();
 		for(short i = 0; i < 4; ++i){
-			vertices->emplace_back(Vertex(pos[i], glm::vec4(1.f), UVs[i], std::vector<uint>{}, glm::vec3(0.f, 0.f, 1.f), tangent[!(i % 3)]));
+			vertices->emplace_back(Vertex(pos[i], glm::vec4(1.f), UVs[i], glm::vec3(0.f, 0.f, 1.f), tangent[!(i % 3)], 0.f));
 		}
 		if(indices){
 			delete indices;

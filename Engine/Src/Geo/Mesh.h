@@ -4,6 +4,11 @@
 
 class Mesh{ //Single drawable geo
 public:
+	struct BatchRenderParams final{
+		glm::mat4 modelMat;
+		glm::vec4 colour;
+		float process;
+	};
 	enum struct MeshType{ //Can be extended
 		None = -1,
 		Pt = 0,
@@ -15,7 +20,7 @@ public:
 	Mesh(const MeshType& myType, const int& myPrimitive);
 	virtual ~Mesh();
 	void Update(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection);
-	void BatchRender(ShaderProg& shaderProg, const std::vector<glm::mat4>& modelMats);
+	void BatchRender(ShaderProg& shaderProg, const std::vector<BatchRenderParams>& params);
 	void Render(ShaderProg& shaderProg);
 
 
