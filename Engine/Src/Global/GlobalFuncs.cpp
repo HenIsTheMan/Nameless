@@ -37,7 +37,13 @@ bool InitAPI(GLFWwindow*& win){
     //HWND hwnd = ::GetActiveWindow();
     //ShowWindow(hwnd, SW_SHOWMAXIMIZED);
     const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-    winWidth = GetSystemMetrics(SM_CXFULLSCREEN) - int(float(mode->width - GetSystemMetrics(SM_CXFULLSCREEN)) / 2.f);
+    SetWindowPos(GetConsoleWindow(), 0,
+        int((GetSystemMetrics(SM_CXFULLSCREEN) - float(mode->width - GetSystemMetrics(SM_CXFULLSCREEN)) / 2.f) * 5.f / 6.f),
+        0,
+        int((GetSystemMetrics(SM_CXFULLSCREEN) - float(mode->width - GetSystemMetrics(SM_CXFULLSCREEN)) / 2.f) / 6.f),
+        GetSystemMetrics(SM_CYFULLSCREEN),
+        0);
+    winWidth = int((GetSystemMetrics(SM_CXFULLSCREEN) - float(mode->width - GetSystemMetrics(SM_CXFULLSCREEN)) / 2.f) * 5.f / 6.f);
     winHeight = GetSystemMetrics(SM_CYFULLSCREEN) - int(float(mode->height - GetSystemMetrics(SM_CYFULLSCREEN)) / 2.f);
     win = glfwCreateWindow(winWidth, winHeight, "Nameless Engine", nullptr, nullptr);
     glfwSetWindowPos(win, int(float(mode->width - GetSystemMetrics(SM_CXFULLSCREEN)) / 2.f), int(float(mode->height - GetSystemMetrics(SM_CYFULLSCREEN)) / 2.f));
