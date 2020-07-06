@@ -10,3 +10,5 @@ float lastX = 0.f;
 float lastY = 0.f;
 float SENS = .05f;
 float angularFOV = 45.f;
+int winWidth = 800; //??
+int winHeight = 600; //??

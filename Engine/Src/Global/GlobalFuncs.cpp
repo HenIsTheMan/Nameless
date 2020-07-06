@@ -8,6 +8,8 @@ extern float lastX;
 extern float lastY;
 extern float SENS;
 extern float angularFOV;
+extern int winWidth;
+extern int winHeight;
 
 bool Key(const char& key){
     return GetAsyncKeyState((unsigned short)key) & 0x8000;
@@ -25,7 +27,9 @@ bool InitAPI(GLFWwindow*& win){
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); //For Mac OS X
     #endif
 
-    win = glfwCreateWindow(800, 600, "Nameless Game Engine", 0, 0);
+    winWidth = 800;
+    winHeight = 600;
+    win = glfwCreateWindow(winWidth, winHeight, "Nameless Engine", 0, 0);
     if(win == 0){ //Get a handle to the created window obj
         printf("Failed to create GLFW win\n");
         return false;
@@ -80,7 +84,9 @@ bool InitConsole(){
 
 static void FramebufferSizeCallback(GLFWwindow*, int width, int height){ //Resize callback
     glViewport(0, 0, width, height); //For viewport transform
-} //Aspect ratio??
+    winWidth = width;
+    winHeight = height;
+}
 
 static void CursorPosCallback(GLFWwindow*, double xPos, double yPos){
     if(firstCall){

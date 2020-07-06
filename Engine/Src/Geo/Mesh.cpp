@@ -69,7 +69,7 @@ void Mesh::BatchRender(ShaderProg& shaderProg, const std::vector<BatchRenderPara
 
 	shaderProg.Use();
 	glm::mat4 PVM = projection * view * model;
-	shaderProg.SetMat4fv("PVM", &(PVM)[0][0]);
+	shaderProg.SetMat4fv("PVM", &(PVM)[0][0], false);
 
 	std::vector<Vertex> allVertices(paramsVec.size() * vertices->size());
 	for(size_t i = 0; i < paramsVec.size(); ++i){
@@ -144,7 +144,7 @@ void Mesh::Render(ShaderProg& shaderProg){
 
 	shaderProg.Use();
 	glm::mat4 PVM = projection * view * model;
-	shaderProg.SetMat4fv("PVM", &(PVM)[0][0]);
+	shaderProg.SetMat4fv("PVM", &(PVM)[0][0], false);
 
 	if(!VAO){
 		glGenVertexArrays(1, &VAO);
