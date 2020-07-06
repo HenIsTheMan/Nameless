@@ -4,31 +4,6 @@
 
 extern float angularFOV;
 
-uint texRefIDs[32];
-void SetUpTex(const SetUpTexsParams& params, ShaderProg& shaderProg, const uint& texUnit){
-	stbi_set_flip_vertically_on_load(params.flipTex); //OpenGL reads y/v tex coord in reverse so must flip tex vertically
-	glActiveTexture(GL_TEXTURE0 + texUnit);
-	glGenTextures(1, &texRefIDs[texUnit]);
-	glBindTexture(params.texTarget, texRefIDs[texUnit]); //Make tex referenced by 'texRefIDs[i]' the tex currently bound to the currently active tex unit so subsequent tex commands will config it
-	int width, height, colourChannelsAmt;
-	unsigned char* data = stbi_load(params.texPath, &width, &height, &colourChannelsAmt, 0);
-	if(data){
-		GLenum format1 = colourChannelsAmt == 3 ? GL_RGB16F : GL_RGBA16F;
-		GLenum format2 = colourChannelsAmt == 3 ? GL_RGB : GL_RGBA;
-		glTexImage2D(params.texTarget, 0, format1, width, height, 0, format2, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(params.texTarget); //Gen required mipmap lvls for currently bound tex
-		stbi_image_free(data); //Free the img mem
-	} else{
-		printf("Failed to load tex at \"%s\"\n", params.texPath);
-	}
-	glTexImage2D(params.texTarget, 0, GL_RGBA16F, params.texWidth, params.texHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL); //Set tex's dimensions to screen size (not required) and NULL to allocate mem (data uninitialised)
-	glTexParameteri(params.texTarget, GL_TEXTURE_WRAP_S, params.texWrapParam);
-	glTexParameteri(params.texTarget, GL_TEXTURE_WRAP_T, params.texWrapParam);
-	glTexParameteri(params.texTarget, GL_TEXTURE_MIN_FILTER, params.texFilterMin); //Nearest neighbour/Point filtering/interpolation when textures are scaled downwards
-	glTexParameteri(params.texTarget, GL_TEXTURE_MAG_FILTER, params.texFilterMag); //Linear filtering/interpolation for upscaled textures
-	shaderProg.Set1i(("texSamplers[" + std::to_string(texUnit) + ']').c_str(), texUnit);
-}
-
 Scene::Scene():
 	cam(glm::vec3(0.f, 0.f, 2.f), glm::vec3(0.f), glm::vec3(0.f, 1.f, 0.f), 800.f / 600.f, 150.f),
 	mesh(Mesh::MeshType::Quad, GL_TRIANGLES),
@@ -51,16 +26,21 @@ Scene::~Scene(){
 }
 
 void Scene::Init(){
-	SetUpTex({
-		"Imgs/BrickWallAlbedo",
-		true,
-		GL_TEXTURE_2D,
-		800,
-		600,
-		GL_CLAMP_TO_BORDER,
-		GL_LINEAR,
-		GL_LINEAR,
-	}, shaderProg, 0);
+	cstr imgPaths[]{
+		"Imgs/BrickWallAlbedo.jpg",
+		"Imgs/Grass.png",
+		"Imgs/Water.jpg",
+	};
+	for(size_t i = 0; i < sizeof(imgPaths) / sizeof(imgPaths[0]); ++i){
+		SetUpTex({
+			imgPaths[i],
+			true,
+			GL_TEXTURE_2D,
+			GL_REPEAT,
+			GL_NEAREST,
+			GL_LINEAR,
+		}, shaderProg, (const uint)i);
+	}
 }
 
 void Scene::Update(){
@@ -94,11 +74,11 @@ void Scene::PreRender() const{
 
 void Scene::Render(){
 	std::vector<Mesh::BatchRenderParams> params;
-	for(short i = 0; i < 1000; ++i){
+	for(short i = 0; i < 2000; ++i){
 		params.push_back({
 			CreateModelMat(glm::vec3(-100.f + float(rand()) / (float(RAND_MAX / (100.f - (-100.f))))), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)),
 			glm::vec4(float(rand() % 101) / 100.f, float(rand() % 101) / 100.f, float(rand() % 101) / 100.f, 1.f),
-			1.f,
+			rand() % 3,
 		});
 	};
 	//mesh.Render(shaderProg);
@@ -106,4 +86,29 @@ void Scene::Render(){
 }
 
 void Scene::PostRender() const{
+}
+
+void SetUpTex(const SetUpTexsParams& params, ShaderProg& shaderProg, const uint& texUnit){
+	uint texRefID;
+	stbi_set_flip_vertically_on_load(params.flipTex); //OpenGL reads y/v tex coord in reverse so must flip tex vertically
+	glActiveTexture(GL_TEXTURE0 + texUnit);
+	glGenTextures(1, &texRefID);
+	glBindTexture(params.texTarget, texRefID); //Make tex referenced by 'texRefIDs[i]' the tex currently bound to the currently active tex unit so subsequent tex commands will config it
+	int width, height, colourChannelsAmt;
+	unsigned char* data = stbi_load(params.texPath, &width, &height, &colourChannelsAmt, 0);
+	if(data){
+		GLenum format1 = colourChannelsAmt == 3 ? GL_RGB16F : GL_RGBA16F;
+		GLenum format2 = colourChannelsAmt == 3 ? GL_RGB : GL_RGBA;
+		glTexImage2D(params.texTarget, 0, format1, width, height, 0, format2, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(params.texTarget); //Gen required mipmap lvls for currently bound tex
+		stbi_image_free(data); //Free the img mem
+	} else{
+		printf("Failed to load tex at \"%s\"\n", params.texPath);
+	}
+	glTexParameteri(params.texTarget, GL_TEXTURE_WRAP_S, params.texWrapParam);
+	glTexParameteri(params.texTarget, GL_TEXTURE_WRAP_T, params.texWrapParam);
+	glTexParameteri(params.texTarget, GL_TEXTURE_MIN_FILTER, params.texFilterMin); //Nearest neighbour/Point filtering/interpolation when textures are scaled downwards
+	glTexParameteri(params.texTarget, GL_TEXTURE_MAG_FILTER, params.texFilterMag); //Linear filtering/interpolation for upscaled textures
+	shaderProg.Use();
+	shaderProg.Set1i(("texSamplers[" + std::to_string(texUnit) + ']').c_str(), texUnit);
 }

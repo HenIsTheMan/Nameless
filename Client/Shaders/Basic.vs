@@ -4,14 +4,14 @@ layout (location = 1) in vec4 colour;
 layout (location = 2) in vec2 texCoords;
 layout (location = 3) in vec3 normal;
 layout (location = 4) in vec3 tangent;
-layout (location = 5) in float process;
+layout (location = 5) in int texIndex;
 
 out myInterface{
 	vec4 colour;
 	vec2 texCoords;
 	vec3 normal;
 	vec3 tangent;
-	float process;
+	flat int texIndex;
 } vsOut;
 
 uniform mat4 view;
@@ -23,5 +23,5 @@ void main(){
 	vsOut.texCoords = texCoords;
 	vsOut.normal = normal;
 	vsOut.tangent = tangent;
-	vsOut.process = process;
+	vsOut.texIndex = texIndex;
 }

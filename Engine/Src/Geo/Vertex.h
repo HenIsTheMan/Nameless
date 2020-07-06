@@ -7,5 +7,5 @@ struct Vertex final{
     glm::vec2 texCoords;
     glm::vec3 normal;
     glm::vec3 tangent;
-    float process;
+    int texIndex = -1;
 };

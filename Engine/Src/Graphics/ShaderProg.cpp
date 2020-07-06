@@ -1,5 +1,6 @@
 #include "ShaderProg.h"
 
+ShaderProg* ShaderProg::currShaderProg = nullptr;
 uint ShaderProg::texRefIDs[32];
 std::unordered_map<cstr, uint> ShaderProg::shaderCache;
 
@@ -94,7 +95,10 @@ void ShaderProg::Use(){
 		}
 		Link();
 	}
-	glUseProgram(refID);
+	if(!currShaderProg || currShaderProg->refID != refID){
+		glUseProgram(refID);
+		currShaderProg = this;
+	}
 }
 
 void ShaderProg::Set1f(cstr const& uniName, const float& val){

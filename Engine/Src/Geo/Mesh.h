@@ -7,7 +7,7 @@ public:
 	struct BatchRenderParams final{
 		glm::mat4 modelMat;
 		glm::vec4 colour;
-		float process;
+		int texIndex;
 	};
 	enum struct MeshType{ //Can be extended
 		None = -1,

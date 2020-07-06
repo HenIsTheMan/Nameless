@@ -84,7 +84,7 @@ void Mesh::BatchRender(ShaderProg& shaderProg, const std::vector<BatchRenderPara
 			allVertices[i * vertices->size() + j] = (*vertices)[j];
 			allVertices[i * vertices->size() + j].pos = glm::vec3(paramsVec[i].modelMat * glm::vec4((*vertices)[j].pos, 1.f));
 			allVertices[i * vertices->size() + j].colour = paramsVec[i].colour;
-			allVertices[i * vertices->size() + j].process = paramsVec[i].process;
+			allVertices[i * vertices->size() + j].texIndex = paramsVec[i].texIndex;
 		}
 	}
 	if(!VAO){
@@ -107,7 +107,7 @@ void Mesh::BatchRender(ShaderProg& shaderProg, const std::vector<BatchRenderPara
 		glEnableVertexAttribArray(4);
 		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, tangent));
 		glEnableVertexAttribArray(5);
-		glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, process));
+		glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, texIndex));
 	} else{
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	}
@@ -209,7 +209,7 @@ void Mesh::CreateQuad(){
 				UVs[i],
 				glm::vec3(0.f, 0.f, 1.f),
 				tangent[!(i % 3)],
-				0.f,
+				-1,
 			});
 		}
 		if(indices){

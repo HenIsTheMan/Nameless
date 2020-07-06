@@ -12,7 +12,7 @@ App::App():
 		printf("Failed to init API\n");
 		endLoop = true;
 	}
-	//scene.Init();
+	scene.Init();
 }
 
 App::~App(){

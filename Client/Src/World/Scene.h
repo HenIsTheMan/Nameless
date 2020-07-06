@@ -25,8 +25,6 @@ struct SetUpTexsParams final{
 	cstr texPath;
 	bool flipTex;
 	int texTarget;
-	int texWidth;
-	int texHeight;
 	int texWrapParam;
 	int texFilterMin;
 	int texFilterMag;

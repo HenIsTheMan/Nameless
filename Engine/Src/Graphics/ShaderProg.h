@@ -2,6 +2,7 @@
 #include "../Core.h"
 
 class ShaderProg final{
+	static ShaderProg* currShaderProg;
 	cstr shaderPaths[3];
 	static uint texRefIDs[32];
 	std::unordered_map<str, int> uniLocationCache;
