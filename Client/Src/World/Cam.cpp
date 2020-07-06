@@ -3,12 +3,12 @@
 #include <Global/GlobalVars.h>
 
 Cam::Cam():
-	aspectRatio(float(winWidth) / float(winHeight)),
+	aspectRatio(0.f),
 	spd(0.f),
 	pos(glm::vec3(0.f)),
 	target(glm::vec3(0.f)),
 	up(glm::vec3(0.f)),
-	defaultAspectRatio(float(winWidth) / float(winHeight)),
+	defaultAspectRatio(0.f),
 	defaultSpd(0.f),
 	defaultPos(glm::vec3(0.f)),
 	defaultTarget(glm::vec3(0.f)),

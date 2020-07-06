@@ -7,9 +7,9 @@ extern int winWidth;
 extern int winHeight;
 
 Scene::Scene():
-	cam(glm::vec3(0.f, 0.f, 2.f), glm::vec3(0.f), glm::vec3(0.f, 1.f, 0.f), float(winWidth) / float(winHeight), 150.f),
+	cam(glm::vec3(0.f, 0.f, 2.f), glm::vec3(0.f), glm::vec3(0.f, 1.f, 0.f), 0.f, 150.f),
 	mesh(Mesh::MeshType::Quad, GL_TRIANGLES),
-	shaderProg(ShaderProg("Shaders/Basic.vs", "Shaders/Basic.fs")),
+	shaderProg("Shaders/Basic.vs", "Shaders/Basic.fs"),
 	texRefIDs{}
 {
 	soundEngine = createIrrKlangDevice(ESOD_AUTO_DETECT, ESEO_MULTI_THREADED | ESEO_LOAD_PLUGINS | ESEO_USE_3D_BUFFERS | ESEO_PRINT_DEBUG_INFO_TO_DEBUGGER);
@@ -48,7 +48,8 @@ void Scene::Init(){
 }
 
 void Scene::Update(){
-	cam.SetAspectRatio(float(winWidth) / float(winHeight));
+	cam.SetDefaultAspectRatio(float(winWidth) / float(winHeight));
+	cam.ResetAspectRatio();
 	cam.Update(GLFW_KEY_Q, GLFW_KEY_E, GLFW_KEY_A, GLFW_KEY_D, GLFW_KEY_W, GLFW_KEY_S);
 	mesh.Update(glm::scale(glm::mat4(1.f), glm::vec3(2.f)), cam.LookAt(), glm::perspective(glm::radians(angularFOV), cam.GetAspectRatio(), .1f, 100.f));
 }

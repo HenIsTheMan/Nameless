@@ -6,7 +6,8 @@ extern bool endLoop;
 GLFWwindow* App::win = nullptr;
 
 App::App():
-	lastFrameTime(0.f)
+	lastFrameTime(0.f),
+	scene()
 {
 	if(!InitAPI(win)){
 		printf("Failed to init API\n");

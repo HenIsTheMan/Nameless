@@ -2,8 +2,8 @@
 #include "../World/Scene.h"
 
 class App final: public Singleton<App>{
-	App(const App&) = delete;
-	App(App&&) = delete;
+	explicit App(const App&) = delete;
+	explicit App(App&&) = delete;
 	App& operator=(const App&) = delete;
 	App& operator=(App&&) noexcept = delete;
 

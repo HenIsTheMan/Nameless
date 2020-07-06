@@ -2,8 +2,8 @@
 
 template <class T>
 class Singleton{
-	Singleton(const Singleton&) = delete;
-	Singleton(Singleton&&) = delete;
+	explicit Singleton(const Singleton&) = delete;
+	explicit Singleton(Singleton&&) = delete;
 	Singleton& operator=(const Singleton&) = delete;
 	Singleton& operator=(Singleton&&) noexcept = delete;
 
