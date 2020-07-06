@@ -49,5 +49,11 @@
     <None Include="Shaders\Basic.vs">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="Shaders\Screen.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\Screen.vs">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

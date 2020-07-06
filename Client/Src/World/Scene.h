@@ -6,7 +6,8 @@ class Scene final{
 	Cam cam;
 	ISoundEngine* soundEngine;
 	Mesh mesh;
-	ShaderProg shaderProg;
+	ShaderProg basicShaderProg;
+	ShaderProg screenShaderProg;
 	uint texRefIDs[32];
 public:
 	struct SetUpTexsParams final{
@@ -22,7 +23,7 @@ public:
 	void Init();
 	void Update();
 	void PreRender() const;
-	void Render();
+	void Render(const uint& FBORefID);
 	void PostRender() const;
 	void SetUpTex(const SetUpTexsParams& params, ShaderProg& shaderProg, const uint& texUnit);
 };

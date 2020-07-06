@@ -1,5 +1,4 @@
 #include "Scene.h"
-#define STB_IMAGE_IMPLEMENTATION
 #include "Vendor/stb_image.h"
 
 extern float angularFOV;
@@ -9,7 +8,8 @@ extern int winHeight;
 Scene::Scene():
 	cam(glm::vec3(0.f, 0.f, 2.f), glm::vec3(0.f), glm::vec3(0.f, 1.f, 0.f), 0.f, 150.f),
 	mesh(Mesh::MeshType::Quad, GL_TRIANGLES),
-	shaderProg("Shaders/Basic.vs", "Shaders/Basic.fs"),
+	basicShaderProg{"Shaders/Basic.vs", "Shaders/Basic.fs"},
+	screenShaderProg{"Shaders/Screen.vs", "Shaders/Screen.fs"},
 	texRefIDs{}
 {
 	soundEngine = createIrrKlangDevice(ESOD_AUTO_DETECT, ESEO_MULTI_THREADED | ESEO_LOAD_PLUGINS | ESEO_USE_3D_BUFFERS | ESEO_PRINT_DEBUG_INFO_TO_DEBUGGER);
@@ -22,6 +22,8 @@ Scene::Scene():
 	//if(music){
 	//	music->setPosition(vec3df(0, 0, 0));
 	//}
+
+	mesh.SetModel(CreateModelMat(glm::vec3(0.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)));
 }
 
 Scene::~Scene(){
@@ -43,7 +45,7 @@ void Scene::Init(){
 			GL_REPEAT,
 			GL_NEAREST,
 			GL_LINEAR,
-		}, shaderProg, (const uint)i);
+		}, basicShaderProg, (const uint)i);
 	}
 }
 
@@ -51,7 +53,8 @@ void Scene::Update(){
 	cam.SetDefaultAspectRatio(float(winWidth) / float(winHeight));
 	cam.ResetAspectRatio();
 	cam.Update(GLFW_KEY_Q, GLFW_KEY_E, GLFW_KEY_A, GLFW_KEY_D, GLFW_KEY_W, GLFW_KEY_S);
-	mesh.Update(glm::scale(glm::mat4(1.f), glm::vec3(2.f)), cam.LookAt(), glm::perspective(glm::radians(angularFOV), cam.GetAspectRatio(), .1f, 100.f));
+	mesh.SetView(cam.LookAt());
+	mesh.SetProjection(glm::perspective(glm::radians(angularFOV), cam.GetAspectRatio(), .1f, 9999.f)); //??
 }
 
 void Scene::PreRender() const{
@@ -78,17 +81,30 @@ void Scene::PreRender() const{
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 }
 
-void Scene::Render(){
-	//std::vector<Mesh::BatchRenderParams> params;
-	//for(short i = 0; i < 2000; ++i){
-	//	params.push_back({
-	//		CreateModelMat(glm::vec3(PseudorandMinMax(-100.f, 100.f), PseudorandMinMax(-100.f, 100.f), PseudorandMinMax(-100.f, 100.f)), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)),
-	//		glm::vec4(PseudorandMinMax(0.f, 1.f), PseudorandMinMax(0.f, 1.f), PseudorandMinMax(0.f, 1.f), 1.f),
-	//		PseudorandMinMax(0, 2),
-	//	});
-	//};
-	//mesh.BatchRender(shaderProg, params);
-	mesh.Render(shaderProg);
+void Scene::Render(const uint& FBORefID){
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	if(FBORefID){
+		basicShaderProg.Use();
+		basicShaderProg.SetMat4fv("model", &(mesh.GetModel())[0][0], false);
+		glm::mat4 PV = mesh.GetProjection() * mesh.GetView();
+		basicShaderProg.SetMat4fv("PV", &(PV)[0][0], false);
+		std::vector<Mesh::BatchRenderParams> params;
+		for(short i = 0; i < 2000; ++i){
+			params.push_back({
+				CreateModelMat(glm::vec3(PseudorandMinMax(-100.f, 100.f), PseudorandMinMax(-100.f, 100.f), PseudorandMinMax(-100.f, 100.f)), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)),
+				glm::vec4(PseudorandMinMax(0.f, 1.f), PseudorandMinMax(0.f, 1.f), PseudorandMinMax(0.f, 1.f), 1.f),
+				PseudorandMinMax(0, 2),
+			});
+		};
+
+		mesh.BatchRender(params);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	} else{
+		screenShaderProg.Use();
+		screenShaderProg.Set1i("texSampler", 31);
+		screenShaderProg.SetMat4fv("model", &(mesh.GetModel())[0][0], false);
+		mesh.Render();
+	}
 }
 
 void Scene::PostRender() const{

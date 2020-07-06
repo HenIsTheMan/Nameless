@@ -48,13 +48,7 @@ Mesh::~Mesh(){
 	}
 }
 
-void Mesh::Update(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection){
-	this->model = model;
-	this->view = view;
-	this->projection = projection;
-}
-
-void Mesh::BatchRender(ShaderProg& shaderProg, const std::vector<BatchRenderParams>& paramsVec){
+void Mesh::BatchRender(const std::vector<BatchRenderParams>& paramsVec){
 	if(primitive < 0){
 		printf("Invalid primitive!\n");
 		return;
@@ -66,10 +60,6 @@ void Mesh::BatchRender(ShaderProg& shaderProg, const std::vector<BatchRenderPara
 			CreateQuad();
 			break;
 	}
-
-	shaderProg.Use();
-	glm::mat4 PVM = projection * view * model;
-	shaderProg.SetMat4fv("PVM", &(PVM)[0][0], false);
 
 	std::vector<Vertex> allVertices(paramsVec.size() * vertices->size());
 	for(size_t i = 0; i < paramsVec.size(); ++i){
@@ -130,7 +120,7 @@ void Mesh::BatchRender(ShaderProg& shaderProg, const std::vector<BatchRenderPara
 	glBindVertexArray(0);
 }
 
-void Mesh::Render(ShaderProg& shaderProg){
+void Mesh::Render(){
 	if(primitive < 0){
 		return;
 	}
@@ -141,10 +131,6 @@ void Mesh::Render(ShaderProg& shaderProg){
 			CreateQuad();
 			break;
 	}
-
-	shaderProg.Use();
-	glm::mat4 PVM = projection * view * model;
-	shaderProg.SetMat4fv("PVM", &(PVM)[0][0], false);
 
 	if(!VAO){
 		glGenVertexArrays(1, &VAO);
@@ -176,6 +162,30 @@ void Mesh::Render(ShaderProg& shaderProg){
 		}
 		indices ? glDrawElements(primitive, (int)indices->size(), GL_UNSIGNED_INT, 0) : glDrawArrays(primitive, 0, (int)vertices->size());
 	glBindVertexArray(0);
+}
+
+const glm::mat4& Mesh::GetModel() const{
+	return model;
+}
+
+const glm::mat4& Mesh::GetView() const{
+	return view;
+}
+
+const glm::mat4& Mesh::GetProjection() const{
+	return projection;
+}
+
+void Mesh::SetModel(const glm::mat4& model){
+	this->model = model;
+}
+
+void Mesh::SetView(const glm::mat4& view){
+	this->view = view;
+}
+
+void Mesh::SetProjection(const glm::mat4& projection){
+	this->projection = projection;
 }
 
 //void Mesh::SetType(const MeshType& type){

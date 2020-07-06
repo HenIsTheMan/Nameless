@@ -18,4 +18,10 @@ public:
 	void PreRender() const;
 	void Render();
 	void PostRender() const;
+
+
+
+	uint gBufferRefID;
+	uint texRefIDs[3];
+	uint RBORefID;
 };

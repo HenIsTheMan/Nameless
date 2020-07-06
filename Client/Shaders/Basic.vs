@@ -7,6 +7,7 @@ layout (location = 4) in vec3 tangent;
 layout (location = 5) in int texIndex;
 
 out myInterface{
+	vec4 worldSpacePos;
 	vec4 colour;
 	vec2 texCoords;
 	vec3 normal;
@@ -14,13 +15,16 @@ out myInterface{
 	flat int texIndex;
 } vsOut;
 
-uniform mat4 PVM;
+uniform mat4 model;
+uniform mat4 PV;
+//uniform mat4 PVM;
 
 void main(){
-	gl_Position = PVM * vec4(pos, 1.f);
+	vsOut.worldSpacePos = model * vec4(pos, 1.f);
 	vsOut.colour = colour;
 	vsOut.texCoords = texCoords;
 	vsOut.normal = normal;
 	vsOut.tangent = tangent;
 	vsOut.texIndex = texIndex;
+	gl_Position = PV * vsOut.worldSpacePos;
 }

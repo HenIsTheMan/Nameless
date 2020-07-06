@@ -1,5 +1,4 @@
 #pragma once
-#include "../Graphics/ShaderProg.h"
 #include "Vertex.h"
 
 class Mesh{ //Single drawable geo
@@ -21,10 +20,18 @@ public:
 	Mesh();
 	Mesh(const MeshType& myType, const int& myPrimitive);
 	virtual ~Mesh();
-	void Update(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection);
-	void BatchRender(ShaderProg& shaderProg, const std::vector<BatchRenderParams>& params);
-	void Render(ShaderProg& shaderProg);
+	void BatchRender(const std::vector<BatchRenderParams>& params);
+	void Render();
 
+	///Getters
+	const glm::mat4& GetModel() const;
+	const glm::mat4& GetView() const;
+	const glm::mat4& GetProjection() const;
+
+	///Setters
+	void SetModel(const glm::mat4& model);
+	void SetView(const glm::mat4& view);
+	void SetProjection(const glm::mat4& projection);
 	//void SetType(const MeshType& type);
 	//void SetPrimitive(const int& primitive);
 protected:
