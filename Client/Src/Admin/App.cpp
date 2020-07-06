@@ -33,11 +33,11 @@ App::App():
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + (int)i, GL_TEXTURE_2D, texRefIDs[i], 0);
-			glDrawBuffer(GL_COLOR_ATTACHMENT0 + (int)i); //??
+			//glDrawBuffer(GL_COLOR_ATTACHMENT0 + (int)i); //??
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
-	//unsigned int colAttachments[3] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
-	//glDrawBuffers(3, colAttachments);
+	unsigned int colAttachments[3] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
+	glDrawBuffers(3, colAttachments);
 
 	glGenRenderbuffers(1, &RBORefID);
 	glBindRenderbuffer(GL_RENDERBUFFER, RBORefID);
@@ -51,6 +51,8 @@ App::App():
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	scene.Init();
+	glPointSize(50.f);
+	glLineWidth(2.f);
 }
 
 App::~App(){
@@ -66,16 +68,14 @@ void App::Update(){
 }
 
 void App::PreRender() const{
-	glClearColor(0.2f, 0.3f, 0.3f, 1.f); //State-setting function
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); //State-using function
 }
 
 void App::Render(){
 	scene.Render(gBufferRefID);
 
-	//glActiveTexture(GL_TEXTURE31);
-	//glBindTexture(GL_TEXTURE_2D, texRefIDs[2]);
-	//scene.Render(0);
+	glActiveTexture(GL_TEXTURE31);
+	glBindTexture(GL_TEXTURE_2D, texRefIDs[2]);
+	scene.Render(0);
 }
 
 void App::PostRender() const{

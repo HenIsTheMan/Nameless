@@ -55,6 +55,12 @@ void Scene::Update(){
 	cam.Update(GLFW_KEY_Q, GLFW_KEY_E, GLFW_KEY_A, GLFW_KEY_D, GLFW_KEY_W, GLFW_KEY_S);
 	mesh.SetView(cam.LookAt());
 	mesh.SetProjection(glm::perspective(glm::radians(angularFOV), cam.GetAspectRatio(), .1f, 9999.f)); //??
+
+	GLint polyMode;
+	glGetIntegerv(GL_POLYGON_MODE, &polyMode);
+	if(Key(50)){
+		glPolygonMode(GL_FRONT_AND_BACK, polyMode + (polyMode == GL_FILL ? -2 : 1));
+	}
 }
 
 void Scene::PreRender() const{
@@ -82,16 +88,19 @@ void Scene::PreRender() const{
 }
 
 void Scene::Render(const uint& FBORefID){
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, FBORefID);
+	glClearColor(0.2f, 0.3f, 0.3f, 1.f); //State-setting function
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); //State-using function
 	if(FBORefID){
 		basicShaderProg.Use();
 		basicShaderProg.SetMat4fv("model", &(mesh.GetModel())[0][0], false);
 		glm::mat4 PV = mesh.GetProjection() * mesh.GetView();
 		basicShaderProg.SetMat4fv("PV", &(PV)[0][0], false);
 		std::vector<Mesh::BatchRenderParams> params;
-		for(short i = 0; i < 2000; ++i){
+		for(short i = 0; i < 1; ++i){
 			params.push_back({
-				CreateModelMat(glm::vec3(PseudorandMinMax(-100.f, 100.f), PseudorandMinMax(-100.f, 100.f), PseudorandMinMax(-100.f, 100.f)), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)),
+				//PseudorandMinMax(-100.f, 100.f), PseudorandMinMax(-100.f, 100.f), PseudorandMinMax(-100.f, 100.f)
+				CreateModelMat(glm::vec3(0.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)),
 				glm::vec4(PseudorandMinMax(0.f, 1.f), PseudorandMinMax(0.f, 1.f), PseudorandMinMax(0.f, 1.f), 1.f),
 				PseudorandMinMax(0, 2),
 			});
