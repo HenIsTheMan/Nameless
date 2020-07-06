@@ -6,10 +6,6 @@ class Singleton{
 	explicit Singleton(Singleton&&) = delete;
 	Singleton& operator=(const Singleton&) = delete;
 	Singleton& operator=(Singleton&&) noexcept = delete;
-
-	static T* objPtr;
-protected:
-	Singleton() = default;
 public:
 	static T* const& GetObjPtr(){
 		if(!objPtr){
@@ -23,6 +19,10 @@ public:
 			objPtr = nullptr;
 		}
 	}
+protected:
+	Singleton() = default;
+private:
+	static T* objPtr;
 };
 
 template <class T>

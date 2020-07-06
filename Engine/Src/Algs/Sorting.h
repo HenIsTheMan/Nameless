@@ -15,6 +15,7 @@ enum struct SortOrder{
 };
 
 class SortingAlgs final{
+private:
 	template <class T>
 	friend void SortArr(T* arr, const int& start, const int& end, const SortOrder& order, const SortingAlgType& algType);
 	template <class T>

@@ -18,6 +18,8 @@
 
 using namespace irrklang;
 
+constexpr auto KEY_2 = 50;
+
 #pragma comment(lib, "assimp-vc142-mtd.lib")
 #pragma comment(lib, "glfw3.lib")
 #pragma comment(lib, "irrKlang.lib")

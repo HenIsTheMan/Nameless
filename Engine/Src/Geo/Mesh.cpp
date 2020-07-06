@@ -8,9 +8,7 @@ Mesh::Mesh():
 	VAO(0),
 	VBO(0),
 	EBO(0),
-	model(glm::mat4(1.f)),
-	view(glm::mat4(1.f)),
-	projection(glm::mat4(1.f))
+	model(glm::mat4(1.f))
 {
 }
 
@@ -22,9 +20,7 @@ Mesh::Mesh(const MeshType& myType, const int& myPrimitive):
 	VAO(0),
 	VBO(0),
 	EBO(0),
-	model(glm::mat4(1.f)),
-	view(glm::mat4(1.f)),
-	projection(glm::mat4(1.f))
+	model(glm::mat4(1.f))
 {
 }
 
@@ -50,7 +46,7 @@ Mesh::~Mesh(){
 
 void Mesh::BatchRender(const std::vector<BatchRenderParams>& paramsVec){
 	if(primitive < 0){
-		printf("Invalid primitive!\n");
+		puts("Invalid primitive!\n");
 		return;
 	}
 	switch(type){
@@ -64,7 +60,7 @@ void Mesh::BatchRender(const std::vector<BatchRenderParams>& paramsVec){
 	std::vector<Vertex> allVertices(paramsVec.size() * vertices->size());
 	for(size_t i = 0; i < paramsVec.size(); ++i){
 		if(paramsVec[i].texIndex < 0 || paramsVec[i].texIndex > 31){
-			printf("Invalid texIndex!\n");
+			puts("Invalid texIndex!\n");
 			return;
 		}
 		for(size_t j = 0; j < vertices->size(); ++j){
@@ -168,24 +164,8 @@ const glm::mat4& Mesh::GetModel() const{
 	return model;
 }
 
-const glm::mat4& Mesh::GetView() const{
-	return view;
-}
-
-const glm::mat4& Mesh::GetProjection() const{
-	return projection;
-}
-
 void Mesh::SetModel(const glm::mat4& model){
 	this->model = model;
-}
-
-void Mesh::SetView(const glm::mat4& view){
-	this->view = view;
-}
-
-void Mesh::SetProjection(const glm::mat4& projection){
-	this->projection = projection;
 }
 
 //void Mesh::SetType(const MeshType& type){

@@ -38,9 +38,6 @@
     <ClInclude Include="Src\Admin\App.h">
       <Filter>Src\Admin</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Admin\Manager.h">
-      <Filter>Src\Admin</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Basic.fs">

@@ -77,6 +77,7 @@
     <SourcePath>$(SolutionDir)$(ProjectName)\Src\</SourcePath>
     <IncludePath>$(SolutionDir)Engine\Includes\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)Engine\Libs\;$(LibraryPath)</LibraryPath>
+    <TargetName>Product</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -85,6 +86,7 @@
     <SourcePath>$(SolutionDir)$(ProjectName)\Src\</SourcePath>
     <IncludePath>$(SolutionDir)Engine\Includes\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)Engine\Libs\;$(LibraryPath)</LibraryPath>
+    <TargetName>Product</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -93,6 +95,7 @@
     <SourcePath>$(SolutionDir)$(ProjectName)\Src\</SourcePath>
     <IncludePath>$(SolutionDir)Engine\Includes\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)Engine\Libs\;$(LibraryPath)</LibraryPath>
+    <TargetName>Product</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -101,6 +104,7 @@
     <SourcePath>$(SolutionDir)$(ProjectName)\Src\</SourcePath>
     <IncludePath>$(SolutionDir)Engine\Includes\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)Engine\Libs\;$(LibraryPath)</LibraryPath>
+    <TargetName>Product</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -182,7 +186,6 @@
     <ClCompile Include="Src\World\Scene.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Src\Admin\Manager.h" />
     <ClInclude Include="Src\Admin\App.h" />
     <ClInclude Include="Src\World\Cam.h" />
     <ClInclude Include="Src\World\Scene.h" />

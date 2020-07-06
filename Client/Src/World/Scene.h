@@ -3,12 +3,6 @@
 #include "Cam.h"
 
 class Scene final{
-	Cam cam;
-	ISoundEngine* soundEngine;
-	Mesh mesh;
-	ShaderProg basicShaderProg;
-	ShaderProg screenShaderProg;
-	uint texRefIDs[32];
 public:
 	struct SetUpTexsParams final{
 		cstr texPath;
@@ -25,7 +19,19 @@ public:
 	void PreRender() const;
 	void Render(const uint& FBORefID);
 	void PostRender() const;
+private:
+	Cam cam;
+	ISoundEngine* soundEngine;
+	Mesh mesh;
+	ShaderProg basicShaderProg;
+	ShaderProg screenShaderProg;
+	uint texRefIDs[32];
+	glm::mat4 view;
+	glm::mat4 projection;
 	void SetUpTex(const SetUpTexsParams& params, ShaderProg& shaderProg, const uint& texUnit);
+
+	float elapsedTime;
+	float polyModeBT;
 };
 
 inline glm::mat4 CreateModelMat(const glm::vec3& translate, const glm::vec4& rotate, const glm::vec3& scale){

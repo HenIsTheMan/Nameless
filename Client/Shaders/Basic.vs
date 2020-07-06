@@ -17,7 +17,6 @@ out myInterface{
 
 uniform mat4 model;
 uniform mat4 PV;
-//uniform mat4 PVM;
 
 void main(){
 	vsOut.worldSpacePos = model * vec4(pos, 1.f);

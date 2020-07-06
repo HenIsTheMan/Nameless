@@ -2,6 +2,7 @@
 #include "Vendor/stb_image.h"
 
 extern float angularFOV;
+extern float dt;
 extern int winWidth;
 extern int winHeight;
 
@@ -10,7 +11,8 @@ Scene::Scene():
 	mesh(Mesh::MeshType::Quad, GL_TRIANGLES),
 	basicShaderProg{"Shaders/Basic.vs", "Shaders/Basic.fs"},
 	screenShaderProg{"Shaders/Screen.vs", "Shaders/Screen.fs"},
-	texRefIDs{}
+	texRefIDs{},
+	elapsedTime(0.f)
 {
 	soundEngine = createIrrKlangDevice(ESOD_AUTO_DETECT, ESEO_MULTI_THREADED | ESEO_LOAD_PLUGINS | ESEO_USE_3D_BUFFERS | ESEO_PRINT_DEBUG_INFO_TO_DEBUGGER);
 	//soundEngine->play2D("Audio/Music/YellowCafe.mp3", true);
@@ -50,16 +52,18 @@ void Scene::Init(){
 }
 
 void Scene::Update(){
+	elapsedTime += dt;
 	cam.SetDefaultAspectRatio(float(winWidth) / float(winHeight));
 	cam.ResetAspectRatio();
 	cam.Update(GLFW_KEY_Q, GLFW_KEY_E, GLFW_KEY_A, GLFW_KEY_D, GLFW_KEY_W, GLFW_KEY_S);
-	mesh.SetView(cam.LookAt());
-	mesh.SetProjection(glm::perspective(glm::radians(angularFOV), cam.GetAspectRatio(), .1f, 9999.f)); //??
+	view = cam.LookAt();
+	projection = glm::perspective(glm::radians(angularFOV), cam.GetAspectRatio(), .1f, 9999.f);
 
 	GLint polyMode;
 	glGetIntegerv(GL_POLYGON_MODE, &polyMode);
-	if(Key(50)){
+	if(Key(KEY_2) && polyModeBT <= elapsedTime){
 		glPolygonMode(GL_FRONT_AND_BACK, polyMode + (polyMode == GL_FILL ? -2 : 1));
+		polyModeBT = elapsedTime + .5f;
 	}
 }
 
@@ -94,7 +98,7 @@ void Scene::Render(const uint& FBORefID){
 	if(FBORefID){
 		basicShaderProg.Use();
 		basicShaderProg.SetMat4fv("model", &(mesh.GetModel())[0][0], false);
-		glm::mat4 PV = mesh.GetProjection() * mesh.GetView();
+		glm::mat4 PV = projection * view;
 		basicShaderProg.SetMat4fv("PV", &(PV)[0][0], false);
 		std::vector<Mesh::BatchRenderParams> params;
 		for(short i = 0; i < 1; ++i){
@@ -121,7 +125,7 @@ void Scene::PostRender() const{
 
 void Scene::SetUpTex(const SetUpTexsParams& params, ShaderProg& shaderProg, const uint& texUnit){
 	if(texUnit < 0 || texUnit > 31){
-		printf("Invalid texUnit!\n");
+		puts("Invalid texUnit!\n");
 		return;
 	}
 	stbi_set_flip_vertically_on_load(params.flipTex); //OpenGL reads y/v tex coord in reverse so must flip tex vertically

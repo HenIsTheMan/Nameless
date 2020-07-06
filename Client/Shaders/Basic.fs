@@ -17,6 +17,5 @@ uniform sampler2D texSamplers[32];
 void main(){
     pos = fsIn.worldSpacePos.xyz;
     normal = normalize(fsIn.normal);
-	albedoSpec = vec4(texture(texSamplers[fsIn.texIndex], fsIn.texCoords).rgb, texture(texSamplers[fsIn.texIndex], fsIn.texCoords).r); //??
-	//fragColour = fsIn.texIndex < 0 ? fsIn.colour : texture(texSamplers[fsIn.texIndex], fsIn.texCoords);
+	albedoSpec = vec4((fsIn.texIndex < 0 ? fsIn.colour : texture(texSamplers[fsIn.texIndex], fsIn.texCoords)).rgb, 1.f); //texture(texSamplers[fsIn.texIndex], fsIn.texCoords).r??
 }

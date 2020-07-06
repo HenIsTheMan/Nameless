@@ -32,7 +32,7 @@ bool InitAPI(GLFWwindow*& win){
     //    winWidth = rect.right - rect.left;
     //    winHeight = rect.bottom - rect.top;
     //} else{
-    //    printf("Failed to set winWidth and winHeight\n");
+    //    puts("Failed to set winWidth and winHeight\n");
     //}
     //HWND hwnd = ::GetActiveWindow();
     //ShowWindow(hwnd, SW_SHOWMAXIMIZED);
@@ -49,12 +49,12 @@ bool InitAPI(GLFWwindow*& win){
     glfwSetWindowPos(win, int(float(mode->width - GetSystemMetrics(SM_CXFULLSCREEN)) / 2.f), int(float(mode->height - GetSystemMetrics(SM_CYFULLSCREEN)) / 2.f));
 
     if(win == 0){ //Get a handle to the created window obj
-        printf("Failed to create GLFW win\n");
+        puts("Failed to create GLFW win\n");
         return false;
     }
     glfwMakeContextCurrent(win); //Make context of the window the main context on the curr thread
     if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)){
-        printf("Failed to init GLAD\n");
+        puts("Failed to init GLAD\n");
         return false;
     }
     glfwSetFramebufferSizeCallback(win, &FramebufferSizeCallback);
@@ -93,7 +93,7 @@ bool InitConsole(){
 
     ::ShowWindow(::GetConsoleWindow(), SW_SHOW);
     if(!SetConsoleCtrlHandler((PHANDLER_ROUTINE)ConsoleEventHandler, TRUE)){
-        printf("Failed to install console event handler!\n");
+        puts("Failed to install console event handler!\n");
         return false;
     }
     return true;
@@ -110,19 +110,10 @@ static void CursorPosCallback(GLFWwindow*, double xPos, double yPos){
         firstCall = 0;
     } else{ //Add mouse movement offset between last frame and curr frame
         yaw -= (float(xPos) - lastX) * SENS;
-        pitch -= (float(yPos) - lastY) * SENS; //??
+        pitch -= (float(yPos) - lastY) * SENS;
     }
     lastX = float(xPos);
     lastY = float(yPos);
-
-    ///For geometric intersection testing by ray casting
-    //float x = (2.f * float(xPos)) / 800.f - 1.f, y = 1.f - (2.f * float(yPos)) / 600.f; //Viewport coords (viewportWidth to viewportHeight) to NDC (-1 to 1)
-    //glm::vec3 rayNDC(x, y, -1.f); //-1.f so ray points forward
-    //glm::vec4 rayClipSpace(rayNDC, 1.f); //1.f to form 4D vec //No need to reverse perspective division here as the ray has no intrinsic depth (only need in the special case of pts, for certain effects)
-    //glm::vec4 rayViewSpace(glm::inverse(glm::perspective(glm::radians(angularFOV), 800.f / 600.f, .1f, 9999.f)) * rayClipSpace);
-    //rayViewSpace = glm::vec4(rayViewSpace.x, rayViewSpace.y, -1.f, 0.f); //-1.f so... //0.f to indicate that the ray is not a pt (similar to directional light rays)
-    //rayWorldSpace = glm::inverse(cam->LookAt()) * rayViewSpace;
-    //rayWorldSpace = glm::normalize(rayWorldSpace);
 }
 
 static void MouseButtonCallback(GLFWwindow* win, int button, int action, int mods){ //For mouse buttons

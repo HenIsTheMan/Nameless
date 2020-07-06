@@ -2,6 +2,13 @@
 #include "../World/Scene.h"
 
 class App final: public Singleton<App>{
+public:
+	~App();
+	void Update();
+	void PreRender() const;
+	void Render();
+	void PostRender() const;
+private:
 	explicit App(const App&) = delete;
 	explicit App(App&&) = delete;
 	App& operator=(const App&) = delete;
@@ -12,15 +19,6 @@ class App final: public Singleton<App>{
 	float lastFrameTime;
 	Scene scene;
 	static GLFWwindow* win;
-public:
-	~App();
-	void Update();
-	void PreRender() const;
-	void Render();
-	void PostRender() const;
-
-
-
 	uint gBufferRefID;
 	uint texRefIDs[3];
 	uint RBORefID;
