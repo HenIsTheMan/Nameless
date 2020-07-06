@@ -7,7 +7,8 @@ extern float angularFOV;
 Scene::Scene():
 	cam(glm::vec3(0.f, 0.f, 2.f), glm::vec3(0.f), glm::vec3(0.f, 1.f, 0.f), 800.f / 600.f, 150.f),
 	mesh(Mesh::MeshType::Quad, GL_TRIANGLES),
-	shaderProg(ShaderProg("Shaders/Basic.vs", "Shaders/Basic.fs"))
+	shaderProg(ShaderProg("Shaders/Basic.vs", "Shaders/Basic.fs")),
+	texRefIDs{}
 {
 	soundEngine = createIrrKlangDevice(ESOD_AUTO_DETECT, ESEO_MULTI_THREADED | ESEO_LOAD_PLUGINS | ESEO_USE_3D_BUFFERS | ESEO_PRINT_DEBUG_INFO_TO_DEBUGGER);
 	//soundEngine->play2D("Audio/Music/YellowCafe.mp3", true);
@@ -23,6 +24,7 @@ Scene::Scene():
 
 Scene::~Scene(){
 	soundEngine->drop();
+	glDeleteTextures(32, texRefIDs);
 }
 
 void Scene::Init(){
@@ -88,16 +90,15 @@ void Scene::Render(){
 void Scene::PostRender() const{
 }
 
-void SetUpTex(const SetUpTexsParams& params, ShaderProg& shaderProg, const uint& texUnit){
+void Scene::SetUpTex(const SetUpTexsParams& params, ShaderProg& shaderProg, const uint& texUnit){
 	if(texUnit < 0 || texUnit > 31){
 		printf("Invalid texUnit!\n");
 		return;
 	}
-	uint texRefID;
 	stbi_set_flip_vertically_on_load(params.flipTex); //OpenGL reads y/v tex coord in reverse so must flip tex vertically
 	glActiveTexture(GL_TEXTURE0 + texUnit);
-	glGenTextures(1, &texRefID);
-	glBindTexture(params.texTarget, texRefID); //Make tex referenced by 'texRefIDs[i]' the tex currently bound to the currently active tex unit so subsequent tex commands will config it
+	glGenTextures(1, &texRefIDs[texUnit]);
+	glBindTexture(params.texTarget, texRefIDs[texUnit]); //Make tex referenced by 'texRefIDs[i]' the tex currently bound to the currently active tex unit so subsequent tex commands will config it
 	int width, height, colourChannelsAmt;
 	unsigned char* data = stbi_load(params.texPath, &width, &height, &colourChannelsAmt, 0);
 	if(data){
