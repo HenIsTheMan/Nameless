@@ -172,6 +172,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Src\Algs\Printing.h" />
+    <ClInclude Include="Src\Algs\Pseudorand.h" />
     <ClInclude Include="Src\Algs\Sorting.h" />
     <ClInclude Include="Src\Algs\Swapping.h" />
     <ClInclude Include="Src\Global\GlobalFuncs.h" />

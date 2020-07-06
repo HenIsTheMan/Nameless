@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Algs/Printing.h"
+#include "Algs/Pseudorand.h"
 #include "Algs/Sorting.h"
 #include "Algs/Swapping.h"
 #include "Geo/Mesh.h"

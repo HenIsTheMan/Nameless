@@ -76,9 +76,9 @@ void Scene::Render(){
 	std::vector<Mesh::BatchRenderParams> params;
 	for(short i = 0; i < 2000; ++i){
 		params.push_back({
-			CreateModelMat(glm::vec3(-100.f + float(rand()) / (float(RAND_MAX / (100.f - (-100.f))))), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)),
-			glm::vec4(float(rand() % 101) / 100.f, float(rand() % 101) / 100.f, float(rand() % 101) / 100.f, 1.f),
-			rand() % 3,
+			CreateModelMat(glm::vec3(PseudorandMinMax(-100.f, 100.f), PseudorandMinMax(-100.f, 100.f), PseudorandMinMax(-100.f, 100.f)), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)),
+			glm::vec4(PseudorandMinMax(0.f, 1.f), PseudorandMinMax(0.f, 1.f), PseudorandMinMax(0.f, 1.f), 1.f),
+			PseudorandMinMax(0, 2),
 		});
 	};
 	//mesh.Render(shaderProg);
