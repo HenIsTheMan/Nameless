@@ -89,6 +89,10 @@ void Scene::PostRender() const{
 }
 
 void SetUpTex(const SetUpTexsParams& params, ShaderProg& shaderProg, const uint& texUnit){
+	if(texUnit < 0 || texUnit > 31){
+		printf("Invalid texUnit!\n");
+		return;
+	}
 	uint texRefID;
 	stbi_set_flip_vertically_on_load(params.flipTex); //OpenGL reads y/v tex coord in reverse so must flip tex vertically
 	glActiveTexture(GL_TEXTURE0 + texUnit);

@@ -9,12 +9,14 @@ public:
 		glm::vec4 colour;
 		int texIndex;
 	};
-	enum struct MeshType{ //Can be extended
-		None = -1,
-		Pt = 0,
-		Line = 1,
-		Quad = 2,
-		Cuboid = 3,
+	enum struct MeshType{
+		//Pt
+		//Line
+		//2D (circle, ring and 2D polygons with >= 3 vertices)
+		//3D (sphere, torus and 3D polyhedrons with >= 3 flat polygonal faces)
+		None = 0,
+		Quad,
+		Cuboid,
 	};
 	Mesh();
 	Mesh(const MeshType& myType, const int& myPrimitive);
@@ -23,9 +25,8 @@ public:
 	void BatchRender(ShaderProg& shaderProg, const std::vector<BatchRenderParams>& params);
 	void Render(ShaderProg& shaderProg);
 
-
-	void SetType(const MeshType& type);
-
+	//void SetType(const MeshType& type);
+	//void SetPrimitive(const int& primitive);
 protected:
 	MeshType type;
 	int primitive;
@@ -37,5 +38,6 @@ protected:
 	glm::mat4 model;
 	glm::mat4 view;
 	glm::mat4 projection;
+
 	void CreateQuad();
 };

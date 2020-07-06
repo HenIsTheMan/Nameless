@@ -48,14 +48,6 @@ Mesh::~Mesh(){
 	}
 }
 
-void Mesh::SetType(const MeshType& type){
-	if(vertices){
-		delete vertices;
-		vertices = nullptr;
-	}
-	this->type = type;
-}
-
 void Mesh::Update(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection){
 	this->model = model;
 	this->view = view;
@@ -64,6 +56,7 @@ void Mesh::Update(const glm::mat4& model, const glm::mat4& view, const glm::mat4
 
 void Mesh::BatchRender(ShaderProg& shaderProg, const std::vector<BatchRenderParams>& paramsVec){
 	if(primitive < 0){
+		printf("Invalid primitive!\n");
 		return;
 	}
 	switch(type){
@@ -80,6 +73,10 @@ void Mesh::BatchRender(ShaderProg& shaderProg, const std::vector<BatchRenderPara
 
 	std::vector<Vertex> allVertices(paramsVec.size() * vertices->size());
 	for(size_t i = 0; i < paramsVec.size(); ++i){
+		if(paramsVec[i].texIndex < 0 || paramsVec[i].texIndex > 31){
+			printf("Invalid texIndex!\n");
+			return;
+		}
 		for(size_t j = 0; j < vertices->size(); ++j){
 			allVertices[i * vertices->size() + j] = (*vertices)[j];
 			allVertices[i * vertices->size() + j].pos = glm::vec3(paramsVec[i].modelMat * glm::vec4((*vertices)[j].pos, 1.f));
@@ -183,6 +180,18 @@ void Mesh::Render(ShaderProg& shaderProg){
 		}
 	glBindVertexArray(0);
 }
+
+//void Mesh::SetType(const MeshType& type){
+//	if(vertices){
+//		delete vertices;
+//		vertices = nullptr;
+//	}
+//	this->type = type;
+//}
+//
+//void Mesh::SetPrimitive(const int& primitive){
+//	this->primitive = primitive;
+//}
 
 void Mesh::CreateQuad(){
 	if(!vertices){

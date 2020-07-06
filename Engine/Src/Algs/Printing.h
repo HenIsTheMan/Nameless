@@ -1,11 +1,11 @@
 #pragma once
 #include <iostream>
 
-enum struct PrintFormat{ //Can be extended
+enum struct PrintFormat{
 	ListHoriz = 0,
-	ListVert = 1,
-	CSListHoriz = 2,
-	CSListVert = 3,
+	ListVert,
+	CSListHoriz,
+	CSListVert,
 };
 
 template <class T>

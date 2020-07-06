@@ -1,17 +1,17 @@
 #pragma once
 #include "Swapping.h"
 
-enum struct SortingAlgType{ //Can be extended
+enum struct SortingAlgType{
 	Bubble = 0,
-	Selection = 1,
-	Insertion = 2,
-	Quick = 3,
-	Merge = 4,
+	Selection,
+	Insertion,
+	Quick,
+	Merge,
 };
 
-enum struct SortOrder{ //Cannot be extended
+enum struct SortOrder{
 	Ascending = 0,
-	Descending = 1,
+	Descending
 };
 
 class SortingAlgs final{
