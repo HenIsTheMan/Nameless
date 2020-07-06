@@ -47,7 +47,7 @@ void Scene::Init(){
 
 void Scene::Update(){
 	cam.Update(GLFW_KEY_Q, GLFW_KEY_E, GLFW_KEY_A, GLFW_KEY_D, GLFW_KEY_W, GLFW_KEY_S);
-	mesh.Update(glm::scale(glm::mat4(1.f), glm::vec3(.5f, .5f, 1.f)), cam.LookAt(), glm::perspective(glm::radians(angularFOV), cam.GetAspectRatio(), .1f, 100.f)); //??
+	mesh.Update(glm::scale(glm::mat4(1.f), glm::vec3(2.f)), cam.LookAt(), glm::perspective(glm::radians(angularFOV), cam.GetAspectRatio(), .1f, 100.f));
 }
 
 void Scene::PreRender() const{
@@ -75,16 +75,16 @@ void Scene::PreRender() const{
 }
 
 void Scene::Render(){
-	std::vector<Mesh::BatchRenderParams> params;
-	for(short i = 0; i < 2000; ++i){
-		params.push_back({
-			CreateModelMat(glm::vec3(PseudorandMinMax(-100.f, 100.f), PseudorandMinMax(-100.f, 100.f), PseudorandMinMax(-100.f, 100.f)), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)),
-			glm::vec4(PseudorandMinMax(0.f, 1.f), PseudorandMinMax(0.f, 1.f), PseudorandMinMax(0.f, 1.f), 1.f),
-			PseudorandMinMax(0, 2),
-		});
-	};
-	//mesh.Render(shaderProg);
-	mesh.BatchRender(shaderProg, params);
+	//std::vector<Mesh::BatchRenderParams> params;
+	//for(short i = 0; i < 2000; ++i){
+	//	params.push_back({
+	//		CreateModelMat(glm::vec3(PseudorandMinMax(-100.f, 100.f), PseudorandMinMax(-100.f, 100.f), PseudorandMinMax(-100.f, 100.f)), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)),
+	//		glm::vec4(PseudorandMinMax(0.f, 1.f), PseudorandMinMax(0.f, 1.f), PseudorandMinMax(0.f, 1.f), 1.f),
+	//		PseudorandMinMax(0, 2),
+	//	});
+	//};
+	//mesh.BatchRender(shaderProg, params);
+	mesh.Render(shaderProg);
 }
 
 void Scene::PostRender() const{

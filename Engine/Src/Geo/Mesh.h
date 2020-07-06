@@ -5,7 +5,7 @@
 class Mesh{ //Single drawable geo
 public:
 	struct BatchRenderParams final{
-		glm::mat4 modelMat;
+		glm::mat4 model;
 		glm::vec4 colour;
 		int texIndex;
 	};

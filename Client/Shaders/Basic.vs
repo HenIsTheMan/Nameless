@@ -14,11 +14,10 @@ out myInterface{
 	flat int texIndex;
 } vsOut;
 
-uniform mat4 view;
-uniform mat4 projection;
+uniform mat4 PVM;
 
 void main(){
-	gl_Position = projection * view * vec4(pos, 1.f);
+	gl_Position = PVM * vec4(pos, 1.f);
 	vsOut.colour = colour;
 	vsOut.texCoords = texCoords;
 	vsOut.normal = normal;
