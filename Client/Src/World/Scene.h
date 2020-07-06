@@ -17,7 +17,8 @@ public:
 	void Init();
 	void Update();
 	void PreRender() const;
-	void Render(const uint& FBORefID);
+	void RenderToCreatedFB();
+	void RenderToDefaultFB(const uint& texRefID);
 	void PostRender() const;
 private:
 	Cam cam;
