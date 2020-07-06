@@ -27,9 +27,21 @@ bool InitAPI(GLFWwindow*& win){
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); //For Mac OS X
     #endif
 
-    winWidth = 800;
-    winHeight = 600;
-    win = glfwCreateWindow(winWidth, winHeight, "Nameless Engine", 0, 0);
+    //RECT rect;
+    //if(GetWindowRect(hwnd, &rect)){
+    //    winWidth = rect.right - rect.left;
+    //    winHeight = rect.bottom - rect.top;
+    //} else{
+    //    printf("Failed to set winWidth and winHeight\n");
+    //}
+    //HWND hwnd = ::GetActiveWindow();
+    //ShowWindow(hwnd, SW_SHOWMAXIMIZED);
+    const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+    winWidth = GetSystemMetrics(SM_CXFULLSCREEN) - int(float(mode->width - GetSystemMetrics(SM_CXFULLSCREEN)) / 2.f);
+    winHeight = GetSystemMetrics(SM_CYFULLSCREEN) - int(float(mode->height - GetSystemMetrics(SM_CYFULLSCREEN)) / 2.f);
+    win = glfwCreateWindow(winWidth, winHeight, "Nameless Engine", nullptr, nullptr);
+    glfwSetWindowPos(win, int(float(mode->width - GetSystemMetrics(SM_CXFULLSCREEN)) / 2.f), int(float(mode->height - GetSystemMetrics(SM_CYFULLSCREEN)) / 2.f));
+
     if(win == 0){ //Get a handle to the created window obj
         printf("Failed to create GLFW win\n");
         return false;
@@ -39,7 +51,6 @@ bool InitAPI(GLFWwindow*& win){
         printf("Failed to init GLAD\n");
         return false;
     }
-
     glfwSetFramebufferSizeCallback(win, &FramebufferSizeCallback);
     glfwSetCursorPosCallback(win, CursorPosCallback);
     glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_DISABLED); //Hide and capture mouse cursor
