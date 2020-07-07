@@ -189,7 +189,6 @@
   <ItemGroup>
     <ClCompile Include="Src\Global\GlobalFuncs.cpp" />
     <ClCompile Include="Src\Geo\Mesh.cpp" />
-    <ClCompile Include="Src\Graphics\Light.cpp" />
     <ClCompile Include="Src\Graphics\ShaderProg.cpp" />
     <ClCompile Include="Src\Vendor\glad.c" />
   </ItemGroup>

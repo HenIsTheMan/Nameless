@@ -51,9 +51,6 @@
     <ClCompile Include="Src\Geo\Mesh.cpp">
       <Filter>Src\Geo</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Graphics\Light.cpp">
-      <Filter>Src\Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="Src\Graphics\ShaderProg.cpp">
       <Filter>Src\Graphics</Filter>
     </ClCompile>

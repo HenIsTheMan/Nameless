@@ -9,8 +9,9 @@ extern int winHeight;
 Scene::Scene():
 	cam(glm::vec3(0.f, 0.f, 2.f), glm::vec3(0.f), glm::vec3(0.f, 1.f, 0.f), 0.f, 150.f),
 	mesh(Mesh::MeshType::Quad, GL_TRIANGLES),
-	basicShaderProg{"Shaders/GeoPass.vs", "Shaders/GeoPass.fs"},
-	screenShaderProg{"Shaders/Quad.vs", "Shaders/Screen.fs"},
+	geoPassSP{"Shaders/GeoPass.vs", "Shaders/GeoPass.fs"},
+	lightingPassSP{"Shaders/Quad.vs", "Shaders/LightingPass.fs"},
+	screenSP{"Shaders/Quad.vs", "Shaders/Screen.fs"},
 	texRefIDs{},
 	view(glm::mat4(1.f)),
 	projection(glm::mat4(1.f)),
@@ -29,6 +30,7 @@ Scene::Scene():
 	//}
 
 	mesh.SetModel(CreateModelMat(glm::vec3(0.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)));
+	spotlights.emplace_back(Light::CreateLight(Light::LightType::Spot));
 }
 
 Scene::~Scene(){
@@ -50,7 +52,7 @@ bool Scene::Init(){
 			GL_REPEAT,
 			GL_LINEAR_MIPMAP_LINEAR,
 			GL_LINEAR,
-		}, basicShaderProg, (const uint)i);
+		}, geoPassSP, (const uint)i);
 	}
 
 	return true;
@@ -63,6 +65,43 @@ void Scene::Update(){
 	cam.Update(GLFW_KEY_Q, GLFW_KEY_E, GLFW_KEY_A, GLFW_KEY_D, GLFW_KEY_W, GLFW_KEY_S);
 	view = cam.LookAt();
 	projection = glm::perspective(glm::radians(angularFOV), cam.GetAspectRatio(), .1f, 9999.f);
+
+	lightingPassSP.Use();
+	const size_t& pAmt = ptLights.size();
+	const size_t& dAmt = directionalLights.size();
+	const size_t& sAmt = spotlights.size();
+	lightingPassSP.Set3fv("globalAmbient", Light::globalAmbient);
+	for(size_t i = 0; i < pAmt; ++i){
+		lightingPassSP.Set1i("pAmt", pAmt);
+		const PtLight* const& ptLight = static_cast<PtLight*>(ptLights[i]);
+		lightingPassSP.Set3fv(("ptLights[" + std::to_string(i) + "].ambient").c_str(), ptLight->ambient);
+		lightingPassSP.Set3fv(("ptLights[" + std::to_string(i) + "].diffuse").c_str(), ptLight->diffuse);
+		lightingPassSP.Set3fv(("ptLights[" + std::to_string(i) + "].specular").c_str(), ptLight->specular);
+		lightingPassSP.Set3fv(("ptLights[" + std::to_string(i) + "].pos").c_str(), ptLight->pos);
+		lightingPassSP.Set1f(("ptLights[" + std::to_string(i) + "].constant").c_str(), ptLight->constant);
+		lightingPassSP.Set1f(("ptLights[" + std::to_string(i) + "].linear").c_str(), ptLight->linear);
+		lightingPassSP.Set1f(("ptLights[" + std::to_string(i) + "].quadratic").c_str(), ptLight->quadratic);
+	}
+	for(size_t i = 0; i < dAmt; ++i){
+		lightingPassSP.Set1i("dAmt", dAmt);
+		const DirectionalLight* const& directionalLight = static_cast<DirectionalLight*>(ptLights[i]);
+		lightingPassSP.Set3fv(("directionalLights[" + std::to_string(i) + "].ambient").c_str(), directionalLight->ambient);
+		lightingPassSP.Set3fv(("directionalLights[" + std::to_string(i) + "].diffuse").c_str(), directionalLight->diffuse);
+		lightingPassSP.Set3fv(("directionalLights[" + std::to_string(i) + "].specular").c_str(), directionalLight->specular);
+		lightingPassSP.Set3fv(("directionalLights[" + std::to_string(i) + "].dir").c_str(), directionalLight->dir);
+	}
+	for(size_t i = 0; i < sAmt; ++i){
+		lightingPassSP.Set1i("sAmt", sAmt);
+		const Spotlight* const& spotlight = static_cast<Spotlight*>(spotlights[i]);
+		lightingPassSP.Set3fv(("spotights[" + std::to_string(i) + "].ambient").c_str(), spotlight->ambient);
+		lightingPassSP.Set3fv(("spotights[" + std::to_string(i) + "].diffuse").c_str(), spotlight->diffuse);
+		lightingPassSP.Set3fv(("spotights[" + std::to_string(i) + "].specular").c_str(), spotlight->specular);
+		lightingPassSP.Set3fv(("spotlights[" + std::to_string(i) + "].pos").c_str(), spotlight->pos);
+		lightingPassSP.Set3fv(("spotlights[" + std::to_string(i) + "].dir").c_str(), spotlight->dir);
+		lightingPassSP.Set1f(("spotlights[" + std::to_string(i) + "].cosInnerCutoff").c_str(), spotlight->cosInnerCutoff);
+		lightingPassSP.Set1f(("spotlights[" + std::to_string(i) + "].cosOuterCutoff").c_str(), spotlight->cosOuterCutoff);
+	}
+	lightingPassSP.Set1f("mtl.shininess", 32.f); //More light scattering if lower
 
 	GLint polyMode;
 	glGetIntegerv(GL_POLYGON_MODE, &polyMode);
@@ -77,10 +116,10 @@ void Scene::PreRender() const{
 }
 
 void Scene::RenderToCreatedFB(){
-	basicShaderProg.Use();
-	basicShaderProg.SetMat4fv("model", &(mesh.GetModel())[0][0], false);
+	geoPassSP.Use();
+	geoPassSP.SetMat4fv("model", &(mesh.GetModel())[0][0], false);
 	glm::mat4 PV = projection * view;
-	basicShaderProg.SetMat4fv("PV", &(PV)[0][0], false);
+	geoPassSP.SetMat4fv("PV", &(PV)[0][0], false);
 	std::vector<Mesh::BatchRenderParams> params;
 	for(short i = 0; i < 1; ++i){
 		params.push_back({
@@ -93,11 +132,11 @@ void Scene::RenderToCreatedFB(){
 }
 
 void Scene::RenderToDefaultFB(const uint& texRefID){
-	screenShaderProg.Use();
+	screenSP.Use();
 	glActiveTexture(GL_TEXTURE31);
 	glBindTexture(GL_TEXTURE_2D, texRefID);
-	screenShaderProg.Set1i("texSampler", 31);
-	screenShaderProg.SetMat4fv("model", &(mesh.GetModel())[0][0], false);
+	screenSP.Set1i("texSampler", 31);
+	screenSP.SetMat4fv("model", &(mesh.GetModel())[0][0], false);
 	mesh.Render();
 }
 
