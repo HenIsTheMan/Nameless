@@ -40,16 +40,19 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\Basic.fs">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\Basic.vs">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="Shaders\Screen.fs">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Shaders\Screen.vs">
+    <None Include="Shaders\GeoPass.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\GeoPass.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\LightingPass.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\Quad.vs">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

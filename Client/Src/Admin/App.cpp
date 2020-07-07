@@ -104,7 +104,7 @@ void App::Render(){
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	scene.PreRender();
-	scene.RenderToDefaultFB(texRefIDs[1]);
+	scene.RenderToDefaultFB(texRefIDs[0]);
 }
 
 void App::PostRender() const{

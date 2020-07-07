@@ -9,8 +9,8 @@ extern int winHeight;
 Scene::Scene():
 	cam(glm::vec3(0.f, 0.f, 2.f), glm::vec3(0.f), glm::vec3(0.f, 1.f, 0.f), 0.f, 150.f),
 	mesh(Mesh::MeshType::Quad, GL_TRIANGLES),
-	basicShaderProg{"Shaders/Basic.vs", "Shaders/Basic.fs"},
-	screenShaderProg{"Shaders/Screen.vs", "Shaders/Screen.fs"},
+	basicShaderProg{"Shaders/GeoPass.vs", "Shaders/GeoPass.fs"},
+	screenShaderProg{"Shaders/Quad.vs", "Shaders/Screen.fs"},
 	texRefIDs{},
 	view(glm::mat4(1.f)),
 	projection(glm::mat4(1.f)),
