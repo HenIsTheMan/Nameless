@@ -14,7 +14,7 @@ public:
 	};
 	Scene();
 	~Scene();
-	void Init();
+	bool Init();
 	void Update();
 	void PreRender() const;
 	void RenderToCreatedFB();

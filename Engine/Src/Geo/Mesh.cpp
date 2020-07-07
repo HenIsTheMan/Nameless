@@ -59,10 +59,6 @@ void Mesh::BatchRender(const std::vector<BatchRenderParams>& paramsVec){
 
 	std::vector<Vertex> allVertices(paramsVec.size() * vertices->size());
 	for(size_t i = 0; i < paramsVec.size(); ++i){
-		if(paramsVec[i].texIndex < 0 || paramsVec[i].texIndex > 31){
-			puts("Invalid texIndex!\n");
-			return;
-		}
 		for(size_t j = 0; j < vertices->size(); ++j){
 			allVertices[i * vertices->size() + j] = (*vertices)[j];
 			allVertices[i * vertices->size() + j].pos = glm::vec3(paramsVec[i].model * glm::vec4((*vertices)[j].pos, 1.f));

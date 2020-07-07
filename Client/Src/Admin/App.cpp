@@ -20,38 +20,41 @@ App::App():
 		puts("Failed to init API\n");
 		endLoop = true;
 	}
+	(void)Init();
+}
 
+App::~App(){
+	glfwTerminate(); //Clean/Del all GLFW's resources that were allocated
+}
+
+bool App::Init(){
 	glGenFramebuffers(1, &gBufferRefID);
 	glBindFramebuffer(GL_FRAMEBUFFER, gBufferRefID);
-		size_t size = sizeof(texRefIDs) / sizeof(texRefIDs[0]);
-		stbi_set_flip_vertically_on_load(true);
-		glGenTextures((int)size, texRefIDs);
-		for(size_t i = 0; i < size; ++i){
-			glBindTexture(GL_TEXTURE_2D, texRefIDs[i]);
-				glTexImage2D(GL_TEXTURE_2D, 0, i == size - 1 ? GL_RGBA : GL_RGBA16F, winWidth, winHeight, 0, GL_RGBA, i == size - 1 ? GL_UNSIGNED_BYTE : GL_FLOAT, NULL);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + (int)i, GL_TEXTURE_2D, texRefIDs[i], 0);
-			glBindTexture(GL_TEXTURE_2D, 0);
-		}
-		unsigned int colAttachments[3] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
-		glDrawBuffers(3, colAttachments);
+	size_t size = sizeof(texRefIDs) / sizeof(texRefIDs[0]);
+	stbi_set_flip_vertically_on_load(true);
+	glGenTextures((int)size, texRefIDs);
+	for(size_t i = 0; i < size; ++i){
+		glBindTexture(GL_TEXTURE_2D, texRefIDs[i]);
+		glTexImage2D(GL_TEXTURE_2D, 0, i == size - 1 ? GL_RGBA : GL_RGBA16F, winWidth, winHeight, 0, GL_RGBA, i == size - 1 ? GL_UNSIGNED_BYTE : GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + (int)i, GL_TEXTURE_2D, texRefIDs[i], 0);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+	unsigned int colAttachments[3] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
+	glDrawBuffers(3, colAttachments);
 
-		glGenRenderbuffers(1, &RBORefID);
-		glBindRenderbuffer(GL_RENDERBUFFER, RBORefID);
-			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, winWidth, winHeight);
-			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, RBORefID);
-		glBindRenderbuffer(GL_RENDERBUFFER, 0);
+	glGenRenderbuffers(1, &RBORefID);
+	glBindRenderbuffer(GL_RENDERBUFFER, RBORefID);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, winWidth, winHeight);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, RBORefID);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
-		if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE){
-			puts("Created framebuffer is incomplete.\n");
-		}
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	scene.Init();
-	glPointSize(10.f);
-	glLineWidth(5.f);
-	glClearColor(1.f, 0.82f, 0.86f, 1.f); //State-setting function
+	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE){
+		puts("Created framebuffer is incomplete.\n");
+		return false;
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	//Stencil buffer usually contains 8 bits per stencil value that amts to 256 diff stencil values per pixel
 	//Use stencil buffer operations to write to the stencil buffer when rendering frags (read stencil values in the same or following frame(s) to pass or discard frags based on their stencil value)
@@ -61,7 +64,7 @@ App::App():
 	glEnable(GL_DEPTH_TEST); //Done in screen space after the frag shader has run and after the stencil test //(pass ? frag is rendered and depth buffer is updated with new depth value : frag is discarded)
 
 	glEnable(GL_BLEND); //Colour resulting from blend eqn replaces prev colour stored in the colour buffer
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //++options??
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //++options??
 	//glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO); //sets the RGB components as we've set them previously, but only lets the resulting alpha component be influenced by the source's alpha value??
 	//glBlendEquation(GL_FUNC_ADD); //Change operator between src and dst part of blend eqn //++other blend eqns??
 
@@ -74,10 +77,13 @@ App::App():
 
 	//glEnable(GL_FRAMEBUFFER_SRGB); //Colours from sRGB colour space are gamma corrected after each frag shader run before they are stored in colour buffers of all framebuffers
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
-}
 
-App::~App(){
-	glfwTerminate(); //Clean/Del all GLFW's resources that were allocated
+	(void)scene.Init();
+	glPointSize(10.f);
+	glLineWidth(5.f);
+	glClearColor(1.f, 0.82f, 0.86f, 1.f); //State-setting function
+
+	return true;
 }
 
 void App::Update(){
@@ -95,10 +101,10 @@ void App::Render(){
 	glBindFramebuffer(GL_FRAMEBUFFER, gBufferRefID);
 	scene.PreRender();
 	scene.RenderToCreatedFB();
-	scene.PostRender();
 
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	scene.PreRender();
-	scene.RenderToDefaultFB(texRefIDs[2]);
+	scene.RenderToDefaultFB(texRefIDs[1]);
 }
 
 void App::PostRender() const{

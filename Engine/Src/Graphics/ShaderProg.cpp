@@ -36,6 +36,39 @@ int ShaderProg::GetUniLocation(cstr const& uniName){
 	return uniLocationCache[str{uniName}];
 }
 
+bool ShaderProg::Init(){
+	if(shaderPaths[0] == ""){
+		return false;
+	}
+	refID = glCreateProgram();
+	for(short i = 0; i < sizeof(shaderPaths) / sizeof(shaderPaths[0]) - (shaderPaths[2] == ""); ++i){
+		if(shaderCache.count(shaderPaths[i])){
+			printf("Reusing \"%s\"...\n", shaderPaths[i]);
+			glAttachShader(refID, shaderCache[shaderPaths[i]]);
+		} else{
+			uint shaderRefID = glCreateShader(i < 2 ? (~i & 1 ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER) : GL_GEOMETRY_SHADER);
+			ParseShader(shaderPaths[i], shaderRefID);
+			glAttachShader(refID, shaderRefID);
+			shaderCache[shaderPaths[i]] = shaderRefID;
+		}
+	}
+	Link();
+	return true;
+}
+
+void ShaderProg::Link() const{
+	int infoLogLength;
+	puts("Linking prog...\n");
+	glLinkProgram(refID); //Vars in diff shaders are linked here too
+
+	glGetProgramiv(refID, GL_INFO_LOG_LENGTH, &infoLogLength);
+	if(infoLogLength){
+		char* errorMsg = (char*)_malloca(infoLogLength * sizeof(char)); //Allocate memory on the stack dynamically
+		glGetProgramInfoLog(refID, infoLogLength, &infoLogLength, errorMsg);
+		printf("%s\n", errorMsg);
+	}
+}
+
 void ShaderProg::ParseShader(cstr const& fPath, const uint& shaderRefID) const{
 	int infoLogLength;
 	str srcCodeStr, line;
@@ -62,38 +95,9 @@ void ShaderProg::ParseShader(cstr const& fPath, const uint& shaderRefID) const{
 	}
 }
 
-void ShaderProg::Link() const{
-	int infoLogLength;
-	puts("Linking prog...\n");
-	glLinkProgram(refID); //Vars in diff shaders are linked here too
-
-	glGetProgramiv(refID, GL_INFO_LOG_LENGTH, &infoLogLength);
-	if(infoLogLength){
-		char* errorMsg = (char*)_malloca(infoLogLength * sizeof(char)); //Allocate memory on the stack dynamically
-		glGetProgramInfoLog(refID, infoLogLength, &infoLogLength, errorMsg);
-		printf("%s\n", errorMsg);
-	}
-}
-
 void ShaderProg::Use(){
-	if(!refID){ //Init on 1st use
-		if(shaderPaths[0] == ""){
-			printf("%u: ShaderProg not initialised\n", this->refID);
-			return;
-		}
-		refID = glCreateProgram();
-		for(short i = 0; i < sizeof(shaderPaths) / sizeof(shaderPaths[0]) - (shaderPaths[2] == ""); ++i){
-			if(shaderCache.count(shaderPaths[i])){
-				printf("Reusing \"%s\"...\n", shaderPaths[i]);
-				glAttachShader(refID, shaderCache[shaderPaths[i]]);
-			} else{
-				uint shaderRefID = glCreateShader(i < 2 ? (~i & 1 ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER) : GL_GEOMETRY_SHADER);
-				ParseShader(shaderPaths[i], shaderRefID);
-				glAttachShader(refID, shaderRefID);
-				shaderCache[shaderPaths[i]] = shaderRefID;
-			}
-		}
-		Link();
+	if(!refID && !Init()){ //Init on 1st use
+		printf("%u: ShaderProg not initialised\n", this->refID);
 	}
 	if(!currShaderProg || currShaderProg->refID != refID){
 		glUseProgram(refID);

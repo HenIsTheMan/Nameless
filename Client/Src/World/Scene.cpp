@@ -36,7 +36,7 @@ Scene::~Scene(){
 	glDeleteTextures(32, texRefIDs);
 }
 
-void Scene::Init(){
+bool Scene::Init(){
 	cstr imgPaths[]{
 		"Imgs/BrickWallAlbedo.jpg",
 		"Imgs/Grass.png",
@@ -48,10 +48,12 @@ void Scene::Init(){
 			true,
 			GL_TEXTURE_2D,
 			GL_REPEAT,
-			GL_NEAREST,
+			GL_LINEAR_MIPMAP_LINEAR,
 			GL_LINEAR,
 		}, basicShaderProg, (const uint)i);
 	}
+
+	return true;
 }
 
 void Scene::Update(){
@@ -82,10 +84,9 @@ void Scene::RenderToCreatedFB(){
 	std::vector<Mesh::BatchRenderParams> params;
 	for(short i = 0; i < 1; ++i){
 		params.push_back({
-			//PseudorandMinMax(-100.f, 100.f), PseudorandMinMax(-100.f, 100.f), PseudorandMinMax(-100.f, 100.f)
 			CreateModelMat(glm::vec3(0.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)),
 			glm::vec4(PseudorandMinMax(0.f, 1.f), PseudorandMinMax(0.f, 1.f), PseudorandMinMax(0.f, 1.f), 1.f),
-			PseudorandMinMax(0, 2),
+			PseudorandMinMax(1, 2),
 			});
 	};
 	mesh.BatchRender(params);
@@ -101,7 +102,6 @@ void Scene::RenderToDefaultFB(const uint& texRefID){
 }
 
 void Scene::PostRender() const{
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void Scene::SetUpTex(const SetUpTexsParams& params, ShaderProg& shaderProg, const uint& texUnit){

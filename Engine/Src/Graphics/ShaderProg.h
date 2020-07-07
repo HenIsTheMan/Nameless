@@ -22,7 +22,8 @@ private:
 	static std::unordered_map<cstr, uint> shaderCache;
 
 	uint refID;
+	bool Init();
 	int GetUniLocation(cstr const& uniName);
-	void ParseShader(cstr const& fPath, const uint& shaderRefID) const;
 	void Link() const;
+	void ParseShader(cstr const& fPath, const uint& shaderRefID) const;
 };

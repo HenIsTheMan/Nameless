@@ -3,11 +3,16 @@
 
 template <class T>
 inline T PseudorandMinMax(const T& min, const T& max){
-	return min + T(rand()) / T(RAND_MAX / (max - min));
+	std::random_device rd;
+	std::mt19937 generator(rd());
+	std::uniform_real_distribution<T> distribution(min, max);
+	return distribution(generator);
 }
 
 template <>
 inline int PseudorandMinMax<int>(const int& min, const int& max){
-	const int&& absMin = abs(min);
-	return rand() % (max + abs(min) + 1) - abs(min);
+	std::random_device rd;
+	std::mt19937 generator(rd());
+	std::uniform_int_distribution<int> distribution(min, max);
+	return distribution(generator);
 }

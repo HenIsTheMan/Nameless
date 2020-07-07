@@ -69,7 +69,6 @@ bool InitAPI(GLFWwindow*& win){
 bool InitConsole(){
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
     SetConsoleTitleA("Nameless Console");
-    srand(uint(glfwGetTime()));
     system("Color 0A");
 
     HANDLE StdHandle = GetStdHandle(DWORD(-11));

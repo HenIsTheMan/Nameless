@@ -4,6 +4,7 @@
 class App final: public Singleton<App>{
 public:
 	~App();
+	bool Init();
 	void Update();
 	void PreRender() const;
 	void Render();
