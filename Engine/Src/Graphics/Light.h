@@ -8,10 +8,10 @@ public:
         Directional,
         Spot,
     };
-    static glm::vec3 globalAmbient;
-    glm::vec3 ambient;
-    glm::vec3 diffuse;
-    glm::vec3 specular;
+    static glm::vec3 globalAmbient; //Affects brightness of unlit scene
+    glm::vec3 ambient; //Affects colour and intensity of ambient component of light
+    glm::vec3 diffuse; //...
+    glm::vec3 specular; //...
     static Light* CreateLight(const LightType& type){
         switch(type){
             case LightType::Pt:

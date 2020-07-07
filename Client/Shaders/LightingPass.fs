@@ -5,7 +5,7 @@
 layout (location = 0) out vec4 fragColour;
 layout (location = 1) out vec4 brightFragColour;
 
-struct Mtl{
+struct Mtl{ //need??
     float shininess; //Impacts the scattering of light and hence radius of the specular highlight
 };
 
@@ -40,6 +40,7 @@ in vec2 TexCoords;
 #define maxAmtP 10
 #define maxAmtD 10
 #define maxAmtS 10
+const float gamma = 2.2f;
 
 uniform vec3 globalAmbient;
 uniform int pAmt;
@@ -53,56 +54,50 @@ uniform Mtl mtl;
 uniform vec3 camPos;
 uniform sampler2D posTex;
 uniform sampler2D normalsTex;
-uniform sampler2D albedoSpecTex;
+uniform sampler2D albedoSpecularTex;
 
-const float gamma = 2.2f;
+vec3 WorldSpacePos = texture(posTex, TexCoords).rgb;
+vec3 Normal = texture(normalsTex, TexCoords).rgb;
+vec3 Albedo = texture(albedoSpecularTex, TexCoords).rgb;
+float Specular = texture(albedoSpecularTex, TexCoords).a;
 
-vec3 CalcAmbient(vec3 ambient){
+vec3 CalcAmbient(vec3 lightAmbient){
+    return lightAmbient * Albedo;
 }
 
-vec3 CalcDiffuse(vec3 lightDir){
+vec3 CalcDiffuse(vec3 lightDir, vec3 lightDiffuse){
+    float dImpact = max(dot(Normal, -lightDir), 0.f); //Diffuse impact of light on curr frag
+    return dImpact * lightDiffuse * pow(Albedo, vec3(gamma)); //Diffuse component (> 0.f && <= 1.f when angle between... (>= 0.f && < 90.f) || (> 270.f && <= 360.f)) of frag
 }
 
-vec3 CalcSpecular(vec3 lightDir){
+vec3 CalcSpecularular(vec3 lightDir, vec3 lightSpecular){
+    vec3 viewDir = normalize(WorldSpacePos - camPos);
+    vec3 halfwayDir = -normalize(lightDir + viewDir);
+    float sImpact = pow(max(dot(Normal, halfwayDir), 0.f), mtl.shininess);
+    return sImpact * lightSpecular * vec3(Specular); //texture(mtl.sMap, fsIn.TexCoords).rgb??
 }
 
 vec3 CalcPtLight(PtLight light){
+    vec3 lightDir = normalize(WorldSpacePos - light.pos);
+    float dist = length(WorldSpacePos - light.pos);
+    float attenuation = 1.f / (light.constant + light.linear * dist + light.quadratic * dist * dist);
+    return attenuation * (CalcAmbient(light.ambient) + CalcDiffuse(lightDir, light.diffuse) + CalcSpecular(lightDir, light.specular));
 }
 
 vec3 CalcDirectionalLight(DirectionalLight light){
+    vec3 lightDir = normalize(light.dir);
+    return CalcAmbient(light.ambient) + CalcDiffuse(lightDir, light.diffuse) + CalcSpecular(lightDir, light.specular));
 }
 
 vec3 CalcSpotlight(Spotlight light){
+    vec3 lightDir = normalize(WorldSpacePos - light.pos);
+    float cosTheta = dot(lightDir, normalize(light.dir));
+    float epsilon = light.cosInnerCutoff - light.cosOuterCutoff;
+    float lightIntensity = clamp((cosTheta - light.cosOuterCutoff) / epsilon, 0.f, 1.f);
+    return CalcAmbient(light.ambient) + lightIntensity * (CalcDiffuse(lightDir, light.diffuse) + CalcSpecular(lightDir, light.specular));
 }
 
-
-
-
-
-struct Light{
-    vec3 Position;
-    vec3 Color;
-};
-const int NR_LIGHTS = 32;
-uniform Light lights[NR_LIGHTS];
-
-
 void main(){
-    vec3 Pos = texture(posTex, TexCoords).rgb;
-    vec3 Normal = texture(normalsTex, TexCoords).rgb;
-    vec3 Albedo = texture(albedoSpecTex, TexCoords).rgb;
-    float Spec = texture(albedoSpecTex, TexCoords).a;
-    
-    // then calculate lighting as usual
-    vec3 lighting = Albedo * 0.1; // hard-coded ambient component
-    vec3 viewDir = normalize(viewPos - FragPos);
-    for(int i = 0; i < NR_LIGHTS; ++i){
-        // diffuse
-        vec3 lightDir = normalize(lights[i].Position - FragPos);
-        vec3 diffuse = max(dot(Normal, lightDir), 0.0) * Albedo * lights[i].Color;
-        lighting += diffuse;
-    }
-
     if(!(pAmt * dAmt * sAmt)){
         fragColour = vec4(CalcAmbient(globalAmbient), 1.f);
         brightFragColour = vec4(vec3(0.f), 1.f);
