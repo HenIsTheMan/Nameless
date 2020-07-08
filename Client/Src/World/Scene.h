@@ -33,7 +33,7 @@ private:
 	uint texRefIDs[32];
 	glm::mat4 view;
 	glm::mat4 projection;
-	void SetUpTex(const SetUpTexsParams& params, ShaderProg& shaderProg, const uint& texUnit);
+	void SetUpTex(const SetUpTexsParams& params, const uint& index);
 
 	float elapsedTime;
 	float polyModeBT;

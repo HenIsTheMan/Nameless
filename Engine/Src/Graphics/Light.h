@@ -3,10 +3,11 @@
 
 class Light{
 public:
-    static glm::vec3 globalAmbient; //Affects brightness of unlit scene
     glm::vec3 ambient; //Affects colour and intensity of ambient component of light
     glm::vec3 diffuse; //...
     glm::vec3 specular; //...
+    static glm::vec3 globalAmbient; //Affects brightness of unlit scene
+    virtual ~Light() = default;
 protected:
     Light():
         ambient(glm::vec3(.05f)),
@@ -14,7 +15,6 @@ protected:
         specular(glm::vec3(1.f))
     {
     }
-    virtual ~Light() = default;
 };
 
 struct PtLight final: Light{

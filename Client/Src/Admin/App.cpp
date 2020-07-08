@@ -24,6 +24,9 @@ App::App():
 }
 
 App::~App(){
+	glDeleteTextures(3, texRefIDs);
+	glDeleteRenderbuffers(1, &RBORefID);
+	glDeleteFramebuffers(1, &gBufferRefID);
 	glfwTerminate(); //Clean/Del all GLFW's resources that were allocated
 }
 
@@ -104,7 +107,7 @@ void App::Render(){
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	scene.PreRender();
-	scene.RenderToDefaultFB(texRefIDs[0]);
+	scene.RenderToDefaultFB(texRefIDs[1]);
 }
 
 void App::PostRender() const{

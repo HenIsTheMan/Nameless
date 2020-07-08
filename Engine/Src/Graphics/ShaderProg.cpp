@@ -1,7 +1,7 @@
 #include "ShaderProg.h"
 
+std::vector<int> ShaderProg::texTargets;
 ShaderProg* ShaderProg::currShaderProg = nullptr;
-uint ShaderProg::texRefIDs[32];
 std::unordered_map<cstr, uint> ShaderProg::shaderCache;
 
 ShaderProg::ShaderProg():
@@ -102,6 +102,26 @@ void ShaderProg::Use(){
 	if(!currShaderProg || currShaderProg->refID != refID){
 		glUseProgram(refID);
 		currShaderProg = this;
+	}
+}
+
+void ShaderProg::UseTex(const uint& texRefID, const cstr& samplerName, const int& texTarget){
+	const short size = (short)texTargets.size();
+	if(size == 32){
+		puts("Exceeded 32 texs in draw call!");
+		return;
+	}
+	glActiveTexture(GL_TEXTURE0 + size);
+	glBindTexture(texTarget, texRefID);
+	Set1i(samplerName, size); //Make sure each shader sampler uni corresponds to the correct tex unit
+	texTargets.emplace_back(texTarget);
+}
+
+void ShaderProg::ResetTexUnits() const{
+	for(short i = (short)texTargets.size() - 1; i >= 0; --i){
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(texTargets[i], 0);
+		texTargets.pop_back();
 	}
 }
 

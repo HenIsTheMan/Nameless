@@ -7,6 +7,8 @@ public:
 	ShaderProg(cstr const& vsPath, cstr const& fsPath, cstr const& gsPath = "");
 	~ShaderProg();
 	void Use();
+	void UseTex(const uint& texRefID, const cstr& samplerName, const int& texTarget = GL_TEXTURE_2D);
+	void ResetTexUnits() const;
 
 	///Utility funcs
 	void Set1f(cstr const& uniName, const float& val);
@@ -15,9 +17,9 @@ public:
 	void Set1i(cstr const& uniName, const int& val);
 	void SetMat4fv(cstr const& uniName, const float* const& floatPtr, const bool& transpose);
 private:
-	static ShaderProg* currShaderProg;
+	static std::vector<int> texTargets; //For every tex unit
 	cstr shaderPaths[3];
-	static uint texRefIDs[32];
+	static ShaderProg* currShaderProg;
 	std::unordered_map<str, int> uniLocationCache;
 	static std::unordered_map<cstr, uint> shaderCache;
 
