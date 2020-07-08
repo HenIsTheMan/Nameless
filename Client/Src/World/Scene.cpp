@@ -78,48 +78,12 @@ void Scene::Update(){
 	cam.SetDefaultAspectRatio(float(winWidth) / float(winHeight));
 	cam.ResetAspectRatio();
 	cam.Update(GLFW_KEY_Q, GLFW_KEY_E, GLFW_KEY_A, GLFW_KEY_D, GLFW_KEY_W, GLFW_KEY_S);
+
 	const glm::vec3& camPos = cam.GetPos();
 	const glm::vec3& camFront = cam.CalcFront();
 	soundEngine->setListenerPosition(vec3df(camPos.x, camPos.y, camPos.z), vec3df(camFront.x, camFront.y, camFront.z));
 	view = cam.LookAt();
 	projection = glm::perspective(glm::radians(angularFOV), cam.GetAspectRatio(), .1f, 9999.f);
-
-	//lightingPassSP.Use();
-	//const int& pAmt = (int)ptLights.size();
-	//const int& dAmt = (int)directionalLights.size();
-	//const int& sAmt = (int)spotlights.size();
-	//lightingPassSP.Set3fv("globalAmbient", Light::globalAmbient);
-	//for(int i = 0; i < pAmt; ++i){
-	//	lightingPassSP.Set1i("pAmt", pAmt);
-	//	const PtLight* const& ptLight = static_cast<PtLight*>(ptLights[i]);
-	//	lightingPassSP.Set3fv(("ptLights[" + std::to_string(i) + "].ambient").c_str(), ptLight->ambient);
-	//	lightingPassSP.Set3fv(("ptLights[" + std::to_string(i) + "].diffuse").c_str(), ptLight->diffuse);
-	//	lightingPassSP.Set3fv(("ptLights[" + std::to_string(i) + "].specular").c_str(), ptLight->specular);
-	//	lightingPassSP.Set3fv(("ptLights[" + std::to_string(i) + "].pos").c_str(), ptLight->pos);
-	//	lightingPassSP.Set1f(("ptLights[" + std::to_string(i) + "].constant").c_str(), ptLight->constant);
-	//	lightingPassSP.Set1f(("ptLights[" + std::to_string(i) + "].linear").c_str(), ptLight->linear);
-	//	lightingPassSP.Set1f(("ptLights[" + std::to_string(i) + "].quadratic").c_str(), ptLight->quadratic);
-	//}
-	//for(int i = 0; i < dAmt; ++i){
-	//	lightingPassSP.Set1i("dAmt", dAmt);
-	//	const DirectionalLight* const& directionalLight = static_cast<DirectionalLight*>(ptLights[i]);
-	//	lightingPassSP.Set3fv(("directionalLights[" + std::to_string(i) + "].ambient").c_str(), directionalLight->ambient);
-	//	lightingPassSP.Set3fv(("directionalLights[" + std::to_string(i) + "].diffuse").c_str(), directionalLight->diffuse);
-	//	lightingPassSP.Set3fv(("directionalLights[" + std::to_string(i) + "].specular").c_str(), directionalLight->specular);
-	//	lightingPassSP.Set3fv(("directionalLights[" + std::to_string(i) + "].dir").c_str(), directionalLight->dir);
-	//}
-	//for(int i = 0; i < sAmt; ++i){
-	//	lightingPassSP.Set1i("sAmt", sAmt);
-	//	const Spotlight* const& spotlight = static_cast<Spotlight*>(spotlights[i]);
-	//	lightingPassSP.Set3fv(("spotights[" + std::to_string(i) + "].ambient").c_str(), spotlight->ambient);
-	//	lightingPassSP.Set3fv(("spotights[" + std::to_string(i) + "].diffuse").c_str(), spotlight->diffuse);
-	//	lightingPassSP.Set3fv(("spotights[" + std::to_string(i) + "].specular").c_str(), spotlight->specular);
-	//	lightingPassSP.Set3fv(("spotlights[" + std::to_string(i) + "].pos").c_str(), spotlight->pos);
-	//	lightingPassSP.Set3fv(("spotlights[" + std::to_string(i) + "].dir").c_str(), spotlight->dir);
-	//	lightingPassSP.Set1f(("spotlights[" + std::to_string(i) + "].cosInnerCutoff").c_str(), spotlight->cosInnerCutoff);
-	//	lightingPassSP.Set1f(("spotlights[" + std::to_string(i) + "].cosOuterCutoff").c_str(), spotlight->cosOuterCutoff);
-	//}
-	//lightingPassSP.Set1f("mtl.shininess", 32.f); //More light scattering if lower
 
 	GLint polyMode;
 	glGetIntegerv(GL_POLYGON_MODE, &polyMode);
@@ -133,7 +97,7 @@ void Scene::PreRender() const{
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); //State-using function
 }
 
-void Scene::RenderToCreatedFB(){
+void Scene::GeoPassRender(){
 	geoPassSP.Use();
 	for(short i = 0; i < 32; ++i){
 		if(!texRefIDs[i]){
@@ -154,6 +118,51 @@ void Scene::RenderToCreatedFB(){
 	};
 	mesh.BatchRender(params);
 	geoPassSP.ResetTexUnits();
+}
+
+void Scene::LightingPassRender(const uint& posTexRefID, const uint& normalsTexRefID, const uint& albedoSpecularTexRefID){
+	lightingPassSP.Use();
+	const int& pAmt = (int)ptLights.size();
+	const int& dAmt = (int)directionalLights.size();
+	const int& sAmt = (int)spotlights.size();
+	lightingPassSP.Set1f("mtl.shininess", 32.f); //More light scattering if lower
+	lightingPassSP.Set3fv("globalAmbient", Light::globalAmbient);
+
+	lightingPassSP.Set3fv("camPos", cam.GetPos());
+	lightingPassSP.Set1i("posTex", posTexRefID);
+	lightingPassSP.Set1i("normalsTex", normalsTexRefID);
+	lightingPassSP.Set1i("albedoSpecularTex", albedoSpecularTexRefID);
+
+	for(int i = 0; i < pAmt; ++i){
+		lightingPassSP.Set1i("pAmt", pAmt);
+		const PtLight* const& ptLight = static_cast<PtLight*>(ptLights[i]);
+		lightingPassSP.Set3fv(("ptLights[" + std::to_string(i) + "].ambient").c_str(), ptLight->ambient);
+		lightingPassSP.Set3fv(("ptLights[" + std::to_string(i) + "].diffuse").c_str(), ptLight->diffuse);
+		lightingPassSP.Set3fv(("ptLights[" + std::to_string(i) + "].specular").c_str(), ptLight->specular);
+		lightingPassSP.Set3fv(("ptLights[" + std::to_string(i) + "].pos").c_str(), ptLight->pos);
+		lightingPassSP.Set1f(("ptLights[" + std::to_string(i) + "].constant").c_str(), ptLight->constant);
+		lightingPassSP.Set1f(("ptLights[" + std::to_string(i) + "].linear").c_str(), ptLight->linear);
+		lightingPassSP.Set1f(("ptLights[" + std::to_string(i) + "].quadratic").c_str(), ptLight->quadratic);
+	}
+	for(int i = 0; i < dAmt; ++i){
+		lightingPassSP.Set1i("dAmt", dAmt);
+		const DirectionalLight* const& directionalLight = static_cast<DirectionalLight*>(ptLights[i]);
+		lightingPassSP.Set3fv(("directionalLights[" + std::to_string(i) + "].ambient").c_str(), directionalLight->ambient);
+		lightingPassSP.Set3fv(("directionalLights[" + std::to_string(i) + "].diffuse").c_str(), directionalLight->diffuse);
+		lightingPassSP.Set3fv(("directionalLights[" + std::to_string(i) + "].specular").c_str(), directionalLight->specular);
+		lightingPassSP.Set3fv(("directionalLights[" + std::to_string(i) + "].dir").c_str(), directionalLight->dir);
+	}
+	for(int i = 0; i < sAmt; ++i){
+		lightingPassSP.Set1i("sAmt", sAmt);
+		const Spotlight* const& spotlight = static_cast<Spotlight*>(spotlights[i]);
+		lightingPassSP.Set3fv(("spotlights[" + std::to_string(i) + "].ambient").c_str(), spotlight->ambient);
+		lightingPassSP.Set3fv(("spotlights[" + std::to_string(i) + "].diffuse").c_str(), spotlight->diffuse);
+		lightingPassSP.Set3fv(("spotlights[" + std::to_string(i) + "].specular").c_str(), spotlight->specular);
+		lightingPassSP.Set3fv(("spotlights[" + std::to_string(i) + "].pos").c_str(), spotlight->pos);
+		lightingPassSP.Set3fv(("spotlights[" + std::to_string(i) + "].dir").c_str(), spotlight->dir);
+		lightingPassSP.Set1f(("spotlights[" + std::to_string(i) + "].cosInnerCutoff").c_str(), spotlight->cosInnerCutoff);
+		lightingPassSP.Set1f(("spotlights[" + std::to_string(i) + "].cosOuterCutoff").c_str(), spotlight->cosOuterCutoff);
+	}
 }
 
 void Scene::RenderToDefaultFB(const uint& texRefID){

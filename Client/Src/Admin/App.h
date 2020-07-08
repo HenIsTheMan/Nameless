@@ -3,6 +3,17 @@
 
 class App final: public Singleton<App>{
 public:
+	enum struct FBO{
+		GeoPass = 0,
+		LightingPass,
+	};
+	enum struct Tex{
+		Pos = 0,
+		Normals,
+		AlbedoSpecular,
+		Lit,
+		BrightLit,
+	};
 	~App();
 	bool Init();
 	void Update();
@@ -17,10 +28,18 @@ private:
 
 	friend Singleton<App>;
 	App();
+	bool InitOptions() const;
 	float lastFrameTime;
 	Scene scene;
 	static GLFWwindow* win;
-	uint gBufferRefID;
-	uint texRefIDs[3];
-	uint RBORefID;
+
+	uint FBORefIDs[2];
+	uint texRefIDs[5];
+	uint RBORefIDs[1];
 };
+
+template <class T>
+inline T& operator++(T& myEnum){
+	myEnum = T((int)myEnum + 1);
+	return myEnum;
+}

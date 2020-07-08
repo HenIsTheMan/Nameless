@@ -57,13 +57,15 @@ void Mesh::BatchRender(const std::vector<BatchRenderParams>& paramsVec){
 			break;
 	}
 
-	std::vector<Vertex> allVertices(paramsVec.size() * vertices->size());
-	for(size_t i = 0; i < paramsVec.size(); ++i){
-		for(size_t j = 0; j < vertices->size(); ++j){
-			allVertices[i * vertices->size() + j] = (*vertices)[j];
-			allVertices[i * vertices->size() + j].pos = glm::vec3(paramsVec[i].model * glm::vec4((*vertices)[j].pos, 1.f));
-			allVertices[i * vertices->size() + j].colour = paramsVec[i].colour;
-			allVertices[i * vertices->size() + j].texIndex = paramsVec[i].texIndex;
+	const size_t paramsVecSize = paramsVec.size();
+	const size_t verticesSize = vertices->size();
+	std::vector<Vertex> allVertices(paramsVecSize * verticesSize);
+	for(size_t i = 0; i < paramsVecSize; ++i){
+		for(size_t j = 0; j < verticesSize; ++j){
+			allVertices[i * verticesSize + j] = (*vertices)[j];
+			allVertices[i * verticesSize + j].pos = glm::vec3(paramsVec[i].model * glm::vec4((*vertices)[j].pos, 1.f));
+			allVertices[i * verticesSize + j].colour = paramsVec[i].colour;
+			allVertices[i * verticesSize + j].texIndex = paramsVec[i].texIndex;
 		}
 	}
 	if(!VAO){
@@ -96,15 +98,17 @@ void Mesh::BatchRender(const std::vector<BatchRenderParams>& paramsVec){
 		glGenBuffers(1, &EBO); //Element index buffer
 	}
 	if(EBO){
-		std::vector<uint> allIndices(paramsVec.size() * indices->size());
-		for(size_t i = 0; i < paramsVec.size(); ++i){
-			for(size_t j = 0; j < indices->size(); ++j){
-				allIndices[i * indices->size() + j] = uint((*indices)[j] + vertices->size() * i);
+		const size_t paramsVecSize = paramsVec.size();
+		const size_t indicesSize = indices->size();
+		std::vector<uint> allIndices(paramsVecSize * indicesSize);
+		for(size_t i = 0; i < paramsVecSize; ++i){
+			for(size_t j = 0; j < indicesSize; ++j){
+				allIndices[i * indicesSize + j] = uint((*indices)[j] + verticesSize * i);
 			}
 		}
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, paramsVec.size() * indices->size() * sizeof(uint), &allIndices[0], GL_STATIC_DRAW); //Alloc/Reserve a piece of GPU mem and add data into it
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, paramsVecSize * indicesSize * sizeof(uint), &allIndices[0], GL_STATIC_DRAW); //Alloc/Reserve a piece of GPU mem and add data into it
 		glDrawElements(primitive, (int)allIndices.size(), GL_UNSIGNED_INT, 0); //Draw/Render call/command
 	} else{
 		glDrawArrays(primitive, 0, (int)allVertices.size()); //...

@@ -12,9 +12,9 @@ GLFWwindow* App::win = nullptr;
 App::App():
 	lastFrameTime(0.f),
 	scene(),
-	gBufferRefID(0),
+	FBORefIDs{},
 	texRefIDs{},
-	RBORefID(0)
+	RBORefIDs{}
 {
 	if(!InitAPI(win)){
 		puts("Failed to init API\n");
@@ -24,41 +24,69 @@ App::App():
 }
 
 App::~App(){
-	glDeleteTextures(3, texRefIDs);
-	glDeleteRenderbuffers(1, &RBORefID);
-	glDeleteFramebuffers(1, &gBufferRefID);
+	glDeleteTextures(sizeof(texRefIDs) / sizeof(texRefIDs[0]), texRefIDs);
+	glDeleteRenderbuffers(sizeof(RBORefIDs) / sizeof(RBORefIDs[0]), RBORefIDs);
+	glDeleteFramebuffers(sizeof(FBORefIDs) / sizeof(FBORefIDs[0]), FBORefIDs);
 	glfwTerminate(); //Clean/Del all GLFW's resources that were allocated
 }
 
 bool App::Init(){
-	glGenFramebuffers(1, &gBufferRefID);
-	glBindFramebuffer(GL_FRAMEBUFFER, gBufferRefID);
-	size_t size = sizeof(texRefIDs) / sizeof(texRefIDs[0]);
+	glGenFramebuffers(sizeof(FBORefIDs) / sizeof(FBORefIDs[0]), FBORefIDs);
+	glGenTextures(sizeof(texRefIDs) / sizeof(texRefIDs[0]), texRefIDs);
+	glGenRenderbuffers(sizeof(RBORefIDs) / sizeof(RBORefIDs[0]), RBORefIDs);
+	uint colAttachments[3] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
 	stbi_set_flip_vertically_on_load(true);
-	glGenTextures((int)size, texRefIDs);
-	for(size_t i = 0; i < size; ++i){
-		glBindTexture(GL_TEXTURE_2D, texRefIDs[i]);
-		glTexImage2D(GL_TEXTURE_2D, 0, i == size - 1 ? GL_RGBA : GL_RGBA16F, winWidth, winHeight, 0, GL_RGBA, i == size - 1 ? GL_UNSIGNED_BYTE : GL_FLOAT, NULL);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + (int)i, GL_TEXTURE_2D, texRefIDs[i], 0);
-		glBindTexture(GL_TEXTURE_2D, 0);
-	}
-	unsigned int colAttachments[3] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
-	glDrawBuffers(3, colAttachments);
 
-	glGenRenderbuffers(1, &RBORefID);
-	glBindRenderbuffer(GL_RENDERBUFFER, RBORefID);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, winWidth, winHeight);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, RBORefID);
-	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)FBO::GeoPass]);
+		for(Tex i = Tex::Pos; i <= Tex::AlbedoSpecular; ++i){
+			glBindTexture(GL_TEXTURE_2D, texRefIDs[(short)i]);
+				glTexImage2D(GL_TEXTURE_2D, 0, i == Tex::AlbedoSpecular ? GL_RGBA : GL_RGBA16F, winWidth, winHeight, 0, GL_RGBA, i == Tex::AlbedoSpecular ? GL_UNSIGNED_BYTE : GL_FLOAT, NULL);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + (int)i, GL_TEXTURE_2D, texRefIDs[(short)i], 0);
+			glBindTexture(GL_TEXTURE_2D, 0);
+		}
+		glDrawBuffers(3, colAttachments);
 
-	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE){
-		puts("Created framebuffer is incomplete.\n");
-		return false;
-	}
+		glBindRenderbuffer(GL_RENDERBUFFER, RBORefIDs[0]);
+			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, winWidth, winHeight);
+			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, RBORefIDs[0]);
+		glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+		if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE){
+			printf(STR(FBO::GeoPass));
+			puts(" is incomplete!\n");
+			return false;
+		}
+	glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)FBO::LightingPass]);
+		for(Tex i = Tex::Lit; i <= Tex::BrightLit; ++i){
+			glBindTexture(GL_TEXTURE_2D, texRefIDs[(int)i]);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, winWidth, winHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + (int)i, GL_TEXTURE_2D, texRefIDs[(int)i], 0);
+		}
+		glDrawBuffers(2, colAttachments);
+
+		if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE){
+			printf(STR(FBO::LightingPass));
+			puts(" is incomplete!\n");
+			return false;
+		}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+	(void)InitOptions();
+	(void)scene.Init();
+	glPointSize(10.f);
+	glLineWidth(5.f);
+	glClearColor(1.f, 0.82f, 0.86f, 1.f); //State-setting function
+
+	return true;
+}
+
+bool App::InitOptions() const{
 	//Stencil buffer usually contains 8 bits per stencil value that amts to 256 diff stencil values per pixel
 	//Use stencil buffer operations to write to the stencil buffer when rendering frags (read stencil values in the same or following frame(s) to pass or discard frags based on their stencil value)
 	glEnable(GL_STENCIL_TEST); //Discard frags based on frags of other drawn objs in the scene
@@ -81,11 +109,6 @@ bool App::Init(){
 	//glEnable(GL_FRAMEBUFFER_SRGB); //Colours from sRGB colour space are gamma corrected after each frag shader run before they are stored in colour buffers of all framebuffers
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
-	(void)scene.Init();
-	glPointSize(10.f);
-	glLineWidth(5.f);
-	glClearColor(1.f, 0.82f, 0.86f, 1.f); //State-setting function
-
 	return true;
 }
 
@@ -101,13 +124,20 @@ void App::PreRender() const{
 }
 
 void App::Render(){
-	glBindFramebuffer(GL_FRAMEBUFFER, gBufferRefID);
+	glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)FBO::GeoPass]);
 	scene.PreRender();
-	scene.RenderToCreatedFB();
+	scene.GeoPassRender();
+	scene.PostRender();
+
+	glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)FBO::LightingPass]);
+	scene.PreRender();
+	scene.LightingPassRender(texRefIDs[(int)Tex::Pos], texRefIDs[(int)Tex::Normals], texRefIDs[(int)Tex::AlbedoSpecular]);
+	scene.PostRender();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	scene.PreRender();
-	scene.RenderToDefaultFB(texRefIDs[1]);
+	scene.RenderToDefaultFB(texRefIDs[(int)Tex::Lit]);
+	scene.PostRender();
 }
 
 void App::PostRender() const{

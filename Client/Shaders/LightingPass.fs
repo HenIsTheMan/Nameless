@@ -42,6 +42,7 @@ in vec2 TexCoords;
 #define maxAmtS 10
 const float gamma = 2.2f;
 
+uniform Mtl mtl;
 uniform vec3 globalAmbient;
 uniform int pAmt;
 uniform int dAmt;
@@ -50,7 +51,6 @@ uniform PtLight ptLights[maxAmtP];
 uniform DirectionalLight directionalLights[maxAmtD];
 uniform Spotlight spotlights[maxAmtS];
 
-uniform Mtl mtl;
 uniform vec3 camPos;
 uniform sampler2D posTex;
 uniform sampler2D normalsTex;
@@ -70,7 +70,7 @@ vec3 CalcDiffuse(vec3 lightDir, vec3 lightDiffuse){
     return dImpact * lightDiffuse * pow(Albedo, vec3(gamma)); //Diffuse component (> 0.f && <= 1.f when angle between... (>= 0.f && < 90.f) || (> 270.f && <= 360.f)) of frag
 }
 
-vec3 CalcSpecularular(vec3 lightDir, vec3 lightSpecular){
+vec3 CalcSpecular(vec3 lightDir, vec3 lightSpecular){
     vec3 viewDir = normalize(WorldSpacePos - camPos);
     vec3 halfwayDir = -normalize(lightDir + viewDir);
     float sImpact = pow(max(dot(Normal, halfwayDir), 0.f), mtl.shininess);
@@ -86,7 +86,7 @@ vec3 CalcPtLight(PtLight light){
 
 vec3 CalcDirectionalLight(DirectionalLight light){
     vec3 lightDir = normalize(light.dir);
-    return CalcAmbient(light.ambient) + CalcDiffuse(lightDir, light.diffuse) + CalcSpecular(lightDir, light.specular));
+    return CalcAmbient(light.ambient) + CalcDiffuse(lightDir, light.diffuse) + CalcSpecular(lightDir, light.specular);
 }
 
 vec3 CalcSpotlight(Spotlight light){
@@ -98,7 +98,7 @@ vec3 CalcSpotlight(Spotlight light){
 }
 
 void main(){
-    if(!(pAmt * dAmt * sAmt)){
+    if(pAmt == 0 && dAmt == 0 && sAmt == 0){
         fragColour = vec4(CalcAmbient(globalAmbient), 1.f);
         brightFragColour = vec4(vec3(0.f), 1.f);
     } else{
