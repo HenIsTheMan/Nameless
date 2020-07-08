@@ -88,6 +88,7 @@ void Scene::Update(){
 	soundEngine->setListenerPosition(vec3df(camPos.x, camPos.y, camPos.z), vec3df(camFront.x, camFront.y, camFront.z));
 	static_cast<Spotlight*>(spotlights[0])->pos = camPos;
 	static_cast<Spotlight*>(spotlights[0])->dir = camFront;
+	//static_cast<Spotlight*>(spotlights[0])->diffuse = glm::vec3(100.f, 100.f, 100.f);
 
 	GLint polyMode;
 	glGetIntegerv(GL_POLYGON_MODE, &polyMode);
@@ -97,7 +98,8 @@ void Scene::Update(){
 	}
 }
 
-void Scene::PreRender() const{
+void Scene::PreRender(const float& R, const float& G, const float& B) const{
+	glClearColor(R, G, B, 1.f); //State-setting function
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); //State-using function
 }
 
@@ -124,7 +126,7 @@ void Scene::GeoPassRender(){
 	geoPassSP.ResetTexUnits();
 }
 
-void Scene::LightingPassRender(const uint& posTexRefID, const uint& normalsTexRefID, const uint& albedoSpecularTexRefID){
+void Scene::LightingPassRender(const uint& posTexRefID, const uint& normalsTexRefID, const uint& albedoSpecTexRefID){
 	lightingPassSP.Use();
 	const int& pAmt = (int)ptLights.size();
 	const int& dAmt = (int)directionalLights.size();
@@ -135,14 +137,14 @@ void Scene::LightingPassRender(const uint& posTexRefID, const uint& normalsTexRe
 	lightingPassSP.Set3fv("camPos", cam.GetPos());
 	lightingPassSP.UseTex(posTexRefID, "posTex");
 	lightingPassSP.UseTex(normalsTexRefID, "normalsTex");
-	lightingPassSP.UseTex(albedoSpecularTexRefID, "albedoSpecularTex");
+	lightingPassSP.UseTex(albedoSpecTexRefID, "albedoSpecTex");
 
 	for(int i = 0; i < pAmt; ++i){
 		lightingPassSP.Set1i("pAmt", pAmt);
 		const PtLight* const& ptLight = static_cast<PtLight*>(ptLights[i]);
 		lightingPassSP.Set3fv(("ptLights[" + std::to_string(i) + "].ambient").c_str(), ptLight->ambient);
 		lightingPassSP.Set3fv(("ptLights[" + std::to_string(i) + "].diffuse").c_str(), ptLight->diffuse);
-		lightingPassSP.Set3fv(("ptLights[" + std::to_string(i) + "].specular").c_str(), ptLight->specular);
+		lightingPassSP.Set3fv(("ptLights[" + std::to_string(i) + "].spec").c_str(), ptLight->spec);
 		lightingPassSP.Set3fv(("ptLights[" + std::to_string(i) + "].pos").c_str(), ptLight->pos);
 		lightingPassSP.Set1f(("ptLights[" + std::to_string(i) + "].constant").c_str(), ptLight->constant);
 		lightingPassSP.Set1f(("ptLights[" + std::to_string(i) + "].linear").c_str(), ptLight->linear);
@@ -153,7 +155,7 @@ void Scene::LightingPassRender(const uint& posTexRefID, const uint& normalsTexRe
 		const DirectionalLight* const& directionalLight = static_cast<DirectionalLight*>(ptLights[i]);
 		lightingPassSP.Set3fv(("directionalLights[" + std::to_string(i) + "].ambient").c_str(), directionalLight->ambient);
 		lightingPassSP.Set3fv(("directionalLights[" + std::to_string(i) + "].diffuse").c_str(), directionalLight->diffuse);
-		lightingPassSP.Set3fv(("directionalLights[" + std::to_string(i) + "].specular").c_str(), directionalLight->specular);
+		lightingPassSP.Set3fv(("directionalLights[" + std::to_string(i) + "].spec").c_str(), directionalLight->spec);
 		lightingPassSP.Set3fv(("directionalLights[" + std::to_string(i) + "].dir").c_str(), directionalLight->dir);
 	}
 	for(int i = 0; i < sAmt; ++i){
@@ -161,7 +163,7 @@ void Scene::LightingPassRender(const uint& posTexRefID, const uint& normalsTexRe
 		const Spotlight* const& spotlight = static_cast<Spotlight*>(spotlights[i]);
 		lightingPassSP.Set3fv(("spotlights[" + std::to_string(i) + "].ambient").c_str(), spotlight->ambient);
 		lightingPassSP.Set3fv(("spotlights[" + std::to_string(i) + "].diffuse").c_str(), spotlight->diffuse);
-		lightingPassSP.Set3fv(("spotlights[" + std::to_string(i) + "].specular").c_str(), spotlight->specular);
+		lightingPassSP.Set3fv(("spotlights[" + std::to_string(i) + "].spec").c_str(), spotlight->spec);
 		lightingPassSP.Set3fv(("spotlights[" + std::to_string(i) + "].pos").c_str(), spotlight->pos);
 		lightingPassSP.Set3fv(("spotlights[" + std::to_string(i) + "].dir").c_str(), spotlight->dir);
 		lightingPassSP.Set1f(("spotlights[" + std::to_string(i) + "].cosInnerCutoff").c_str(), spotlight->cosInnerCutoff);

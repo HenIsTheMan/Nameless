@@ -16,9 +16,9 @@ public:
 	~Scene();
 	bool Init();
 	void Update();
-	void PreRender() const;
+	void PreRender(const float& R, const float& G, const float& B) const;
 	void GeoPassRender();
-	void LightingPassRender(const uint& posTexRefID, const uint& normalsTexRefID, const uint& albedoSpecularTexRefID);
+	void LightingPassRender(const uint& posTexRefID, const uint& normalsTexRefID, const uint& albedoSpecTexRefID);
 	void RenderToDefaultFB(const uint& texRefID);
 	void PostRender() const;
 private:

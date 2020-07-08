@@ -5,14 +5,14 @@ class Light{
 public:
     glm::vec3 ambient; //Affects colour and intensity of ambient component of light
     glm::vec3 diffuse; //...
-    glm::vec3 specular; //...
+    glm::vec3 spec; //...
     static glm::vec3 globalAmbient; //Affects brightness of unlit scene
     virtual ~Light() = default;
 protected:
     Light():
         ambient(glm::vec3(.05f)),
         diffuse(glm::vec3(.8f)),
-        specular(glm::vec3(1.f))
+        spec(glm::vec3(1.f))
     {
     }
 };

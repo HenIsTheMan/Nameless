@@ -37,9 +37,9 @@ bool App::Init(){
 	stbi_set_flip_vertically_on_load(true);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)FBO::GeoPass]);
-		for(Tex i = Tex::Pos; i <= Tex::AlbedoSpecular; ++i){
+		for(Tex i = Tex::Pos; i <= Tex::AlbedoSpec; ++i){
 			glBindTexture(GL_TEXTURE_2D, texRefIDs[(int)i]);
-				glTexImage2D(GL_TEXTURE_2D, 0, i == Tex::AlbedoSpecular ? GL_RGBA : GL_RGBA16F, winWidth, winHeight, 0, GL_RGBA, i == Tex::AlbedoSpecular ? GL_UNSIGNED_BYTE : GL_FLOAT, NULL);
+				glTexImage2D(GL_TEXTURE_2D, 0, i == Tex::AlbedoSpec ? GL_RGBA : GL_RGBA16F, winWidth, winHeight, 0, GL_RGBA, i == Tex::AlbedoSpec ? GL_UNSIGNED_BYTE : GL_FLOAT, NULL);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + (int)i, GL_TEXTURE_2D, texRefIDs[(int)i], 0);
@@ -83,7 +83,6 @@ bool App::Init(){
 	(void)scene.Init();
 	glPointSize(10.f);
 	glLineWidth(5.f);
-	glClearColor(1.f, 0.82f, 0.86f, 1.f); //State-setting function
 
 	return true;
 }
@@ -127,17 +126,17 @@ void App::PreRender() const{
 
 void App::Render(){
 	glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)FBO::GeoPass]);
-	scene.PreRender();
+	scene.PreRender(1.f, 0.82f, 0.86f);
 	scene.GeoPassRender();
 	scene.PostRender();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)FBO::LightingPass]);
-	scene.PreRender();
-	scene.LightingPassRender(texRefIDs[(int)Tex::Pos], texRefIDs[(int)Tex::Normals], texRefIDs[(int)Tex::AlbedoSpecular]);
+	scene.PreRender(1.f, 0.82f, 0.86f);
+	scene.LightingPassRender(texRefIDs[(int)Tex::Pos], texRefIDs[(int)Tex::Normals], texRefIDs[(int)Tex::AlbedoSpec]);
 	scene.PostRender();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	scene.PreRender();
+	scene.PreRender(1.f, 0.82f, 0.86f);
 	scene.RenderToDefaultFB(texRefIDs[(int)Tex::Lit]);
 	scene.PostRender();
 }

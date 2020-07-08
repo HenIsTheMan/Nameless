@@ -11,7 +11,7 @@ public:
 	enum struct Tex{
 		Pos = 0,
 		Normals,
-		AlbedoSpecular,
+		AlbedoSpec,
 		Lit,
 		BrightLit,
 		Amt

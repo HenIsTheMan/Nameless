@@ -1,7 +1,7 @@
 #version 330 core
 layout (location = 0) out vec3 pos;
 layout (location = 1) out vec3 normal;
-layout (location = 2) out vec4 albedoSpecular;
+layout (location = 2) out vec4 albedoSpec;
 
 in myInterface{
 	vec4 worldSpacePos;
@@ -17,5 +17,5 @@ uniform sampler2D texSamplers[32];
 void main(){
     pos = fsIn.worldSpacePos.xyz;
     normal = normalize(fsIn.normal);
-	albedoSpecular = vec4((fsIn.texIndex < 0 ? fsIn.colour : texture(texSamplers[fsIn.texIndex], fsIn.texCoords)).rgb, 0.f); //texture(texSamplers[fsIn.texIndex], fsIn.texCoords).r??
+	albedoSpec = vec4((fsIn.texIndex < 0 ? fsIn.colour : texture(texSamplers[fsIn.texIndex], fsIn.texCoords)).rgb, 0.f); //texture(texSamplers[fsIn.texIndex], fsIn.texCoords).r??
 }
