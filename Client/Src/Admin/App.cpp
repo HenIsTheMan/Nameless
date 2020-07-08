@@ -34,19 +34,19 @@ bool App::Init(){
 	glGenFramebuffers(sizeof(FBORefIDs) / sizeof(FBORefIDs[0]), FBORefIDs);
 	glGenTextures(sizeof(texRefIDs) / sizeof(texRefIDs[0]), texRefIDs);
 	glGenRenderbuffers(sizeof(RBORefIDs) / sizeof(RBORefIDs[0]), RBORefIDs);
-	uint colAttachments[3] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
 	stbi_set_flip_vertically_on_load(true);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)FBO::GeoPass]);
 		for(Tex i = Tex::Pos; i <= Tex::AlbedoSpecular; ++i){
-			glBindTexture(GL_TEXTURE_2D, texRefIDs[(short)i]);
+			glBindTexture(GL_TEXTURE_2D, texRefIDs[(int)i]);
 				glTexImage2D(GL_TEXTURE_2D, 0, i == Tex::AlbedoSpecular ? GL_RGBA : GL_RGBA16F, winWidth, winHeight, 0, GL_RGBA, i == Tex::AlbedoSpecular ? GL_UNSIGNED_BYTE : GL_FLOAT, NULL);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + (int)i, GL_TEXTURE_2D, texRefIDs[(short)i], 0);
 			glBindTexture(GL_TEXTURE_2D, 0);
 		}
-		glDrawBuffers(3, colAttachments);
+		uint GeoCA[]{GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
+		glDrawBuffers(3, GeoCA);
 
 		glBindRenderbuffer(GL_RENDERBUFFER, RBORefIDs[0]);
 			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, winWidth, winHeight);
@@ -61,14 +61,21 @@ bool App::Init(){
 	glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)FBO::LightingPass]);
 		for(Tex i = Tex::Lit; i <= Tex::BrightLit; ++i){
 			glBindTexture(GL_TEXTURE_2D, texRefIDs[(int)i]);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, winWidth, winHeight, 0, GL_RGBA, GL_FLOAT, NULL);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + (int)i, GL_TEXTURE_2D, texRefIDs[(int)i], 0);
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, winWidth, winHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + (int)i, GL_TEXTURE_2D, texRefIDs[(int)i], 0);
+			glBindTexture(GL_TEXTURE_2D, 0);
 		}
-		glDrawBuffers(2, colAttachments);
+		uint LightingCA[]{GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+		glDrawBuffers(2, LightingCA);
+
+		//glBindRenderbuffer(GL_RENDERBUFFER, RBORefIDs[1]);
+		//	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, winWidth, winHeight);
+		//	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, RBORefIDs[1]);
+		//glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
 		if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE){
 			printf(STR(FBO::LightingPass));
@@ -129,15 +136,17 @@ void App::Render(){
 	scene.GeoPassRender();
 	scene.PostRender();
 
-	glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)FBO::LightingPass]);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)FBO::LightingPass]);
 	scene.PreRender();
 	scene.LightingPassRender(texRefIDs[(int)Tex::Pos], texRefIDs[(int)Tex::Normals], texRefIDs[(int)Tex::AlbedoSpecular]);
 	scene.PostRender();
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	scene.PreRender();
-	scene.RenderToDefaultFB(texRefIDs[(int)Tex::Lit]);
-	scene.PostRender();
+	//glViewport(winWidth / 2, winHeight / 2, winWidth, winHeight);
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//scene.PreRender();
+	//scene.RenderToDefaultFB(texRefIDs[(int)Tex::BrightLit]);
+	//scene.PostRender();
 }
 
 void App::PostRender() const{

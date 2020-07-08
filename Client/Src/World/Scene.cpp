@@ -78,12 +78,14 @@ void Scene::Update(){
 	cam.SetDefaultAspectRatio(float(winWidth) / float(winHeight));
 	cam.ResetAspectRatio();
 	cam.Update(GLFW_KEY_Q, GLFW_KEY_E, GLFW_KEY_A, GLFW_KEY_D, GLFW_KEY_W, GLFW_KEY_S);
+	view = cam.LookAt();
+	projection = glm::perspective(glm::radians(angularFOV), cam.GetAspectRatio(), .1f, 9999.f);
 
 	const glm::vec3& camPos = cam.GetPos();
 	const glm::vec3& camFront = cam.CalcFront();
 	soundEngine->setListenerPosition(vec3df(camPos.x, camPos.y, camPos.z), vec3df(camFront.x, camFront.y, camFront.z));
-	view = cam.LookAt();
-	projection = glm::perspective(glm::radians(angularFOV), cam.GetAspectRatio(), .1f, 9999.f);
+	static_cast<Spotlight*>(spotlights[0])->pos = camPos;
+	static_cast<Spotlight*>(spotlights[0])->dir = camFront;
 
 	GLint polyMode;
 	glGetIntegerv(GL_POLYGON_MODE, &polyMode);
@@ -129,9 +131,9 @@ void Scene::LightingPassRender(const uint& posTexRefID, const uint& normalsTexRe
 	lightingPassSP.Set3fv("globalAmbient", Light::globalAmbient);
 
 	lightingPassSP.Set3fv("camPos", cam.GetPos());
-	lightingPassSP.Set1i("posTex", posTexRefID);
-	lightingPassSP.Set1i("normalsTex", normalsTexRefID);
-	lightingPassSP.Set1i("albedoSpecularTex", albedoSpecularTexRefID);
+	lightingPassSP.UseTex(posTexRefID, "posTex");
+	lightingPassSP.UseTex(normalsTexRefID, "normalsTex");
+	lightingPassSP.UseTex(albedoSpecularTexRefID, "albedoSpecularTex");
 
 	for(int i = 0; i < pAmt; ++i){
 		lightingPassSP.Set1i("pAmt", pAmt);
@@ -163,6 +165,10 @@ void Scene::LightingPassRender(const uint& posTexRefID, const uint& normalsTexRe
 		lightingPassSP.Set1f(("spotlights[" + std::to_string(i) + "].cosInnerCutoff").c_str(), spotlight->cosInnerCutoff);
 		lightingPassSP.Set1f(("spotlights[" + std::to_string(i) + "].cosOuterCutoff").c_str(), spotlight->cosOuterCutoff);
 	}
+
+	lightingPassSP.SetMat4fv("model", &(mesh.GetModel())[0][0], false);
+	mesh.Render();
+	lightingPassSP.ResetTexUnits();
 }
 
 void Scene::RenderToDefaultFB(const uint& texRefID){

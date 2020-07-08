@@ -35,7 +35,7 @@ private:
 
 	uint FBORefIDs[2];
 	uint texRefIDs[5];
-	uint RBORefIDs[1];
+	uint RBORefIDs[2];
 };
 
 template <class T>

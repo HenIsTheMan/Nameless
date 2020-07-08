@@ -134,7 +134,7 @@ void ShaderProg::Set3f(cstr const& uniName, const float& a, const float& b, cons
 }
 
 void ShaderProg::Set3fv(cstr const& uniName, const glm::vec3& vec){
-	glUniform3fv(GetUniLocation(uniName), 3, &vec[0]);
+	glUniform3fv(GetUniLocation(uniName), 1, &vec[0]);
 }
 
 void ShaderProg::Set1i(cstr const& uniName, const int& val){
