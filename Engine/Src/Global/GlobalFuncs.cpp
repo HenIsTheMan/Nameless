@@ -59,9 +59,9 @@ bool InitAPI(GLFWwindow*& win){
     }
     glfwSetFramebufferSizeCallback(win, &FramebufferSizeCallback);
     glfwSetCursorPosCallback(win, CursorPosCallback);
-    glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_DISABLED); //Hide and capture mouse cursor
     glfwSetMouseButtonCallback(win, MouseButtonCallback);
     glfwSetScrollCallback(win, ScrollCallback);
+    glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_DISABLED); //Hide and capture mouse cursor
 
     return true;
 }

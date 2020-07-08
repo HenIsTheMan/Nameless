@@ -75,8 +75,10 @@ bool Scene::Init(){
 
 void Scene::Update(){
 	elapsedTime += dt;
-	cam.SetDefaultAspectRatio(float(winWidth) / float(winHeight));
-	cam.ResetAspectRatio();
+	if(winHeight){ //Avoid division by 0 when win is minimised
+		cam.SetDefaultAspectRatio(float(winWidth) / float(winHeight));
+		cam.ResetAspectRatio();
+	}
 	cam.Update(GLFW_KEY_Q, GLFW_KEY_E, GLFW_KEY_A, GLFW_KEY_D, GLFW_KEY_W, GLFW_KEY_S);
 	view = cam.LookAt();
 	projection = glm::perspective(glm::radians(angularFOV), cam.GetAspectRatio(), .1f, 9999.f);
@@ -107,9 +109,9 @@ void Scene::GeoPassRender(){
 		}
 		geoPassSP.UseTex(texRefIDs[i], ("texSamplers[" + std::to_string(i) + "]").c_str());
 	}
-	geoPassSP.SetMat4fv("model", &(mesh.GetModel())[0][0], false);
+	geoPassSP.SetMat4fv("model", &(mesh.GetModel())[0][0]);
 	glm::mat4 PV = projection * view;
-	geoPassSP.SetMat4fv("PV", &(PV)[0][0], false);
+	geoPassSP.SetMat4fv("PV", &(PV)[0][0]);
 	std::vector<Mesh::BatchRenderParams> params;
 	for(short i = 0; i < 1; ++i){
 		params.push_back({
@@ -166,7 +168,7 @@ void Scene::LightingPassRender(const uint& posTexRefID, const uint& normalsTexRe
 		lightingPassSP.Set1f(("spotlights[" + std::to_string(i) + "].cosOuterCutoff").c_str(), spotlight->cosOuterCutoff);
 	}
 
-	lightingPassSP.SetMat4fv("model", &(mesh.GetModel())[0][0], false);
+	lightingPassSP.SetMat4fv("model", &(mesh.GetModel())[0][0]);
 	mesh.Render();
 	lightingPassSP.ResetTexUnits();
 }
@@ -174,7 +176,7 @@ void Scene::LightingPassRender(const uint& posTexRefID, const uint& normalsTexRe
 void Scene::RenderToDefaultFB(const uint& texRefID){
 	screenSP.Use();
 	screenSP.UseTex(texRefID, "texSampler");
-	screenSP.SetMat4fv("model", &(mesh.GetModel())[0][0], false);
+	screenSP.SetMat4fv("model", &(mesh.GetModel())[0][0]);
 	mesh.Render();
 	screenSP.ResetTexUnits();
 }

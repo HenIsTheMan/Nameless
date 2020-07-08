@@ -6,6 +6,7 @@ public:
 	enum struct FBO{
 		GeoPass = 0,
 		LightingPass,
+		Amt
 	};
 	enum struct Tex{
 		Pos = 0,
@@ -13,6 +14,7 @@ public:
 		AlbedoSpecular,
 		Lit,
 		BrightLit,
+		Amt
 	};
 	~App();
 	bool Init();

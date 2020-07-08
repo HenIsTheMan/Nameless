@@ -8,6 +8,7 @@ public:
 		None = 0,
 		Quad,
 		Cuboid,
+		Amt
 	};
 	struct BatchRenderParams final{
 		glm::mat4 model;

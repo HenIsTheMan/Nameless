@@ -6,6 +6,7 @@ enum struct PrintFormat{
 	ListVert,
 	CSListHoriz,
 	CSListVert,
+	Amt
 };
 
 template <class T>

@@ -7,6 +7,7 @@ enum struct SortingAlgType{
 	Insertion,
 	Quick,
 	Merge,
+	Amt
 };
 
 enum struct SortOrder{

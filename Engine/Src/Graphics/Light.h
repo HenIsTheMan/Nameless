@@ -60,6 +60,7 @@ enum struct LightType{
     Pt = 0,
     Directional,
     Spot,
+    Amt
 };
 
 static Light* CreateLight(const LightType& type){

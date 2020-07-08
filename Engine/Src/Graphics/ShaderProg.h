@@ -15,7 +15,7 @@ public:
 	void Set3f(cstr const& uniName, const float& a, const float& b, const float& c);
 	void Set3fv(cstr const& uniName, const glm::vec3& vec);
 	void Set1i(cstr const& uniName, const int& val);
-	void SetMat4fv(cstr const& uniName, const float* const& floatPtr, const bool& transpose);
+	void SetMat4fv(cstr const& uniName, const float* const& floatPtr, const bool& transpose = false);
 private:
 	static std::vector<int> texTargets; //For every tex unit
 	cstr shaderPaths[3];

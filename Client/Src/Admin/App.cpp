@@ -42,7 +42,7 @@ bool App::Init(){
 				glTexImage2D(GL_TEXTURE_2D, 0, i == Tex::AlbedoSpecular ? GL_RGBA : GL_RGBA16F, winWidth, winHeight, 0, GL_RGBA, i == Tex::AlbedoSpecular ? GL_UNSIGNED_BYTE : GL_FLOAT, NULL);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + (int)i, GL_TEXTURE_2D, texRefIDs[(short)i], 0);
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + (int)i, GL_TEXTURE_2D, texRefIDs[(int)i], 0);
 			glBindTexture(GL_TEXTURE_2D, 0);
 		}
 		uint GeoCA[]{GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};

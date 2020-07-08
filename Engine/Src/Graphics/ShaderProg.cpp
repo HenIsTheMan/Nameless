@@ -106,9 +106,9 @@ void ShaderProg::Use(){
 }
 
 void ShaderProg::UseTex(const uint& texRefID, const cstr& samplerName, const int& texTarget){
-	const short size = (short)texTargets.size();
+	const int size = (int)texTargets.size();
 	if(size == 32){
-		puts("Exceeded 32 texs in draw call!");
+		puts("Exceeded 32 texs in draw call!\n");
 		return;
 	}
 	glActiveTexture(GL_TEXTURE0 + size);
@@ -118,7 +118,7 @@ void ShaderProg::UseTex(const uint& texRefID, const cstr& samplerName, const int
 }
 
 void ShaderProg::ResetTexUnits() const{
-	for(short i = (short)texTargets.size() - 1; i >= 0; --i){
+	for(int i = (int)texTargets.size() - 1; i >= 0; --i){
 		glActiveTexture(GL_TEXTURE0 + i);
 		glBindTexture(texTargets[i], 0);
 		texTargets.pop_back();
