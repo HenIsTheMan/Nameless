@@ -3,25 +3,10 @@
 
 class Light{
 public:
-    enum struct LightType{
-        Pt = 0,
-        Directional,
-        Spot,
-    };
     static glm::vec3 globalAmbient; //Affects brightness of unlit scene
     glm::vec3 ambient; //Affects colour and intensity of ambient component of light
     glm::vec3 diffuse; //...
     glm::vec3 specular; //...
-    static Light* CreateLight(const LightType& type){
-        switch(type){
-            case LightType::Pt:
-                return new PtLight();
-            case LightType::Directional:
-                return new DirectionalLight();
-            case LightType::Spot:
-                return new Spotlight();
-        }
-    }
 protected:
     Light():
         ambient(glm::vec3(.05f)),
@@ -31,8 +16,6 @@ protected:
     }
     virtual ~Light() = default;
 };
-
-glm::vec3 Light::globalAmbient = glm::vec3(.1f);
 
 struct PtLight final: Light{
     PtLight(): PtLight(glm::vec3(0.f), 1.f, .09f, .032f){}
@@ -72,3 +55,22 @@ struct Spotlight final: Light{
     float cosInnerCutoff;
     float cosOuterCutoff;
 };
+
+enum struct LightType{
+    Pt = 0,
+    Directional,
+    Spot,
+};
+
+static Light* CreateLight(const LightType& type){
+    switch(type){
+        case LightType::Pt:
+            return new PtLight();
+        case LightType::Directional:
+            return new DirectionalLight();
+        case LightType::Spot:
+            return new Spotlight();
+        default:
+            return nullptr;
+    }
+}

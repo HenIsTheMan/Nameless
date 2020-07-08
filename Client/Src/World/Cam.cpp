@@ -35,15 +35,15 @@ glm::vec3 Cam::CalcFront(const bool& normalised) const{
 }
 
 glm::vec3 Cam::CalcRight() const{
-	return glm::normalize(glm::cross(CalcFront(true), up));
+	return glm::normalize(glm::cross(CalcFront(), up));
 }
 
 glm::vec3 Cam::CalcUp() const{
-	return glm::normalize(glm::cross(CalcRight(), CalcFront(true)));
+	return glm::normalize(glm::cross(CalcRight(), CalcFront()));
 }
 
 glm::mat4 Cam::LookAt() const{
-	glm::vec3 vecArr[]{CalcRight(), CalcUp(), -CalcFront(true)};
+	glm::vec3 vecArr[]{CalcRight(), CalcUp(), -CalcFront()};
 	glm::mat4 translation = glm::mat4(1.f), rotation = glm::mat4(1.f);
 	for(short i = 0; i < 3; ++i){ //Access elements as mat[col][row] due to column-major order
 		translation[3][i] = -pos[i];
@@ -60,7 +60,7 @@ void Cam::Update(const int& up, const int& down, const int& left, const int& rig
 	float leftRight = float(Key(left) - Key(right));
 	float frontBack = float(Key(front) - Key(back));
 
-	const glm::vec3&& camFront = CalcFront(true);
+	const glm::vec3&& camFront = CalcFront();
 	const glm::vec3&& xzCamFront = glm::vec3(camFront.x, 0.f, camFront.z);
 	glm::vec3&& frontBackDir = glm::normalize(glm::dot(camFront, glm::normalize(xzCamFront)) * glm::normalize(xzCamFront));
 	frontBackDir.y = 1.f;

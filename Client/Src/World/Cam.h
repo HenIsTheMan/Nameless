@@ -6,7 +6,7 @@ public:
 	Cam();
 	Cam(const glm::vec3& myPos, const glm::vec3& myTarget, const glm::vec3& myUp, const float& myAspectRatio, const float& mySpd);
 	~Cam() = default;
-	glm::vec3 CalcFront(const bool& normalised) const;
+	glm::vec3 CalcFront(const bool& normalised = true) const;
 	glm::vec3 CalcRight() const;
 	glm::vec3 CalcUp() const;
 	glm::mat4 LookAt() const;

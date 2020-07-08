@@ -6,6 +6,8 @@ extern float dt;
 extern int winWidth;
 extern int winHeight;
 
+glm::vec3 Light::globalAmbient = glm::vec3(.1f);
+
 Scene::Scene():
 	cam(glm::vec3(0.f, 0.f, 2.f), glm::vec3(0.f), glm::vec3(0.f, 1.f, 0.f), 0.f, 150.f),
 	mesh(Mesh::MeshType::Quad, GL_TRIANGLES),
@@ -20,17 +22,15 @@ Scene::Scene():
 {
 	soundEngine = createIrrKlangDevice(ESOD_AUTO_DETECT, ESEO_MULTI_THREADED | ESEO_LOAD_PLUGINS | ESEO_USE_3D_BUFFERS | ESEO_PRINT_DEBUG_INFO_TO_DEBUGGER);
 	//soundEngine->play2D("Audio/Music/YellowCafe.mp3", true);
-	//ISound* music = soundEngine->play3D("Audio/Music/YellowCafe.mp3", vec3df(0,0,0), true, false, true);
-	//if(music){
-	//	music->setMinDistance(5.f);
-	//}
-	//soundEngine->setListenerPosition(vec3df(0, 0, 0), vec3df(0, 0, 1));
-	//if(music){
-	//	music->setPosition(vec3df(0, 0, 0));
-	//}
+	ISound* music = soundEngine->play3D("Audio/Music/YellowCafe.mp3", vec3df(0.f, 0.f, 0.f), true, false, true);
+	if(music){
+		//music->setPosition(vec3df(0.f, 0.f, 0.f));
+		music->setMinDistance(5.f);
+		music->setVolume(0);
+	}
 
 	mesh.SetModel(CreateModelMat(glm::vec3(0.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)));
-	spotlights.emplace_back(Light::CreateLight(Light::LightType::Spot));
+	spotlights.emplace_back(CreateLight(LightType::Spot));
 }
 
 Scene::~Scene(){
@@ -63,15 +63,18 @@ void Scene::Update(){
 	cam.SetDefaultAspectRatio(float(winWidth) / float(winHeight));
 	cam.ResetAspectRatio();
 	cam.Update(GLFW_KEY_Q, GLFW_KEY_E, GLFW_KEY_A, GLFW_KEY_D, GLFW_KEY_W, GLFW_KEY_S);
+	const glm::vec3& camPos = cam.GetPos();
+	const glm::vec3& camFront = cam.CalcFront();
+	soundEngine->setListenerPosition(vec3df(camPos.x, camPos.y, camPos.z), vec3df(camFront.x, camFront.y, camFront.z));
 	view = cam.LookAt();
 	projection = glm::perspective(glm::radians(angularFOV), cam.GetAspectRatio(), .1f, 9999.f);
 
 	lightingPassSP.Use();
-	const size_t& pAmt = ptLights.size();
-	const size_t& dAmt = directionalLights.size();
-	const size_t& sAmt = spotlights.size();
+	const int& pAmt = (int)ptLights.size();
+	const int& dAmt = (int)directionalLights.size();
+	const int& sAmt = (int)spotlights.size();
 	lightingPassSP.Set3fv("globalAmbient", Light::globalAmbient);
-	for(size_t i = 0; i < pAmt; ++i){
+	for(int i = 0; i < pAmt; ++i){
 		lightingPassSP.Set1i("pAmt", pAmt);
 		const PtLight* const& ptLight = static_cast<PtLight*>(ptLights[i]);
 		lightingPassSP.Set3fv(("ptLights[" + std::to_string(i) + "].ambient").c_str(), ptLight->ambient);
@@ -82,7 +85,7 @@ void Scene::Update(){
 		lightingPassSP.Set1f(("ptLights[" + std::to_string(i) + "].linear").c_str(), ptLight->linear);
 		lightingPassSP.Set1f(("ptLights[" + std::to_string(i) + "].quadratic").c_str(), ptLight->quadratic);
 	}
-	for(size_t i = 0; i < dAmt; ++i){
+	for(int i = 0; i < dAmt; ++i){
 		lightingPassSP.Set1i("dAmt", dAmt);
 		const DirectionalLight* const& directionalLight = static_cast<DirectionalLight*>(ptLights[i]);
 		lightingPassSP.Set3fv(("directionalLights[" + std::to_string(i) + "].ambient").c_str(), directionalLight->ambient);
@@ -90,7 +93,7 @@ void Scene::Update(){
 		lightingPassSP.Set3fv(("directionalLights[" + std::to_string(i) + "].specular").c_str(), directionalLight->specular);
 		lightingPassSP.Set3fv(("directionalLights[" + std::to_string(i) + "].dir").c_str(), directionalLight->dir);
 	}
-	for(size_t i = 0; i < sAmt; ++i){
+	for(int i = 0; i < sAmt; ++i){
 		lightingPassSP.Set1i("sAmt", sAmt);
 		const Spotlight* const& spotlight = static_cast<Spotlight*>(spotlights[i]);
 		lightingPassSP.Set3fv(("spotights[" + std::to_string(i) + "].ambient").c_str(), spotlight->ambient);
