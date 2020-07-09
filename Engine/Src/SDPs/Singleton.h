@@ -3,7 +3,7 @@
 template <class T>
 class Singleton{
 	explicit Singleton(const Singleton&) = delete;
-	explicit Singleton(Singleton&&) = delete;
+	explicit Singleton(Singleton&&) noexcept = delete;
 	Singleton& operator=(const Singleton&) = delete;
 	Singleton& operator=(Singleton&&) noexcept = delete;
 public:

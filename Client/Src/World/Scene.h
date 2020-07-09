@@ -17,12 +17,16 @@ private:
 	Cam cam;
 	ISoundEngine* soundEngine;
 	Mesh mesh;
+	Model model;
+
 	ShaderProg geoPassSP;
 	ShaderProg lightingPassSP;
 	ShaderProg screenSP;
+
 	std::vector<Light*> ptLights;
 	std::vector<Light*> directionalLights;
 	std::vector<Light*> spotlights;
+
 	std::vector<uint> texRefIDs;
 	glm::mat4 view;
 	glm::mat4 projection;

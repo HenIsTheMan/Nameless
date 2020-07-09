@@ -24,7 +24,7 @@ public:
 	void PostRender() const;
 private:
 	explicit App(const App&) = delete;
-	explicit App(App&&) = delete;
+	explicit App(App&&) noexcept = delete;
 	App& operator=(const App&) = delete;
 	App& operator=(App&&) noexcept = delete;
 

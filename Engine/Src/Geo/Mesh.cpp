@@ -24,6 +24,36 @@ Mesh::Mesh(const MeshType& myType, const int& myPrimitive):
 {
 }
 
+Mesh::Mesh(const Mesh& mesh): Mesh(){
+	if(this != &mesh){
+		vertices = new std::vector<Vertex>(mesh.vertices->begin(), mesh.vertices->end());
+		indices = new std::vector<uint>{mesh.indices->begin(), mesh.indices->end()};
+	}
+}
+
+Mesh::Mesh(Mesh&& mesh) noexcept: Mesh(){
+	if(this != &mesh){
+		vertices = new std::vector<Vertex>(mesh.vertices->begin(), mesh.vertices->end());
+		indices = new std::vector<uint>{mesh.indices->begin(), mesh.indices->end()};
+	}
+}
+
+Mesh& Mesh::operator=(const Mesh& mesh){
+	if(this != &mesh){
+		vertices = new std::vector<Vertex>(mesh.vertices->begin(), mesh.vertices->end());
+		indices = new std::vector<uint>{mesh.indices->begin(), mesh.indices->end()};
+	}
+	return *this;
+}
+
+Mesh& Mesh::operator=(Mesh&& mesh) noexcept{
+	if(this != &mesh){
+		vertices = new std::vector<Vertex>(mesh.vertices->begin(), mesh.vertices->end());
+		indices = new std::vector<uint>{mesh.indices->begin(), mesh.indices->end()};
+	}
+	return *this;
+}
+
 Mesh::~Mesh(){
 	if(vertices){
 		delete vertices;

@@ -57,15 +57,15 @@ void Model::LoadMtlTexs(const aiMaterial* const& mtl) const{ //Helper func to re
         for(uint j = 0; j < mtl->GetTextureCount(texTypes[i]); ++j){
             aiString aiStr;
             mtl->GetTexture(texTypes[i], j, &aiStr);
-            texRefIDs.emplace_back();
+            texRefIDs.emplace_back(0);
             SetUpTex({
-                ("Client/Imgs" + str(aiStr.C_Str())).c_str(),
+                ("Client/Imgs/" + str(aiStr.C_Str())).c_str(),
                 false, //No need to flip tex as aiProcess_FlipUVs flag is set
                 GL_TEXTURE_2D,
                 GL_REPEAT,
                 GL_LINEAR_MIPMAP_LINEAR,
                 GL_LINEAR,
-            }, texRefIDs[i]);
+            }, texRefIDs[j]);
         }
     }
 }

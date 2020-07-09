@@ -16,9 +16,17 @@ public:
 		glm::vec4 colour;
 		int texIndex;
 	};
+
 	Mesh();
 	Mesh(const MeshType& myType, const int& myPrimitive);
+
+	///Rule of 5 (prevents shallow copy)
+	Mesh(const Mesh& mesh);
+	Mesh(Mesh&& mesh) noexcept;
+	Mesh& operator=(const Mesh& mesh);
+	Mesh& operator=(Mesh&& mesh) noexcept;
 	virtual ~Mesh();
+
 	const glm::mat4& GetModel() const;
 	void SetModel(const glm::mat4& model);
 	void BatchRender(const std::vector<BatchRenderParams>& params);

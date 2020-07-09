@@ -11,6 +11,7 @@ glm::vec3 Light::globalAmbient = glm::vec3(.1f);
 Scene::Scene():
 	cam(glm::vec3(0.f, 0.f, 2.f), glm::vec3(0.f), glm::vec3(0.f, 1.f, 0.f), 0.f, 150.f),
 	mesh(Mesh::MeshType::Quad, GL_TRIANGLES),
+	model("ObjsAndMtls/nanosuit.obj", {aiTextureType_DIFFUSE, aiTextureType_SPECULAR, aiTextureType_EMISSIVE, aiTextureType_HEIGHT, aiTextureType_AMBIENT}),
 	geoPassSP{"Shaders/GeoPass.vs", "Shaders/GeoPass.fs"},
 	lightingPassSP{"Shaders/Quad.vs", "Shaders/LightingPass.fs"},
 	screenSP{"Shaders/Quad.vs", "Shaders/Screen.fs"},
@@ -50,7 +51,7 @@ Scene::~Scene(){
 		spotlights[i] = nullptr;
 	}
 	soundEngine->drop();
-	glDeleteTextures(texRefIDs.size(), &texRefIDs[0]);
+	glDeleteTextures((int)texRefIDs.size(), &texRefIDs[0]);
 }
 
 bool Scene::Init(){
@@ -60,7 +61,7 @@ bool Scene::Init(){
 		"Imgs/Water.jpg",
 	};
 	for(short i = 0; i < sizeof(imgPaths) / sizeof(imgPaths[0]); ++i){
-		texRefIDs.emplace_back();
+		texRefIDs.emplace_back(0);
 		SetUpTex({
 			imgPaths[i],
 			true,
@@ -109,18 +110,25 @@ void Scene::GeoPassRender(){
 	for(short i = 0; i < 3; ++i){
 		geoPassSP.UseTex(texRefIDs[i], ("texSamplers[" + std::to_string(i) + "]").c_str());
 	}
-	geoPassSP.SetMat4fv("model", &(mesh.GetModel())[0][0]);
+
 	glm::mat4 PV = projection * view;
 	geoPassSP.SetMat4fv("PV", &(PV)[0][0]);
-	std::vector<Mesh::BatchRenderParams> params;
-	for(short i = 0; i < 1; ++i){
-		params.push_back({
-			CreateModelMat(glm::vec3(0.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)),
-			glm::vec4(PseudorandMinMax(0.f, 1.f), PseudorandMinMax(0.f, 1.f), PseudorandMinMax(0.f, 1.f), 1.f),
-			PseudorandMinMax(0, 2),
-			});
-	};
-	mesh.BatchRender(params);
+
+	//geoPassSP.SetMat4fv("model", &(mesh.GetModel())[0][0]);
+	//std::vector<Mesh::BatchRenderParams> params;
+	//for(short i = 0; i < 1; ++i){
+	//	params.push_back({
+	//		CreateModelMat(glm::vec3(0.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)),
+	//		glm::vec4(PseudorandMinMax(0.f, 1.f), PseudorandMinMax(0.f, 1.f), PseudorandMinMax(0.f, 1.f), 1.f),
+	//		PseudorandMinMax(0, 2),
+	//		});
+	//};
+	//mesh.BatchRender(params);
+
+	glm::mat4 modelMat = glm::mat4(1.f);
+	geoPassSP.SetMat4fv("model", &modelMat[0][0]);
+	model.Render(GL_TRIANGLES);
+
 	geoPassSP.ResetTexUnits();
 }
 
