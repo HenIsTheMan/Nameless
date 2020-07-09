@@ -4,14 +4,6 @@
 
 class Scene final{
 public:
-	struct SetUpTexsParams final{
-		cstr texPath;
-		bool flipTex;
-		int texTarget;
-		int texWrapParam;
-		int texFilterMin;
-		int texFilterMag;
-	};
 	Scene();
 	~Scene();
 	bool Init();
@@ -31,10 +23,9 @@ private:
 	std::vector<Light*> ptLights;
 	std::vector<Light*> directionalLights;
 	std::vector<Light*> spotlights;
-	uint texRefIDs[32];
+	std::vector<uint> texRefIDs;
 	glm::mat4 view;
 	glm::mat4 projection;
-	void SetUpTex(const SetUpTexsParams& params, const uint& index);
 
 	float elapsedTime;
 	float polyModeBT;

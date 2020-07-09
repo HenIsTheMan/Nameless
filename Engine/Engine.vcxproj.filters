@@ -43,6 +43,9 @@
     <ClInclude Include="Src\Algs\Pseudorand.h">
       <Filter>Src\Algs</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Geo\Model.h">
+      <Filter>Src\Geo</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\Vendor\glad.c">
@@ -56,6 +59,9 @@
     </ClCompile>
     <ClCompile Include="Src\Global\GlobalFuncs.cpp">
       <Filter>Src\Global</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Geo\Model.cpp">
+      <Filter>Src\Geo</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

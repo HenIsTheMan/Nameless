@@ -175,6 +175,7 @@
     <ClInclude Include="Src\Algs\Pseudorand.h" />
     <ClInclude Include="Src\Algs\Sorting.h" />
     <ClInclude Include="Src\Algs\Swapping.h" />
+    <ClInclude Include="Src\Geo\Model.h" />
     <ClInclude Include="Src\Global\GlobalFuncs.h" />
     <ClInclude Include="Src\Global\GlobalVars.h" />
     <ClInclude Include="Src\Core.h" />
@@ -187,6 +188,7 @@
     <ClInclude Include="Src\Vendor\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Geo\Model.cpp" />
     <ClCompile Include="Src\Global\GlobalFuncs.cpp" />
     <ClCompile Include="Src\Geo\Mesh.cpp" />
     <ClCompile Include="Src\Graphics\ShaderProg.cpp" />

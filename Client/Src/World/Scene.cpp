@@ -50,7 +50,7 @@ Scene::~Scene(){
 		spotlights[i] = nullptr;
 	}
 	soundEngine->drop();
-	glDeleteTextures(32, texRefIDs);
+	glDeleteTextures(texRefIDs.size(), &texRefIDs[0]);
 }
 
 bool Scene::Init(){
@@ -60,6 +60,7 @@ bool Scene::Init(){
 		"Imgs/Water.jpg",
 	};
 	for(short i = 0; i < sizeof(imgPaths) / sizeof(imgPaths[0]); ++i){
+		texRefIDs.emplace_back();
 		SetUpTex({
 			imgPaths[i],
 			true,
@@ -67,7 +68,7 @@ bool Scene::Init(){
 			GL_REPEAT,
 			GL_LINEAR_MIPMAP_LINEAR,
 			GL_LINEAR,
-		}, i);
+		}, texRefIDs[i]);
 	}
 
 	return true;
@@ -105,10 +106,7 @@ void Scene::PreRender(const float& R, const float& G, const float& B) const{
 
 void Scene::GeoPassRender(){
 	geoPassSP.Use();
-	for(short i = 0; i < 32; ++i){
-		if(!texRefIDs[i]){
-			break;
-		}
+	for(short i = 0; i < 3; ++i){
 		geoPassSP.UseTex(texRefIDs[i], ("texSamplers[" + std::to_string(i) + "]").c_str());
 	}
 	geoPassSP.SetMat4fv("model", &(mesh.GetModel())[0][0]);
@@ -119,7 +117,7 @@ void Scene::GeoPassRender(){
 		params.push_back({
 			CreateModelMat(glm::vec3(0.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)),
 			glm::vec4(PseudorandMinMax(0.f, 1.f), PseudorandMinMax(0.f, 1.f), PseudorandMinMax(0.f, 1.f), 1.f),
-			PseudorandMinMax(1, 2),
+			PseudorandMinMax(0, 2),
 			});
 	};
 	mesh.BatchRender(params);
@@ -184,26 +182,4 @@ void Scene::RenderToDefaultFB(const uint& texRefID){
 }
 
 void Scene::PostRender() const{
-}
-
-void Scene::SetUpTex(const SetUpTexsParams& params, const uint& index){
-	stbi_set_flip_vertically_on_load(params.flipTex); //OpenGL reads y/v tex coord in reverse so must flip tex vertically
-	glGenTextures(1, &texRefIDs[index]);
-	glBindTexture(params.texTarget, texRefIDs[index]); //Make tex referenced by 'texRefIDs[i]' the tex currently bound to the currently active tex unit so subsequent tex commands will config it
-		int width, height, colourChannelsAmt;
-		unsigned char* data = stbi_load(params.texPath, &width, &height, &colourChannelsAmt, 0);
-		if(data){
-			GLenum format1 = colourChannelsAmt == 3 ? GL_RGB16F : GL_RGBA16F;
-			GLenum format2 = colourChannelsAmt == 3 ? GL_RGB : GL_RGBA;
-			glTexImage2D(params.texTarget, 0, format1, width, height, 0, format2, GL_UNSIGNED_BYTE, data);
-			glGenerateMipmap(params.texTarget); //Gen required mipmap lvls for currently bound tex
-			stbi_image_free(data); //Free the img mem
-		} else{
-			printf("Failed to load tex at \"%s\"\n", params.texPath);
-		}
-		glTexParameteri(params.texTarget, GL_TEXTURE_WRAP_S, params.texWrapParam);
-		glTexParameteri(params.texTarget, GL_TEXTURE_WRAP_T, params.texWrapParam);
-		glTexParameteri(params.texTarget, GL_TEXTURE_MIN_FILTER, params.texFilterMin); //Nearest neighbour/Point filtering/interpolation when textures are scaled downwards
-		glTexParameteri(params.texTarget, GL_TEXTURE_MAG_FILTER, params.texFilterMag); //Linear filtering/interpolation for upscaled textures
-	glBindTexture(params.texTarget, 0);
 }

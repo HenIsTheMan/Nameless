@@ -2,7 +2,7 @@
 
 Mesh::Mesh():
 	type(MeshType::None),
-	primitive(-1),
+	primitive(GL_TRIANGLES),
 	vertices(nullptr),
 	indices(nullptr),
 	VAO(0),

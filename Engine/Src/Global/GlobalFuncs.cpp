@@ -98,6 +98,28 @@ bool InitConsole(){
     return true;
 }
 
+void SetUpTex(const SetUpTexsParams& params, uint& texRefID){
+    stbi_set_flip_vertically_on_load(params.flipTex); //OpenGL reads y/v tex coord in reverse so must flip tex vertically
+    glGenTextures(1, &texRefID);
+    glBindTexture(params.texTarget, texRefID); //Make tex referenced by 'texRefIDs[i]' the tex currently bound to the currently active tex unit so subsequent tex commands will config it
+    int width, height, colourChannelsAmt;
+    unsigned char* data = stbi_load(params.texPath, &width, &height, &colourChannelsAmt, 0);
+    if(data){
+        GLenum format1 = colourChannelsAmt == 3 ? GL_RGB16F : GL_RGBA16F;
+        GLenum format2 = colourChannelsAmt == 3 ? GL_RGB : GL_RGBA;
+        glTexImage2D(params.texTarget, 0, format1, width, height, 0, format2, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(params.texTarget); //Gen required mipmap lvls for currently bound tex
+        stbi_image_free(data); //Free the img mem
+    } else{
+        printf("Failed to load tex at \"%s\"\n", params.texPath);
+    }
+    glTexParameteri(params.texTarget, GL_TEXTURE_WRAP_S, params.texWrapParam);
+    glTexParameteri(params.texTarget, GL_TEXTURE_WRAP_T, params.texWrapParam);
+    glTexParameteri(params.texTarget, GL_TEXTURE_MIN_FILTER, params.texFilterMin); //Nearest neighbour/Point filtering/interpolation when textures are scaled downwards
+    glTexParameteri(params.texTarget, GL_TEXTURE_MAG_FILTER, params.texFilterMag); //Linear filtering/interpolation for upscaled textures
+    glBindTexture(params.texTarget, 0);
+}
+
 static void FramebufferSizeCallback(GLFWwindow*, int width, int height){ //Resize callback
     glViewport(0, 0, width, height); //For viewport transform
     winWidth = width;
