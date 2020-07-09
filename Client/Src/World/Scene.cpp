@@ -11,7 +11,7 @@ glm::vec3 Light::globalAmbient = glm::vec3(.1f);
 Scene::Scene():
 	cam(glm::vec3(0.f, 0.f, 2.f), glm::vec3(0.f), glm::vec3(0.f, 1.f, 0.f), 0.f, 150.f),
 	mesh(Mesh::MeshType::Quad, GL_TRIANGLES),
-	model("ObjsAndMtls/nanosuit.obj", {aiTextureType_DIFFUSE, aiTextureType_SPECULAR, aiTextureType_EMISSIVE, aiTextureType_HEIGHT, aiTextureType_AMBIENT}),
+	model("ObjsAndMtls/nanosuit.obj", {}), //aiTextureType_DIFFUSE, aiTextureType_SPECULAR, aiTextureType_EMISSIVE, aiTextureType_HEIGHT, aiTextureType_AMBIENT
 	geoPassSP{"Shaders/GeoPass.vs", "Shaders/GeoPass.fs"},
 	lightingPassSP{"Shaders/Quad.vs", "Shaders/LightingPass.fs"},
 	screenSP{"Shaders/Quad.vs", "Shaders/Screen.fs"},
@@ -107,9 +107,9 @@ void Scene::PreRender(const float& R, const float& G, const float& B) const{
 
 void Scene::GeoPassRender(){
 	geoPassSP.Use();
-	for(short i = 0; i < 3; ++i){
-		geoPassSP.UseTex(texRefIDs[i], ("texSamplers[" + std::to_string(i) + "]").c_str());
-	}
+	//for(short i = 0; i < 3; ++i){
+	//	geoPassSP.UseTex(texRefIDs[i], ("diffuseMaps[" + std::to_string(i) + "]").c_str());
+	//}
 
 	glm::mat4 PV = projection * view;
 	geoPassSP.SetMat4fv("PV", &(PV)[0][0]);

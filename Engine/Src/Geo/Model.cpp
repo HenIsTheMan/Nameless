@@ -1,10 +1,29 @@
 #include "Model.h"
 
 Model::Model(cstr const& fPath, const std::initializer_list<aiTextureType>& iL):
+    storeIndices(true),
     modelPath(fPath),
     meshes{},
-    texTypes(iL)
+    texTypes(iL),
+    texMaps{},
+    allVertices{},
+    allIndices{},
+    VAO(0),
+    VBO(0),
+    EBO(0)
 {
+}
+
+Model::~Model(){
+    if(VAO){
+        glDeleteVertexArrays(1, &VAO);
+    }
+    if(VBO){
+        glDeleteBuffers(1, &VBO);
+    }
+    if(EBO){
+        glDeleteBuffers(1, &EBO);
+    }
 }
 
 void Model::LoadModel() const{ //Load model into a DS of Assimp called a scene obj (root obj of Assimp's data interface)
@@ -33,12 +52,18 @@ Mesh Model::ProcessMesh(const aiScene* const& scene, const aiMesh* const& meshOb
     mesh.indices = new std::vector<uint>();
 
     for(uint i = 0; i < meshObj->mNumVertices; ++i){ //For each vertex of the mesh...
+        const aiVector3D& vertices = meshObj->mVertices[i];
+        const aiColor4D* const& colours = meshObj->mColors[0];
+        const aiVector3D* const& texCoords = meshObj->mTextureCoords[0];
+        const aiVector3D* const& normals = meshObj->mNormals;
+        const aiVector3D* const& tangents = meshObj->mTangents;
         mesh.vertices->push_back({
-            glm::vec3(meshObj->mVertices[i].x, meshObj->mVertices[i].y, meshObj->mVertices[i].z),
-            meshObj->mColors[0] ? glm::vec4(meshObj->mColors[0][i].r, meshObj->mColors[0][i].g, meshObj->mColors[0][i].b, meshObj->mColors[0][i].a) : glm::vec4(0.f),
-            meshObj->mTextureCoords[0] ? glm::vec2(meshObj->mTextureCoords[0][i].x, meshObj->mTextureCoords[0][i].y) : glm::vec2(0.f),
-            meshObj->mNormals ? glm::vec3(meshObj->mNormals[i].x, meshObj->mNormals[i].y, meshObj->mNormals[i].z) : glm::vec3(0.f),
-            meshObj->mTangents ? glm::vec3(meshObj->mTangents[i].x, meshObj->mTangents[i].y, meshObj->mTangents[i].z) : glm::vec3(0.f),
+            glm::vec3(vertices.x, vertices.y, vertices.z),
+            colours ? glm::vec4(colours[i].r, colours[i].g, colours[i].b, colours[i].a) : glm::vec4(.5f),
+            texCoords ? glm::vec2(texCoords[i].x, texCoords[i].y) : glm::vec2(0.f),
+            normals ? glm::vec3(normals[i].x, normals[i].y, normals[i].z) : glm::vec3(0.f),
+            tangents ? glm::vec3(tangents[i].x, tangents[i].y, tangents[i].z) : glm::vec3(0.f),
+            -1
         });
     }
     for(uint i = 0; i < meshObj->mNumFaces; ++i){ //For each face of the mesh... //Each mesh has an arr of primitive faces (triangles due to the aiProcess_Triangulate post-processing option)
@@ -57,7 +82,7 @@ void Model::LoadMtlTexs(const aiMaterial* const& mtl) const{ //Helper func to re
         for(uint j = 0; j < mtl->GetTextureCount(texTypes[i]); ++j){
             aiString aiStr;
             mtl->GetTexture(texTypes[i], j, &aiStr);
-            texRefIDs.emplace_back(0);
+            texMaps.push_back({0, texTypes[i]});
             SetUpTex({
                 ("Client/Imgs/" + str(aiStr.C_Str())).c_str(),
                 false, //No need to flip tex as aiProcess_FlipUVs flag is set
@@ -65,13 +90,70 @@ void Model::LoadMtlTexs(const aiMaterial* const& mtl) const{ //Helper func to re
                 GL_REPEAT,
                 GL_LINEAR_MIPMAP_LINEAR,
                 GL_LINEAR,
-            }, texRefIDs[j]);
+            }, texMaps[i + j].first);
         }
     }
 }
 
 void Model::Render(const int& primitive){
+    if(primitive < 0){
+        puts("Invalid primitive!\n");
+        return;
+    }
     if(!meshes.size()){
         LoadModel();
     }
+
+    if(!VAO){
+        glGenVertexArrays(1, &VAO);
+    }
+    glBindVertexArray(VAO);
+    if(!VBO){
+        for(const Mesh& mesh : meshes){
+            for(size_t i = 0; i < mesh.vertices->size(); ++i){
+                (*(mesh.vertices))[i].pos = glm::vec3(mesh.model * glm::vec4((*(mesh.vertices))[i].pos, 1.f));
+                allVertices.emplace_back((*(mesh.vertices))[i]);
+            }
+        }
+        glGenBuffers(1, &VBO);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER, allVertices.size() * sizeof(Vertex), &allVertices[0], GL_STATIC_DRAW);
+
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, pos));
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, colour));
+        glEnableVertexAttribArray(2);
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, texCoords));
+        glEnableVertexAttribArray(3);
+        glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, normal));
+        glEnableVertexAttribArray(4);
+        glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, tangent));
+        glEnableVertexAttribArray(5);
+        glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, texIndex));
+    } else{
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    }
+
+    if(storeIndices){
+        size_t verticesAmt = 0;
+        for(size_t i = 0; i < meshes.size(); ++i){
+            for(size_t j = 0; j < meshes[i].indices->size(); ++j){
+                allIndices.emplace_back((*meshes[i].indices)[j] + uint(verticesAmt));
+            }
+            verticesAmt += meshes[i].vertices->size();
+        }
+        if(allIndices.size()){
+            glGenBuffers(1, &EBO);
+        }
+        storeIndices = false;
+    }
+    if(EBO){
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, allIndices.size() * sizeof(uint), &allIndices[0], GL_STATIC_DRAW); //Alloc/Reserve a piece of GPU mem and add data into it
+        glDrawElements(primitive, (int)allIndices.size(), GL_UNSIGNED_INT, 0); //Draw/Render call/command
+    } else{
+        glDrawArrays(primitive, 0, (int)allVertices.size()); //...
+    }
+    glBindVertexArray(0);
 }

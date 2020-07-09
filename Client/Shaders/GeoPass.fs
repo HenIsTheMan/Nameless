@@ -12,10 +12,19 @@ in myInterface{
 	flat int texIndex;
 } fsIn;
 
-uniform sampler2D texSamplers[32];
+uniform sampler2D diffuseMaps[28];
+uniform sampler2D specMap;
+uniform sampler2D emissionMap;
+uniform sampler2D reflectionMap;
+uniform sampler2D bumpMap;
+
+uniform bool useSpecMap;
+uniform bool useEmissionMap;
+uniform bool useReflectionMap;
+uniform bool useBumpMap;
 
 void main(){
     pos = fsIn.worldSpacePos.xyz;
     normal = normalize(fsIn.normal);
-	albedoSpec = vec4((fsIn.texIndex < 0 ? fsIn.colour : texture(texSamplers[fsIn.texIndex], fsIn.texCoords)).rgb, 0.f); //texture(texSamplers[fsIn.texIndex], fsIn.texCoords).r??
+	albedoSpec = fsIn.texIndex < 0 ? vec4(fsIn.colour) : vec4(texture(diffuseMaps[fsIn.texIndex], fsIn.texCoords).rgb, texture(specMap, fsIn.texCoords).r);
 }

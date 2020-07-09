@@ -148,11 +148,10 @@ void Mesh::BatchRender(const std::vector<BatchRenderParams>& paramsVec){
 
 void Mesh::Render(){
 	if(primitive < 0){
+		puts("Invalid primitive!\n");
 		return;
 	}
 	switch(type){
-		case MeshType::None:
-			return;
 		case MeshType::Quad:
 			CreateQuad();
 			break;
@@ -231,7 +230,7 @@ void Mesh::CreateQuad(){
 		for(short i = 0; i < 4; ++i){
 			vertices->push_back({
 				pos[i],
-				glm::vec4(1.f),
+				glm::vec4(.5f),
 				UVs[i],
 				glm::vec3(0.f, 0.f, 1.f),
 				tangent[!(i % 3)],
