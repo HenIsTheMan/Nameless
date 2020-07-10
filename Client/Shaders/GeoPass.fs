@@ -26,5 +26,6 @@ uniform bool useBumpMap;
 void main(){
     pos = fsIn.worldSpacePos.xyz;
     normal = normalize(fsIn.normal);
-	albedoSpec = fsIn.texIndex < 0 ? vec4(fsIn.colour) : vec4(texture(diffuseMaps[fsIn.texIndex], fsIn.texCoords).rgb, texture(specMap, fsIn.texCoords).r);
+	albedoSpec = fsIn.texIndex < 0 ? vec4(fsIn.colour) : vec4(texture(diffuseMaps[fsIn.texIndex], fsIn.texCoords).rgb
+	+ (useEmissionMap ? texture(emissionMap, fsIn.texCoords).rgb : vec3(0.f)), useSpecMap ? texture(specMap, fsIn.texCoords).r : 0.f);
 }

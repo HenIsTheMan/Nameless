@@ -56,9 +56,9 @@ Scene::~Scene(){
 
 bool Scene::Init(){
 	cstr imgPaths[]{
-		"Imgs/BrickWallAlbedo.jpg",
-		"Imgs/Grass.png",
-		"Imgs/Water.jpg",
+		"Imgs/BoxAlbedo.png",
+		"Imgs/BoxSpec.png",
+		"Imgs/BoxEmission.png",
 	};
 	for(short i = 0; i < sizeof(imgPaths) / sizeof(imgPaths[0]); ++i){
 		texRefIDs.emplace_back();
@@ -102,9 +102,12 @@ void Scene::Update(){
 
 void Scene::GeoPassRender(){
 	geoPassSP.Use();
-	for(int i = 0; i < (int)TexName::Amt; ++i){
-		geoPassSP.UseTex(texRefIDs[i], ("diffuseMaps[" + std::to_string(i) + "]").c_str());
-	}
+	geoPassSP.UseTex(texRefIDs[0], "diffuseMaps[0]");
+	geoPassSP.Set1i("useSpecMap", 1);
+	geoPassSP.UseTex(texRefIDs[1], "specMap");
+	geoPassSP.Set1i("useEmissionMap", 1);
+	geoPassSP.UseTex(texRefIDs[2], "emissionMap");
+
 	geoPassSP.SetMat4fv("model", &(mesh.GetModel())[0][0]);
 	glm::mat4 PV = projection * view;
 	geoPassSP.SetMat4fv("PV", &(PV)[0][0]);
@@ -114,7 +117,7 @@ void Scene::GeoPassRender(){
 		params.push_back({
 			CreateModelMat(glm::vec3(0.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)),
 			glm::vec4(PseudorandMinMax(0.f, 1.f), PseudorandMinMax(0.f, 1.f), PseudorandMinMax(0.f, 1.f), 1.f),
-			PseudorandMinMax(0, 2),
+			0,
 			});
 	};
 	mesh.BatchRender(params);

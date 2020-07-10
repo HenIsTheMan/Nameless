@@ -5,9 +5,9 @@
 class Scene final{
 public:
 	enum struct TexName{
-		BrickWallAlbedo = 0,
-		Grass,
-		Water,
+		BoxAlbedo = 0,
+		BoxSpec,
+		BoxEmission,
 		Amt,
 	};
 	Scene();
