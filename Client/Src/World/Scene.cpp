@@ -61,7 +61,7 @@ bool Scene::Init(){
 		"Imgs/Water.jpg",
 	};
 	for(short i = 0; i < sizeof(imgPaths) / sizeof(imgPaths[0]); ++i){
-		texRefIDs.emplace_back(0);
+		texRefIDs.emplace_back();
 		SetUpTex({
 			imgPaths[i],
 			true,
@@ -100,34 +100,28 @@ void Scene::Update(){
 	}
 }
 
-void Scene::PreRender(const float& R, const float& G, const float& B) const{
-	glClearColor(R, G, B, 1.f); //State-setting function
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); //State-using function
-}
-
 void Scene::GeoPassRender(){
 	geoPassSP.Use();
-	//for(short i = 0; i < 3; ++i){
-	//	geoPassSP.UseTex(texRefIDs[i], ("diffuseMaps[" + std::to_string(i) + "]").c_str());
-	//}
-
+	for(int i = 0; i < (int)TexName::Amt; ++i){
+		geoPassSP.UseTex(texRefIDs[i], ("diffuseMaps[" + std::to_string(i) + "]").c_str());
+	}
+	geoPassSP.SetMat4fv("model", &(mesh.GetModel())[0][0]);
 	glm::mat4 PV = projection * view;
 	geoPassSP.SetMat4fv("PV", &(PV)[0][0]);
 
-	//geoPassSP.SetMat4fv("model", &(mesh.GetModel())[0][0]);
-	//std::vector<Mesh::BatchRenderParams> params;
-	//for(short i = 0; i < 1; ++i){
-	//	params.push_back({
-	//		CreateModelMat(glm::vec3(0.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)),
-	//		glm::vec4(PseudorandMinMax(0.f, 1.f), PseudorandMinMax(0.f, 1.f), PseudorandMinMax(0.f, 1.f), 1.f),
-	//		PseudorandMinMax(0, 2),
-	//		});
-	//};
-	//mesh.BatchRender(params);
+	std::vector<Mesh::BatchRenderParams> params;
+	for(short i = 0; i < 1; ++i){
+		params.push_back({
+			CreateModelMat(glm::vec3(0.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)),
+			glm::vec4(PseudorandMinMax(0.f, 1.f), PseudorandMinMax(0.f, 1.f), PseudorandMinMax(0.f, 1.f), 1.f),
+			PseudorandMinMax(0, 2),
+			});
+	};
+	mesh.BatchRender(params);
 
-	glm::mat4 modelMat = glm::mat4(1.f);
-	geoPassSP.SetMat4fv("model", &modelMat[0][0]);
-	model.Render(GL_TRIANGLES);
+	//glm::mat4 modelMat = glm::mat4(1.f);
+	//geoPassSP.SetMat4fv("model", &modelMat[0][0]);
+	//model.Render(GL_TRIANGLES);
 
 	geoPassSP.ResetTexUnits();
 }
@@ -187,7 +181,4 @@ void Scene::RenderToDefaultFB(const uint& texRefID){
 	screenSP.SetMat4fv("model", &(mesh.GetModel())[0][0]);
 	mesh.Render();
 	screenSP.ResetTexUnits();
-}
-
-void Scene::PostRender() const{
 }

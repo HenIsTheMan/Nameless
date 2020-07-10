@@ -45,8 +45,6 @@ bool App::Init(){
 				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + (int)i, GL_TEXTURE_2D, texRefIDs[(int)i], 0);
 			glBindTexture(GL_TEXTURE_2D, 0);
 		}
-		uint GeoCA[]{GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
-		glDrawBuffers(3, GeoCA);
 
 		glBindRenderbuffer(GL_RENDERBUFFER, RBORefIDs[0]);
 			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, winWidth, winHeight);
@@ -69,8 +67,6 @@ bool App::Init(){
 				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + int(i) - int(Tex::Lit), GL_TEXTURE_2D, texRefIDs[(int)i], 0);
 			glBindTexture(GL_TEXTURE_2D, 0);
 		}
-		uint LightingCA[]{GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
-		glDrawBuffers(2, LightingCA);
 
 		if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE){
 			printf(STR(FBO::LightingPass));
@@ -125,20 +121,28 @@ void App::PreRender() const{
 }
 
 void App::Render(){
+	uint arr1st[2]{GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+	uint arr2nd[3]{GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
+
 	glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)FBO::GeoPass]);
-	scene.PreRender(1.f, 0.82f, 0.86f);
+	glClearColor(0.f, 0.f, 0.f, 1.f); //State-setting func
+		glDrawBuffers(2, arr1st);
+		glClear(GL_COLOR_BUFFER_BIT);
+	glClearColor(.5f, 0.32f, 0.86f, 1.f);
+		glDrawBuffer(GL_COLOR_ATTACHMENT2);
+		glClear(GL_COLOR_BUFFER_BIT);
+	glDrawBuffers(3, arr2nd);
+	glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); //State-using func
 	scene.GeoPassRender();
-	scene.PostRender();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)FBO::LightingPass]);
-	scene.PreRender(1.f, 0.82f, 0.86f);
+	glDrawBuffers(2, arr1st);
 	scene.LightingPassRender(texRefIDs[(int)Tex::Pos], texRefIDs[(int)Tex::Normals], texRefIDs[(int)Tex::AlbedoSpec]);
-	scene.PostRender();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	scene.PreRender(1.f, 0.82f, 0.86f);
+	glClearColor(1.f, 0.82f, 0.86f, 1.f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	scene.RenderToDefaultFB(texRefIDs[(int)Tex::Lit]);
-	scene.PostRender();
 }
 
 void App::PostRender() const{

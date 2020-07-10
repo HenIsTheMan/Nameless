@@ -98,7 +98,10 @@ vec3 CalcSpotlight(Spotlight light){
 }
 
 void main(){
-    if(pAmt == 0 && dAmt == 0 && sAmt == 0){
+    if(Normal == vec3(0.f)){
+        fragColour = vec4(Albedo, 1.f);
+        brightFragColour = vec4(vec3(0.f), 1.f);
+    } else if(pAmt == 0 && dAmt == 0 && sAmt == 0){
         fragColour = vec4(CalcAmbient(globalAmbient), 1.f);
         brightFragColour = vec4(vec3(0.f), 1.f);
     } else{

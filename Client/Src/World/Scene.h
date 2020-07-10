@@ -4,15 +4,19 @@
 
 class Scene final{
 public:
+	enum struct TexName{
+		BrickWallAlbedo = 0,
+		Grass,
+		Water,
+		Amt,
+	};
 	Scene();
 	~Scene();
 	bool Init();
 	void Update();
-	void PreRender(const float& R, const float& G, const float& B) const;
 	void GeoPassRender();
 	void LightingPassRender(const uint& posTexRefID, const uint& normalsTexRefID, const uint& albedoSpecTexRefID);
 	void RenderToDefaultFB(const uint& texRefID);
-	void PostRender() const;
 private:
 	Cam cam;
 	ISoundEngine* soundEngine;
