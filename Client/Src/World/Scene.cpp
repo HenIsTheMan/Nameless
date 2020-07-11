@@ -9,7 +9,7 @@ extern int winHeight;
 glm::vec3 Light::globalAmbient = glm::vec3(.1f);
 
 Scene::Scene():
-	cam(glm::vec3(0.f, 0.f, 2.f), glm::vec3(0.f), glm::vec3(0.f, 1.f, 0.f), 0.f, 150.f),
+	cam(glm::vec3(0.f, 0.f, 5.f), glm::vec3(0.f), glm::vec3(0.f, 1.f, 0.f), 0.f, 150.f),
 	mesh(Mesh::MeshType::Quad, GL_TRIANGLES),
 	model("ObjsAndMtls/nanosuit.obj", {}), //aiTextureType_DIFFUSE, aiTextureType_SPECULAR, aiTextureType_EMISSIVE, aiTextureType_HEIGHT, aiTextureType_AMBIENT
 	geoPassSP{"Shaders/GeoPass.vs", "Shaders/GeoPass.fs"},
@@ -72,6 +72,14 @@ bool Scene::Init(){
 		}, texRefIDs[i]);
 	}
 
+	for(int i = 0; i < 5000; ++i){
+		params.push_back({
+			CreateModelMat(glm::vec3(PseudorandMinMax(-200.f, 200.f), PseudorandMinMax(-200.f, 200.f), -5.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)),
+			glm::vec4(PseudorandMinMax(0.f, 1.f), PseudorandMinMax(0.f, 1.f), PseudorandMinMax(0.f, 1.f), 1.f),
+			0,
+			});
+	};
+
 	return true;
 }
 
@@ -111,15 +119,6 @@ void Scene::GeoPassRender(){
 	geoPassSP.SetMat4fv("model", &(mesh.GetModel())[0][0]);
 	glm::mat4 PV = projection * view;
 	geoPassSP.SetMat4fv("PV", &(PV)[0][0]);
-
-	std::vector<Mesh::BatchRenderParams> params;
-	for(short i = 0; i < 1; ++i){
-		params.push_back({
-			CreateModelMat(glm::vec3(0.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)),
-			glm::vec4(PseudorandMinMax(0.f, 1.f), PseudorandMinMax(0.f, 1.f), PseudorandMinMax(0.f, 1.f), 1.f),
-			0,
-			});
-	};
 	mesh.BatchRender(params);
 
 	//glm::mat4 modelMat = glm::mat4(1.f);

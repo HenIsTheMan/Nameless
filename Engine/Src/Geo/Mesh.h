@@ -4,8 +4,7 @@
 class Mesh{ //Single drawable geo
 	friend class Model;
 public:
-	enum struct MeshType{
-		//Pt, Line, 2D (circle, ring and 2D polygons with >= 3 vertices), 3D (sphere, torus and 3D polyhedrons with >= 3 flat polygonal faces)
+	enum struct MeshType{ //Pt, Line, 2D (circle, ring and 2D polygons with >= 3 vertices), 3D (sphere, torus and 3D polyhedrons with >= 3 flat polygonal faces)
 		None = 0,
 		Quad,
 		Cuboid,
@@ -36,9 +35,14 @@ protected:
 	int primitive;
 	std::vector<Vertex>* vertices;
 	std::vector<uint>* indices;
+
+	uint batchVAO;
+	uint batchVBO;
+	uint batchEBO;
 	uint VAO;
 	uint VBO;
 	uint EBO;
+
 	glm::mat4 model;
 	void CreateQuad();
 };

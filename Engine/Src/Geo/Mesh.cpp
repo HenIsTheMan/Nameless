@@ -5,6 +5,9 @@ Mesh::Mesh():
 	primitive(GL_TRIANGLES),
 	vertices(nullptr),
 	indices(nullptr),
+	batchVAO(0),
+	batchVBO(0),
+	batchEBO(0),
 	VAO(0),
 	VBO(0),
 	EBO(0),
@@ -17,6 +20,9 @@ Mesh::Mesh(const MeshType& myType, const int& myPrimitive):
 	primitive(myPrimitive),
 	vertices(nullptr),
 	indices(nullptr),
+	batchVAO(0),
+	batchVBO(0),
+	batchEBO(0),
 	VAO(0),
 	VBO(0),
 	EBO(0),
@@ -63,6 +69,15 @@ Mesh::~Mesh(){
 		delete indices;
 		indices = nullptr;
 	}
+	if(batchVAO){
+		glDeleteVertexArrays(1, &batchVAO);
+	}
+	if(batchVBO){
+		glDeleteBuffers(1, &batchVBO);
+	}
+	if(batchEBO){
+		glDeleteBuffers(1, &batchEBO);
+	}
 	if(VAO){
 		glDeleteVertexArrays(1, &VAO);
 	}
@@ -98,14 +113,14 @@ void Mesh::BatchRender(const std::vector<BatchRenderParams>& paramsVec){
 			allVertices[i * verticesSize + j].texIndex = paramsVec[i].texIndex;
 		}
 	}
-	if(!VAO){
-		glGenVertexArrays(1, &VAO);
+	if(!batchVAO){
+		glGenVertexArrays(1, &batchVAO);
 	}
-	glBindVertexArray(VAO);
-	if(!VBO){
-		glGenBuffers(1, &VBO); //A buffer manages a certain piece of GPU mem
-		glBindBuffer(GL_ARRAY_BUFFER, VBO); //Makes VBO the buffer currently bound to the GL_ARRAY_BUFFER target, GL_ARRAY_BUFFER is VBO's type
-		glBufferData(GL_ARRAY_BUFFER, paramsVec.size() * vertices->size() * sizeof(Vertex), NULL, GL_DYNAMIC_DRAW); //Can combine vertex attrib data into 1 arr or vec and fill VBO's mem with glBufferData
+	glBindVertexArray(batchVAO);
+	if(!batchVBO){
+		glGenBuffers(1, &batchVBO); //A buffer manages a certain piece of GPU mem
+		glBindBuffer(GL_ARRAY_BUFFER, batchVBO); //Makes batchVBO the buffer currently bound to the GL_ARRAY_BUFFER target, GL_ARRAY_BUFFER is batchVBO's type
+		glBufferData(GL_ARRAY_BUFFER, paramsVec.size() * vertices->size() * sizeof(Vertex), NULL, GL_DYNAMIC_DRAW); //Can combine vertex attrib data into 1 arr or vec and fill batchVBO's mem with glBufferData
 
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, pos));
@@ -120,14 +135,14 @@ void Mesh::BatchRender(const std::vector<BatchRenderParams>& paramsVec){
 		glEnableVertexAttribArray(5);
 		glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, texIndex));
 	} else{
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBindBuffer(GL_ARRAY_BUFFER, batchVBO);
 	}
 	glBufferSubData(GL_ARRAY_BUFFER, 0, paramsVec.size() * vertices->size() * sizeof(Vertex), &allVertices[0]);
 
-	if(!EBO && indices){
-		glGenBuffers(1, &EBO); //Element index buffer
+	if(!batchEBO && indices){
+		glGenBuffers(1, &batchEBO); //Element index buffer
 	}
-	if(EBO){
+	if(batchEBO){
 		const size_t paramsVecSize = paramsVec.size();
 		const size_t indicesSize = indices->size();
 		std::vector<uint> allIndices(paramsVecSize * indicesSize);
@@ -137,7 +152,7 @@ void Mesh::BatchRender(const std::vector<BatchRenderParams>& paramsVec){
 			}
 		}
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, batchEBO);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, paramsVecSize * indicesSize * sizeof(uint), &allIndices[0], GL_STATIC_DRAW); //Alloc/Reserve a piece of GPU mem and add data into it
 		glDrawElements(primitive, (int)allIndices.size(), GL_UNSIGNED_INT, 0); //Draw/Render call/command
 	} else{
@@ -151,17 +166,18 @@ void Mesh::Render(){
 		puts("Invalid primitive!\n");
 		return;
 	}
-	switch(type){
-		case MeshType::Quad:
-			CreateQuad();
-			break;
-	}
 
 	if(!VAO){
+		switch(type){
+			case MeshType::None:
+				return;
+			case MeshType::Quad:
+				CreateQuad();
+				break;
+		}
+
 		glGenVertexArrays(1, &VAO);
-	}
-	glBindVertexArray(VAO);
-		if(!VBO){
+		glBindVertexArray(VAO);
 			glGenBuffers(1, &VBO);
 			glBindBuffer(GL_ARRAY_BUFFER, VBO);
 			glBufferData(GL_ARRAY_BUFFER, vertices->size() * sizeof(Vertex), &(*vertices)[0], GL_STATIC_DRAW);
@@ -178,13 +194,16 @@ void Mesh::Render(){
 			glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, tangent));
 			glEnableVertexAttribArray(5);
 			glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, texIndex));
-		}
 
-		if(!EBO && indices){
-			glGenBuffers(1, &EBO);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices->size() * sizeof(uint), &(*indices)[0], GL_STATIC_DRAW);
-		}
+			if(indices){
+				glGenBuffers(1, &EBO);
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+				glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices->size() * sizeof(uint), &(*indices)[0], GL_STATIC_DRAW);
+			}
+		glBindVertexArray(0);
+	}
+	
+	glBindVertexArray(VAO);
 		indices ? glDrawElements(primitive, (int)indices->size(), GL_UNSIGNED_INT, 0) : glDrawArrays(primitive, 0, (int)vertices->size());
 	glBindVertexArray(0);
 }

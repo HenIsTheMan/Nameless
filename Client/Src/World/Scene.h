@@ -31,9 +31,10 @@ private:
 	std::vector<Light*> directionalLights;
 	std::vector<Light*> spotlights;
 
-	std::vector<uint> texRefIDs;
 	glm::mat4 view;
 	glm::mat4 projection;
+	std::vector<uint> texRefIDs;
+	std::vector<Mesh::BatchRenderParams> params;
 
 	float elapsedTime;
 	float polyModeBT;
