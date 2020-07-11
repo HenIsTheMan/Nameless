@@ -1,5 +1,7 @@
 #pragma once
 #include "../Core.h"
+#include "../Algs/Pseudorand.h"
+#include "../Algs/Swapping.h"
 
 ///Forward declaration
 template <class T>
@@ -59,7 +61,7 @@ public:
     }
 
     ~BST(){
-        std::function<void(const BinTreeNode<T>*&)> PostOrderDel = [&PostOrderDel](const BinTreeNode<T>*& node){
+        std::function<void(BinTreeNode<T>*&)> PostOrderDel = [&PostOrderDel](BinTreeNode<T>*& node){
             if(node){
                 PostOrderDel(node->left);
                 PostOrderDel(node->right);
@@ -92,7 +94,7 @@ public:
                     }
                 } else{
                     if(!temp->left && !temp->right){
-                        (rand() & 1 ? temp->left : temp->right) = new BinTreeNode<T>(data);
+                        (PseudorandMinMax(0, 1) ? temp->left : temp->right) = new BinTreeNode<T>(data);
                         break;
                     } else if(!temp->left && temp->right){
                         temp->left = new BinTreeNode<T>(data);
@@ -101,7 +103,7 @@ public:
                         temp->right = new BinTreeNode<T>(data);
                         break;
                     } else{
-                        temp = rand() & 1 ? temp->left : temp->right;
+                        temp = PseudorandMinMax(0, 1) ? temp->left : temp->right;
                     }
                 }
             }
@@ -144,7 +146,7 @@ public:
                     currRight = currRight->left;
                 }
                 BinTreeNode<T>* nodeFound = !currLeft->right ? currLeft : currRight;
-                if(nodeToDel->data == nodeFound->data){ //Prevents endless/infinite recursion
+                if(nodeToDel->data == nodeFound->data){ //Prevents endless/infinite recursion //Not working??
                     if(!currLeft->right){
                         BinTreeNode<T>* parentNode = nodeToDel->left;
                         while(parentNode->right && parentNode->right != nodeFound){
@@ -277,6 +279,8 @@ protected:
     int GetRightIndex(const int& index){
         return 2 * index + 2;
     }
+
+    virtual void Fix(int& index) = 0;
 private:
     void IPrint(const int& index, const BinTree<T>::TraversalType& type){
         if(index >= 0 && index < this->size){
@@ -326,12 +330,7 @@ public:
         }
         int index = this->size++;
         this->container[index] = data;
-        while(index && this->container[index] < this->container[this->GetParentIndex(index)]){
-            T tempData = this->container[index];
-            this->container[index] = this->container[this->GetParentIndex(index)];
-            this->container[this->GetParentIndex(index)] = tempData;
-            index = this->GetParentIndex(index);
-        }
+        Fix(index);
     }
 
     void RemoveData(const T& data) override{
@@ -347,18 +346,20 @@ public:
 
     //void MinHeap::SetData(const int& index, const T& data){
     //    this->container[index] = data;
-    //    while(index && this->container[index] < this->container[GetParentIndex(index)]){
-    //        T tempData = this->container[index];
-    //        this->container[index] = this->container[GetParentIndex(index)];
-    //        this->container[GetParentIndex(index)] = tempData;
-    //        index = GetParentIndex(index);
-    //    }
+    //    Fix(index);
     //}
 
     //void MinHeap::RemoveMin(){
     //    this->container[0] = this->container[--this->size];
     //    MinHeapify(0);
     //}
+private:
+    void Fix(int& index) override{
+        while(index && this->container[index] < this->container[this->GetParentIndex(index)]){
+            SwapArrElements(this->container, index, this->GetParentIndex(index));
+            index = this->GetParentIndex(index);
+        }
+    }
 };
 
 template <class T>
@@ -375,14 +376,16 @@ public:
         }
         int index = this->size++;
         this->container[index] = data;
-        while(index && this->container[index] > this->container[this->GetParentIndex(index)]){
-            T tempData = this->container[index];
-            this->container[index] = this->container[this->GetParentIndex(index)];
-            this->container[this->GetParentIndex(index)] = tempData;
-            index = this->GetParentIndex(index);
-        }
+        Fix(index);
     }
 
     void RemoveData(const T& data) override{
+    }
+private:
+    void Fix(int& index) override{
+        while(index && this->container[index] > this->container[this->GetParentIndex(index)]){
+            SwapArrElements(this->container, index, this->GetParentIndex(index));
+            index = this->GetParentIndex(index);
+        }
     }
 };
