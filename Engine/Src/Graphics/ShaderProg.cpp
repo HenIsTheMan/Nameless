@@ -1,7 +1,7 @@
 #include "ShaderProg.h"
 
 std::vector<int> ShaderProg::texTargets;
-ShaderProg* ShaderProg::currShaderProg = nullptr;
+ShaderProg* ShaderProg::currSP = nullptr;
 std::unordered_map<cstr, uint> ShaderProg::shaderCache;
 
 ShaderProg::ShaderProg():
@@ -99,9 +99,9 @@ void ShaderProg::Use(){
 	if(!refID && !Init()){ //Init on 1st use
 		printf("%u: ShaderProg not initialised\n", this->refID);
 	}
-	if(!currShaderProg || currShaderProg->refID != refID){
+	if(!currSP || currSP->refID != refID){
 		glUseProgram(refID);
-		currShaderProg = this;
+		currSP = this;
 	}
 }
 

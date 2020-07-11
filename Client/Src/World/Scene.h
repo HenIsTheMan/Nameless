@@ -33,7 +33,6 @@ private:
 
 	glm::mat4 view;
 	glm::mat4 projection;
-	std::vector<uint> texRefIDs;
 	std::vector<Mesh::BatchRenderParams> params;
 
 	float elapsedTime;

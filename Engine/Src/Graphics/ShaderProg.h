@@ -19,7 +19,7 @@ public:
 private:
 	static std::vector<int> texTargets; //For every tex unit
 	cstr shaderPaths[3];
-	static ShaderProg* currShaderProg;
+	static ShaderProg* currSP;
 	std::unordered_map<str, int> uniLocationCache;
 	static std::unordered_map<cstr, uint> shaderCache;
 

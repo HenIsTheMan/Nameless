@@ -1,10 +1,12 @@
 #include "Mesh.h"
+#include "../Global/GlobalFuncs.h"
 
 Mesh::Mesh():
 	type(MeshType::None),
 	primitive(GL_TRIANGLES),
 	vertices(nullptr),
 	indices(nullptr),
+	texMaps{},
 	batchVAO(0),
 	batchVBO(0),
 	batchEBO(0),
@@ -15,11 +17,12 @@ Mesh::Mesh():
 {
 }
 
-Mesh::Mesh(const MeshType& myType, const int& myPrimitive):
+Mesh::Mesh(const MeshType& myType, const int& myPrimitive, const std::initializer_list<std::tuple<cstr, TexType, uint>>& iL):
 	type(myType),
 	primitive(myPrimitive),
 	vertices(nullptr),
 	indices(nullptr),
+	texMaps(iL),
 	batchVAO(0),
 	batchVBO(0),
 	batchEBO(0),
@@ -161,11 +164,45 @@ void Mesh::BatchRender(const std::vector<BatchRenderParams>& paramsVec){
 	glBindVertexArray(0);
 }
 
-void Mesh::Render(){
+void Mesh::Render(ShaderProg& SP, const glm::mat4& PV){
 	if(primitive < 0){
 		puts("Invalid primitive!\n");
 		return;
 	}
+
+	SP.Use();
+	SP.SetMat4fv("model", &(model)[0][0]);
+	//SP.SetMat4fv("PV", &(PV)[0][0]);
+
+	//const size_t size = texMaps.size();
+	//for(size_t i = 0; i < size; ++i){
+	//	SetUpTex({
+	//		std::get<cstr>(texMaps[i]),
+	//		true,
+	//		GL_TEXTURE_2D,
+	//		GL_REPEAT,
+	//		GL_LINEAR_MIPMAP_LINEAR,
+	//		GL_LINEAR,
+	//	}, std::get<uint>(texMaps[i]));
+
+	//	switch(std::get<TexType>(texMaps[i])){
+	//		case TexType::Diffuse:
+	//			SP.UseTex(std::get<uint>(texMaps[i]), ("diffuseMaps[" + std::to_string(i) + ']').c_str());
+	//			break;
+	//		case TexType::Spec:
+	//			SP.UseTex(std::get<uint>(texMaps[i]), "specMap");
+	//			break;
+	//		case TexType::Emission:
+	//			SP.UseTex(std::get<uint>(texMaps[i]), "emissionMap");
+	//			break;
+	//		case TexType::Reflection:
+	//			SP.UseTex(std::get<uint>(texMaps[i]), "reflectionMap");
+	//			break;
+	//		case TexType::Bump:
+	//			SP.UseTex(std::get<uint>(texMaps[i]), "bumpMap");
+	//			break;
+	//	}
+	//}
 
 	if(!VAO){
 		switch(type){
@@ -206,10 +243,7 @@ void Mesh::Render(){
 	glBindVertexArray(VAO);
 		indices ? glDrawElements(primitive, (int)indices->size(), GL_UNSIGNED_INT, 0) : glDrawArrays(primitive, 0, (int)vertices->size());
 	glBindVertexArray(0);
-}
-
-const glm::mat4& Mesh::GetModel() const{
-	return model;
+	SP.ResetTexUnits();
 }
 
 void Mesh::SetModel(const glm::mat4& model){

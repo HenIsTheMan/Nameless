@@ -1,5 +1,6 @@
 #pragma once
 #include "Vertex.h"
+#include "../Graphics/ShaderProg.h"
 
 class Mesh{ //Single drawable geo
 	friend class Model;
@@ -10,6 +11,14 @@ public:
 		Cuboid,
 		Amt
 	};
+	enum struct TexType{
+		Diffuse = 0,
+		Spec,
+		Emission,
+		Reflection,
+		Bump,
+		Amt
+	};
 	struct BatchRenderParams final{
 		glm::mat4 model;
 		glm::vec4 colour;
@@ -17,7 +26,7 @@ public:
 	};
 
 	Mesh();
-	Mesh(const MeshType& myType, const int& myPrimitive);
+	Mesh(const MeshType& myType, const int& myPrimitive, const std::initializer_list<std::tuple<cstr, TexType, uint>>& iL);
 
 	///Rule of 5 (prevents shallow copy)
 	Mesh(const Mesh& mesh);
@@ -26,15 +35,15 @@ public:
 	Mesh& operator=(Mesh&& mesh) noexcept;
 	virtual ~Mesh();
 
-	const glm::mat4& GetModel() const;
 	void SetModel(const glm::mat4& model);
 	void BatchRender(const std::vector<BatchRenderParams>& params);
-	void Render();
+	void Render(ShaderProg& SP, const glm::mat4& PV);
 protected:
 	MeshType type;
 	int primitive;
 	std::vector<Vertex>* vertices;
 	std::vector<uint>* indices;
+	std::vector<std::tuple<cstr, TexType, uint>> texMaps;
 
 	uint batchVAO;
 	uint batchVBO;

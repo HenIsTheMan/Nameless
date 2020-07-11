@@ -10,12 +10,21 @@ glm::vec3 Light::globalAmbient = glm::vec3(.1f);
 
 Scene::Scene():
 	cam(glm::vec3(0.f, 0.f, 5.f), glm::vec3(0.f), glm::vec3(0.f, 1.f, 0.f), 0.f, 150.f),
-	mesh(Mesh::MeshType::Quad, GL_TRIANGLES),
-	model("ObjsAndMtls/nanosuit.obj", {}), //aiTextureType_DIFFUSE, aiTextureType_SPECULAR, aiTextureType_EMISSIVE, aiTextureType_HEIGHT, aiTextureType_AMBIENT
+	mesh(Mesh::MeshType::Quad, GL_TRIANGLES, {
+		{"Imgs/BoxAlbedo.png", Mesh::TexType::Diffuse, 0},
+		{"Imgs/BoxSpec.png", Mesh::TexType::Spec, 0},
+		{"Imgs/BoxEmission.png", Mesh::TexType::Emission, 0},
+	}),
+	model("ObjsAndMtls/nanosuit.obj", {
+		aiTextureType_DIFFUSE,
+		//aiTextureType_SPECULAR,
+		//aiTextureType_EMISSIVE,
+		//aiTextureType_HEIGHT,
+		//aiTextureType_AMBIENT,
+	}),
 	geoPassSP{"Shaders/GeoPass.vs", "Shaders/GeoPass.fs"},
 	lightingPassSP{"Shaders/Quad.vs", "Shaders/LightingPass.fs"},
 	screenSP{"Shaders/Quad.vs", "Shaders/Screen.fs"},
-	texRefIDs{},
 	view(glm::mat4(1.f)),
 	projection(glm::mat4(1.f)),
 	elapsedTime(0.f),
@@ -51,27 +60,9 @@ Scene::~Scene(){
 		spotlights[i] = nullptr;
 	}
 	soundEngine->drop();
-	glDeleteTextures((int)texRefIDs.size(), &texRefIDs[0]);
 }
 
 bool Scene::Init(){
-	cstr imgPaths[]{
-		"Imgs/BoxAlbedo.png",
-		"Imgs/BoxSpec.png",
-		"Imgs/BoxEmission.png",
-	};
-	for(short i = 0; i < sizeof(imgPaths) / sizeof(imgPaths[0]); ++i){
-		texRefIDs.emplace_back();
-		SetUpTex({
-			imgPaths[i],
-			true,
-			GL_TEXTURE_2D,
-			GL_REPEAT,
-			GL_LINEAR_MIPMAP_LINEAR,
-			GL_LINEAR,
-		}, texRefIDs[i]);
-	}
-
 	for(int i = 0; i < 5000; ++i){
 		params.push_back({
 			CreateModelMat(glm::vec3(PseudorandMinMax(-200.f, 200.f), PseudorandMinMax(-200.f, 200.f), -5.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)),
@@ -109,7 +100,7 @@ void Scene::Update(){
 }
 
 void Scene::GeoPassRender(){
-	geoPassSP.Use();
+	//geoPassSP.Use();
 
 	//geoPassSP.UseTex(texRefIDs[(int)TexName::BoxAlbedo], "diffuseMaps[0]");
 	//geoPassSP.Set1i("useSpecMap", 1);
@@ -126,8 +117,6 @@ void Scene::GeoPassRender(){
 	//glm::mat4 PV = projection * view;
 	//geoPassSP.SetMat4fv("PV", &(PV)[0][0]);
 	//model.Render(GL_TRIANGLES);
-
-	geoPassSP.ResetTexUnits();
 }
 
 void Scene::LightingPassRender(const uint& posTexRefID, const uint& normalsTexRefID, const uint& albedoSpecTexRefID){
@@ -174,15 +163,15 @@ void Scene::LightingPassRender(const uint& posTexRefID, const uint& normalsTexRe
 		lightingPassSP.Set1f(("spotlights[" + std::to_string(i) + "].cosOuterCutoff").c_str(), spotlight->cosOuterCutoff);
 	}
 
-	lightingPassSP.SetMat4fv("model", &(mesh.GetModel())[0][0]);
-	mesh.Render();
+	const glm::mat4 PV = projection * view;
+	mesh.Render(lightingPassSP, PV);
 	lightingPassSP.ResetTexUnits();
 }
 
 void Scene::RenderToDefaultFB(const uint& texRefID){
 	screenSP.Use();
 	screenSP.UseTex(texRefID, "texSampler");
-	screenSP.SetMat4fv("model", &(mesh.GetModel())[0][0]);
-	mesh.Render();
+	const glm::mat4 PV = projection * view;
+	mesh.Render(screenSP, PV);
 	screenSP.ResetTexUnits();
 }
