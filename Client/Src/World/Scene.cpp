@@ -110,19 +110,21 @@ void Scene::Update(){
 
 void Scene::GeoPassRender(){
 	geoPassSP.Use();
-	geoPassSP.UseTex(texRefIDs[0], "diffuseMaps[0]");
-	geoPassSP.Set1i("useSpecMap", 1);
-	geoPassSP.UseTex(texRefIDs[1], "specMap");
-	geoPassSP.Set1i("useEmissionMap", 1);
-	geoPassSP.UseTex(texRefIDs[2], "emissionMap");
 
-	geoPassSP.SetMat4fv("model", &(mesh.GetModel())[0][0]);
-	glm::mat4 PV = projection * view;
-	geoPassSP.SetMat4fv("PV", &(PV)[0][0]);
-	mesh.BatchRender(params);
+	//geoPassSP.UseTex(texRefIDs[(int)TexName::BoxAlbedo], "diffuseMaps[0]");
+	//geoPassSP.Set1i("useSpecMap", 1);
+	//geoPassSP.UseTex(texRefIDs[(int)TexName::BoxSpec], "specMap");
+	//geoPassSP.Set1i("useEmissionMap", 1);
+	//geoPassSP.UseTex(texRefIDs[(int)TexName::BoxEmission], "emissionMap");
+	//geoPassSP.SetMat4fv("model", &(mesh.GetModel())[0][0]);
+	//glm::mat4 PV = projection * view;
+	//geoPassSP.SetMat4fv("PV", &(PV)[0][0]);
+	//mesh.BatchRender(params);
 
 	//glm::mat4 modelMat = glm::mat4(1.f);
 	//geoPassSP.SetMat4fv("model", &modelMat[0][0]);
+	//glm::mat4 PV = projection * view;
+	//geoPassSP.SetMat4fv("PV", &(PV)[0][0]);
 	//model.Render(GL_TRIANGLES);
 
 	geoPassSP.ResetTexUnits();

@@ -21,5 +21,6 @@ class Model final{ //A model obj acts as a container for several mesh objs
 public:
     Model(cstr const& fPath, const std::initializer_list<aiTextureType>& iL);
     ~Model();
+    void BatchRender(const int& primitive);
     void Render(const int& primitive);
 };

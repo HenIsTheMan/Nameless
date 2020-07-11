@@ -28,7 +28,7 @@ Model::~Model(){
 
 void Model::LoadModel() const{ //Load model into a DS of Assimp called a scene obj (root obj of Assimp's data interface)
     Assimp::Importer importer;
-    const aiScene* const scene = importer.ReadFile(modelPath, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+    const aiScene* const scene = importer.ReadFile(modelPath, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices);
     if(!scene || !scene->mRootNode || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE){ //If !scene || !(root node of scene) || returned data is incomplete (given by 1 of its flags)
         printf("Assimp error: %s\n", importer.GetErrorString());
         return;
@@ -63,7 +63,7 @@ Mesh Model::ProcessMesh(const aiScene* const& scene, const aiMesh* const& meshOb
             texCoords ? glm::vec2(texCoords[i].x, texCoords[i].y) : glm::vec2(0.f),
             normals ? glm::vec3(normals[i].x, normals[i].y, normals[i].z) : glm::vec3(0.f),
             tangents ? glm::vec3(tangents[i].x, tangents[i].y, tangents[i].z) : glm::vec3(0.f),
-            -1
+            0
         });
     }
     for(uint i = 0; i < meshObj->mNumFaces; ++i){ //For each face of the mesh... //Each mesh has an arr of primitive faces (triangles due to the aiProcess_Triangulate post-processing option)
@@ -95,7 +95,7 @@ void Model::LoadMtlTexs(const aiMaterial* const& mtl) const{ //Helper func to re
     }
 }
 
-void Model::Render(const int& primitive){
+void Model::BatchRender(const int& primitive){
     if(primitive < 0){
         puts("Invalid primitive!\n");
         return;
@@ -109,7 +109,7 @@ void Model::Render(const int& primitive){
     }
     glBindVertexArray(VAO);
     if(!VBO){
-        for(const Mesh& mesh : meshes){
+        for(const Mesh& mesh: meshes){
             for(size_t i = 0; i < mesh.vertices->size(); ++i){
                 (*(mesh.vertices))[i].pos = glm::vec3(mesh.model * glm::vec4((*(mesh.vertices))[i].pos, 1.f));
                 allVertices.emplace_back((*(mesh.vertices))[i]);
@@ -156,4 +156,17 @@ void Model::Render(const int& primitive){
         glDrawArrays(primitive, 0, (int)allVertices.size()); //...
     }
     glBindVertexArray(0);
+}
+
+void Model::Render(const int& primitive){
+    if(primitive < 0){
+        puts("Invalid primitive!\n");
+        return;
+    }
+    if(!meshes.size()){
+        LoadModel();
+    }
+    for(Mesh& mesh: meshes){
+        mesh.Render();
+    }
 }

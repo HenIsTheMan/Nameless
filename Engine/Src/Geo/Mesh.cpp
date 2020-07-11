@@ -96,7 +96,7 @@ void Mesh::BatchRender(const std::vector<BatchRenderParams>& paramsVec){
 	}
 	switch(type){
 		case MeshType::None:
-			return;
+			break;
 		case MeshType::Quad:
 			CreateQuad();
 			break;
@@ -170,7 +170,7 @@ void Mesh::Render(){
 	if(!VAO){
 		switch(type){
 			case MeshType::None:
-				return;
+				break;
 			case MeshType::Quad:
 				CreateQuad();
 				break;
