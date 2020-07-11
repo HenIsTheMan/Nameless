@@ -8,7 +8,7 @@ public:
 		BoxAlbedo = 0,
 		BoxSpec,
 		BoxEmission,
-		Amt,
+		Amt
 	};
 	Scene();
 	~Scene();

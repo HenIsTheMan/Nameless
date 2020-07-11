@@ -11,6 +11,7 @@
 #include <GLM/gtc/type_ptr.hpp>
 #include <IRRKLANG/irrKlang.h>
 
+#include <functional>
 #include <fstream>
 #include <thread>
 #include <unordered_map>

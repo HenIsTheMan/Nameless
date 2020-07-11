@@ -15,7 +15,7 @@ void MainProcess(){
 	app->Destroy();
 }
 
-int main(){
+int main(const int&, const char* const* const&){
 	if(!InitConsole()){
 		return -1;
 	}

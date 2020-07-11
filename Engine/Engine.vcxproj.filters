@@ -46,6 +46,9 @@
     <ClInclude Include="Src\Geo\Model.h">
       <Filter>Src\Geo</Filter>
     </ClInclude>
+    <ClInclude Include="Src\DS\BinTree.h">
+      <Filter>Src\DS</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\Vendor\glad.c">
@@ -85,6 +88,9 @@
     </Filter>
     <Filter Include="Src\Global">
       <UniqueIdentifier>{80733b05-9865-432a-a105-7d15b50cc595}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\DS">
+      <UniqueIdentifier>{a9d2b0bb-9090-49f9-add0-02bd56b14bc9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

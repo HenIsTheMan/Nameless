@@ -4,6 +4,7 @@
 #include "Algs/Pseudorand.h"
 #include "Algs/Sorting.h"
 #include "Algs/Swapping.h"
+#include "DS/BinTree.h"
 #include "Geo/Mesh.h"
 #include "Geo/Model.h"
 #include "Global/GlobalFuncs.h"
