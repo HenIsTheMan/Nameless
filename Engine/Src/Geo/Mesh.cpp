@@ -164,7 +164,7 @@ void Mesh::BatchRender(const std::vector<BatchRenderParams>& paramsVec){
 	glBindVertexArray(0);
 }
 
-void Mesh::Render(ShaderProg& SP, const glm::mat4& PV){
+void Mesh::Render(ShaderProg& SP, const glm::mat4& PV, const bool& useTexMaps){
 	if(primitive < 0){
 		puts("Invalid primitive!\n");
 		return;
@@ -172,37 +172,45 @@ void Mesh::Render(ShaderProg& SP, const glm::mat4& PV){
 
 	SP.Use();
 	SP.SetMat4fv("model", &(model)[0][0]);
-	//SP.SetMat4fv("PV", &(PV)[0][0]);
+	if(useTexMaps){
+		SP.SetMat4fv("PV", &(PV)[0][0]);
 
-	//const size_t size = texMaps.size();
-	//for(size_t i = 0; i < size; ++i){
-	//	SetUpTex({
-	//		std::get<cstr>(texMaps[i]),
-	//		true,
-	//		GL_TEXTURE_2D,
-	//		GL_REPEAT,
-	//		GL_LINEAR_MIPMAP_LINEAR,
-	//		GL_LINEAR,
-	//	}, std::get<uint>(texMaps[i]));
+		const size_t size = texMaps.size();
+		for(size_t i = 0; i < size; ++i){
+			if(!std::get<uint>(texMaps[i])){
+				SetUpTex({
+					std::get<cstr>(texMaps[i]),
+					true,
+					GL_TEXTURE_2D,
+					GL_REPEAT,
+					GL_LINEAR_MIPMAP_LINEAR,
+					GL_LINEAR,
+				}, std::get<uint>(texMaps[i]));
+			}
 
-	//	switch(std::get<TexType>(texMaps[i])){
-	//		case TexType::Diffuse:
-	//			SP.UseTex(std::get<uint>(texMaps[i]), ("diffuseMaps[" + std::to_string(i) + ']').c_str());
-	//			break;
-	//		case TexType::Spec:
-	//			SP.UseTex(std::get<uint>(texMaps[i]), "specMap");
-	//			break;
-	//		case TexType::Emission:
-	//			SP.UseTex(std::get<uint>(texMaps[i]), "emissionMap");
-	//			break;
-	//		case TexType::Reflection:
-	//			SP.UseTex(std::get<uint>(texMaps[i]), "reflectionMap");
-	//			break;
-	//		case TexType::Bump:
-	//			SP.UseTex(std::get<uint>(texMaps[i]), "bumpMap");
-	//			break;
-	//	}
-	//}
+			switch(std::get<TexType>(texMaps[i])){
+				case TexType::Diffuse:
+					SP.UseTex(std::get<uint>(texMaps[i]), ("diffuseMaps[" + std::to_string(i) + ']').c_str());
+					break;
+				case TexType::Spec:
+					SP.Set1i("useSpecMap", 1);
+					SP.UseTex(std::get<uint>(texMaps[i]), "specMap");
+					break;
+				case TexType::Emission:
+					SP.Set1i("useEmissionMap", 1);
+					SP.UseTex(std::get<uint>(texMaps[i]), "emissionMap");
+					break;
+				case TexType::Reflection:
+					SP.Set1i("useReflectionMap", 1);
+					SP.UseTex(std::get<uint>(texMaps[i]), "reflectionMap");
+					break;
+				case TexType::Bump:
+					SP.Set1i("useBumpMap", 1);
+					SP.UseTex(std::get<uint>(texMaps[i]), "bumpMap");
+					break;
+			}
+		}
+	}
 
 	if(!VAO){
 		switch(type){
@@ -243,7 +251,13 @@ void Mesh::Render(ShaderProg& SP, const glm::mat4& PV){
 	glBindVertexArray(VAO);
 		indices ? glDrawElements(primitive, (int)indices->size(), GL_UNSIGNED_INT, 0) : glDrawArrays(primitive, 0, (int)vertices->size());
 	glBindVertexArray(0);
-	SP.ResetTexUnits();
+	if(useTexMaps){
+		SP.ResetTexUnits();
+	}
+}
+
+void Mesh::AddTexMap(const std::tuple<cstr, TexType, uint>& texMap){
+	texMaps.emplace_back(texMap);
 }
 
 void Mesh::SetModel(const glm::mat4& model){
@@ -283,11 +297,11 @@ void Mesh::CreateQuad(){
 		for(short i = 0; i < 4; ++i){
 			vertices->push_back({
 				pos[i],
-				glm::vec4(.5f),
+				glm::vec4(.7f, .4f, .1f, 1.f),
 				UVs[i],
 				glm::vec3(0.f, 0.f, 1.f),
 				tangent[!(i % 3)],
-				-1,
+				0,
 			});
 		}
 		if(indices){

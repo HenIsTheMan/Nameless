@@ -10,7 +10,7 @@ public:
     virtual ~Light() = default;
 protected:
     Light():
-        ambient(glm::vec3(.05f)),
+        ambient(glm::vec3(.5f)),
         diffuse(glm::vec3(.8f)),
         spec(glm::vec3(1.f))
     {

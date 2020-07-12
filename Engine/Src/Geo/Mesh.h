@@ -35,9 +35,10 @@ public:
 	Mesh& operator=(Mesh&& mesh) noexcept;
 	virtual ~Mesh();
 
+	void AddTexMap(const std::tuple<cstr, TexType, uint>& texMap);
 	void SetModel(const glm::mat4& model);
 	void BatchRender(const std::vector<BatchRenderParams>& params);
-	void Render(ShaderProg& SP, const glm::mat4& PV);
+	void Render(ShaderProg& SP, const glm::mat4& PV, const bool& useTexMaps = true);
 protected:
 	MeshType type;
 	int primitive;

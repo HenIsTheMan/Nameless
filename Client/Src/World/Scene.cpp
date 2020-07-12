@@ -6,7 +6,7 @@ extern float dt;
 extern int winWidth;
 extern int winHeight;
 
-glm::vec3 Light::globalAmbient = glm::vec3(.1f);
+glm::vec3 Light::globalAmbient = glm::vec3(.2f);
 
 Scene::Scene():
 	cam(glm::vec3(0.f, 0.f, 5.f), glm::vec3(0.f), glm::vec3(0.f, 1.f, 0.f), 0.f, 150.f),
@@ -100,17 +100,9 @@ void Scene::Update(){
 }
 
 void Scene::GeoPassRender(){
-	//geoPassSP.Use();
-
-	//geoPassSP.UseTex(texRefIDs[(int)TexName::BoxAlbedo], "diffuseMaps[0]");
-	//geoPassSP.Set1i("useSpecMap", 1);
-	//geoPassSP.UseTex(texRefIDs[(int)TexName::BoxSpec], "specMap");
-	//geoPassSP.Set1i("useEmissionMap", 1);
-	//geoPassSP.UseTex(texRefIDs[(int)TexName::BoxEmission], "emissionMap");
-	//geoPassSP.SetMat4fv("model", &(mesh.GetModel())[0][0]);
-	//glm::mat4 PV = projection * view;
-	//geoPassSP.SetMat4fv("PV", &(PV)[0][0]);
 	//mesh.BatchRender(params);
+
+	mesh.Render(geoPassSP, projection * view);
 
 	//glm::mat4 modelMat = glm::mat4(1.f);
 	//geoPassSP.SetMat4fv("model", &modelMat[0][0]);
@@ -163,15 +155,13 @@ void Scene::LightingPassRender(const uint& posTexRefID, const uint& normalsTexRe
 		lightingPassSP.Set1f(("spotlights[" + std::to_string(i) + "].cosOuterCutoff").c_str(), spotlight->cosOuterCutoff);
 	}
 
-	const glm::mat4 PV = projection * view;
-	mesh.Render(lightingPassSP, PV);
+	mesh.Render(lightingPassSP, projection * view, false);
 	lightingPassSP.ResetTexUnits();
 }
 
 void Scene::RenderToDefaultFB(const uint& texRefID){
 	screenSP.Use();
 	screenSP.UseTex(texRefID, "texSampler");
-	const glm::mat4 PV = projection * view;
-	mesh.Render(screenSP, PV);
+	mesh.Render(screenSP, projection * view, false);
 	screenSP.ResetTexUnits();
 }

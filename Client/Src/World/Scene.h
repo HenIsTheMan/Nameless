@@ -4,12 +4,6 @@
 
 class Scene final{
 public:
-	enum struct TexName{
-		BoxAlbedo = 0,
-		BoxSpec,
-		BoxEmission,
-		Amt
-	};
 	Scene();
 	~Scene();
 	bool Init();
