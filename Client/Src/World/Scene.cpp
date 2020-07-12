@@ -100,13 +100,13 @@ void Scene::Update(){
 }
 
 void Scene::GeoPassRender(){
-	//mesh.RemoveTexMap("Imgs/BoxAlbedo.png");
-	//mesh.AddTexMap({"Imgs/BoxAlbedo.png", Mesh::TexType::Diffuse, 0});
 	//mesh.BatchRender(params);
 
 	geoPassSP.Use();
 	geoPassSP.SetMat4fv("PV", &(projection * view)[0][0]);
 	mesh.SetModel(CreateModelMat(glm::vec3(5.f, 0.f, 0.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)));
+	mesh.RemoveTexMap("Imgs/BoxAlbedo.png");
+	mesh.AddTexMap({"Imgs/BoxAlbedo.png", Mesh::TexType::Diffuse, 0});
 	mesh.Render(geoPassSP);
 	model.Render(geoPassSP);
 }
@@ -155,8 +155,6 @@ void Scene::LightingPassRender(const uint& posTexRefID, const uint& normalsTexRe
 		lightingPassSP.Set1f(("spotlights[" + std::to_string(i) + "].cosOuterCutoff").c_str(), spotlight->cosOuterCutoff);
 	}
 
-	lightingPassSP.Use();
-	lightingPassSP.SetMat4fv("PV", &(projection * view)[0][0]);
 	mesh.SetModel(CreateModelMat(glm::vec3(0.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)));
 	mesh.Render(lightingPassSP, false);
 	lightingPassSP.ResetTexUnits();
@@ -165,7 +163,6 @@ void Scene::LightingPassRender(const uint& posTexRefID, const uint& normalsTexRe
 void Scene::RenderToDefaultFB(const uint& texRefID){
 	screenSP.Use();
 	screenSP.UseTex(texRefID, "texSampler");
-	screenSP.SetMat4fv("PV", &(projection * view)[0][0]);
 	mesh.SetModel(CreateModelMat(glm::vec3(0.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)));
 	mesh.Render(screenSP, false);
 	screenSP.ResetTexUnits();

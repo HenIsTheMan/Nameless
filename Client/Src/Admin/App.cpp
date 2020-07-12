@@ -38,12 +38,14 @@ bool App::Init(){
 
 	glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)FBO::GeoPass]);
 		for(Tex i = Tex::Pos; i <= Tex::AlbedoSpec; ++i){
+			int currTexRefID;
+			glGetIntegerv(GL_TEXTURE_BINDING_2D, &currTexRefID);
 			glBindTexture(GL_TEXTURE_2D, texRefIDs[(int)i]);
 				glTexImage2D(GL_TEXTURE_2D, 0, i == Tex::AlbedoSpec ? GL_RGBA : GL_RGBA16F, winWidth, winHeight, 0, GL_RGBA, i == Tex::AlbedoSpec ? GL_UNSIGNED_BYTE : GL_FLOAT, NULL);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + (int)i, GL_TEXTURE_2D, texRefIDs[(int)i], 0);
-			glBindTexture(GL_TEXTURE_2D, 0);
+			glBindTexture(GL_TEXTURE_2D, currTexRefID); //Bind previously bound tex
 		}
 
 		glBindRenderbuffer(GL_RENDERBUFFER, RBORefIDs[0]);
@@ -58,6 +60,8 @@ bool App::Init(){
 		}
 	glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)FBO::LightingPass]);
 		for(Tex i = Tex::Lit; i <= Tex::BrightLit; ++i){
+			int currTexRefID;
+			glGetIntegerv(GL_TEXTURE_BINDING_2D, &currTexRefID);
 			glBindTexture(GL_TEXTURE_2D, texRefIDs[(int)i]);
 				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, winWidth, winHeight, 0, GL_RGBA, GL_FLOAT, NULL);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -65,7 +69,7 @@ bool App::Init(){
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + int(i) - int(Tex::Lit), GL_TEXTURE_2D, texRefIDs[(int)i], 0);
-			glBindTexture(GL_TEXTURE_2D, 0);
+			glBindTexture(GL_TEXTURE_2D, currTexRefID); //Bind previously bound tex
 		}
 
 		if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE){
