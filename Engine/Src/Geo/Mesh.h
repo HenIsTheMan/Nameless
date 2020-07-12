@@ -26,7 +26,7 @@ public:
 	};
 
 	Mesh();
-	Mesh(const MeshType& myType, const int& myPrimitive, const std::initializer_list<std::tuple<cstr, TexType, uint>>& iL);
+	Mesh(const MeshType& myType, const int& myPrimitive, const std::initializer_list<std::tuple<str, TexType, uint>>& iL);
 
 	///Rule of 5 (prevents shallow copy)
 	Mesh(const Mesh& mesh);
@@ -35,8 +35,8 @@ public:
 	Mesh& operator=(Mesh&& mesh) noexcept;
 	virtual ~Mesh();
 
-	void AddTexMap(const std::tuple<cstr, TexType, uint>& texMap);
-	void RemoveTexMap(cstr const& texPath);
+	void AddTexMap(const std::tuple<str, TexType, uint>& texMap);
+	void RemoveTexMap(str const& texPath);
 	void BatchRender(const std::vector<BatchRenderParams>& params);
 	void Render(ShaderProg& SP, const glm::mat4& PV, const bool& useTexMaps = true);
 	void SetModel(const glm::mat4& model);
@@ -45,7 +45,7 @@ protected:
 	int primitive;
 	std::vector<Vertex>* vertices;
 	std::vector<uint>* indices;
-	std::vector<std::tuple<cstr, TexType, uint>> texMaps;
+	std::vector<std::tuple<str, TexType, uint>> texMaps;
 
 	uint batchVAO;
 	uint batchVBO;

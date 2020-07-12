@@ -7,7 +7,7 @@ bool InitAPI(GLFWwindow*& win);
 bool InitConsole();
 
 struct SetUpTexsParams final{
-    cstr texPath;
+    str texPath;
     bool flipTex;
     int texTarget;
     int texWrapParam;

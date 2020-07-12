@@ -103,7 +103,7 @@ void SetUpTex(const SetUpTexsParams& params, uint& texRefID){
     glGenTextures(1, &texRefID);
     glBindTexture(params.texTarget, texRefID); //Make tex referenced by 'texRefIDs[i]' the tex currently bound to the currently active tex unit so subsequent tex commands will config it
     int width, height, colourChannelsAmt;
-    unsigned char* data = stbi_load(params.texPath, &width, &height, &colourChannelsAmt, 0);
+    unsigned char* data = stbi_load(params.texPath.c_str(), &width, &height, &colourChannelsAmt, 0);
     if(data){
         GLenum format1 = colourChannelsAmt == 3 ? GL_RGB16F : GL_RGBA16F;
         GLenum format2 = colourChannelsAmt == 3 ? GL_RGB : GL_RGBA;
@@ -111,7 +111,7 @@ void SetUpTex(const SetUpTexsParams& params, uint& texRefID){
         glGenerateMipmap(params.texTarget); //Gen required mipmap lvls for currently bound tex
         stbi_image_free(data); //Free the img mem
     } else{
-        printf("Failed to load tex at \"%s\"\n", params.texPath);
+        printf("Failed to load tex at \"%s\"\n", params.texPath.c_str());
     }
     glTexParameteri(params.texTarget, GL_TEXTURE_WRAP_S, params.texWrapParam);
     glTexParameteri(params.texTarget, GL_TEXTURE_WRAP_T, params.texWrapParam);

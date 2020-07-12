@@ -17,7 +17,7 @@ Mesh::Mesh():
 {
 }
 
-Mesh::Mesh(const MeshType& myType, const int& myPrimitive, const std::initializer_list<std::tuple<cstr, TexType, uint>>& iL):
+Mesh::Mesh(const MeshType& myType, const int& myPrimitive, const std::initializer_list<std::tuple<str, TexType, uint>>& iL):
 	type(myType),
 	primitive(myPrimitive),
 	vertices(nullptr),
@@ -35,30 +35,70 @@ Mesh::Mesh(const MeshType& myType, const int& myPrimitive, const std::initialize
 
 Mesh::Mesh(const Mesh& mesh): Mesh(){
 	if(this != &mesh){
+		type = mesh.type;
+		primitive = mesh.primitive;
 		vertices = new std::vector<Vertex>(mesh.vertices->begin(), mesh.vertices->end());
 		indices = new std::vector<uint>{mesh.indices->begin(), mesh.indices->end()};
+		texMaps = mesh.texMaps;
+		batchVAO = mesh.batchVAO;
+		batchVBO = mesh.batchVBO;
+		batchEBO = mesh.batchEBO;
+		VAO = mesh.VAO;
+		VBO = mesh.VBO;
+		EBO = mesh.EBO;
+		model = mesh.model;
 	}
 }
 
 Mesh::Mesh(Mesh&& mesh) noexcept: Mesh(){
 	if(this != &mesh){
+		type = mesh.type;
+		primitive = mesh.primitive;
 		vertices = new std::vector<Vertex>(mesh.vertices->begin(), mesh.vertices->end());
 		indices = new std::vector<uint>{mesh.indices->begin(), mesh.indices->end()};
+		texMaps = mesh.texMaps;
+		batchVAO = mesh.batchVAO;
+		batchVBO = mesh.batchVBO;
+		batchEBO = mesh.batchEBO;
+		VAO = mesh.VAO;
+		VBO = mesh.VBO;
+		EBO = mesh.EBO;
+		model = mesh.model;
 	}
 }
 
 Mesh& Mesh::operator=(const Mesh& mesh){
 	if(this != &mesh){
+		type = mesh.type;
+		primitive = mesh.primitive;
 		vertices = new std::vector<Vertex>(mesh.vertices->begin(), mesh.vertices->end());
 		indices = new std::vector<uint>{mesh.indices->begin(), mesh.indices->end()};
+		texMaps = mesh.texMaps;
+		batchVAO = mesh.batchVAO;
+		batchVBO = mesh.batchVBO;
+		batchEBO = mesh.batchEBO;
+		VAO = mesh.VAO;
+		VBO = mesh.VBO;
+		EBO = mesh.EBO;
+		model = mesh.model;
 	}
 	return *this;
 }
 
 Mesh& Mesh::operator=(Mesh&& mesh) noexcept{
 	if(this != &mesh){
+		type = mesh.type;
+		primitive = mesh.primitive;
 		vertices = new std::vector<Vertex>(mesh.vertices->begin(), mesh.vertices->end());
 		indices = new std::vector<uint>{mesh.indices->begin(), mesh.indices->end()};
+		texMaps = mesh.texMaps;
+		batchVAO = mesh.batchVAO;
+		batchVBO = mesh.batchVBO;
+		batchEBO = mesh.batchEBO;
+		VAO = mesh.VAO;
+		VBO = mesh.VBO;
+		EBO = mesh.EBO;
+		model = mesh.model;
 	}
 	return *this;
 }
@@ -72,7 +112,7 @@ Mesh::~Mesh(){
 		delete indices;
 		indices = nullptr;
 	}
-	for(const std::tuple<cstr, TexType, uint>& texMap: texMaps){
+	for(const std::tuple<str, TexType, uint>& texMap: texMaps){
 		glDeleteTextures(1, &std::get<uint>(texMap));
 	}
 	if(batchVAO){
@@ -95,7 +135,7 @@ Mesh::~Mesh(){
 	}
 }
 
-void Mesh::BatchRender(const std::vector<BatchRenderParams>& paramsVec){
+void Mesh::BatchRender(const std::vector<BatchRenderParams>& paramsVec){ //Old and not working??
 	if(primitive < 0){
 		puts("Invalid primitive!\n");
 		return;
@@ -177,40 +217,45 @@ void Mesh::Render(ShaderProg& SP, const glm::mat4& PV, const bool& useTexMaps){
 	SP.SetMat4fv("model", &(model)[0][0]);
 	if(useTexMaps){
 		SP.SetMat4fv("PV", &(PV)[0][0]);
+		SP.Set1i("useDiffuseMap", 0);
+		SP.Set1i("useSpecMap", 0);
+		SP.Set1i("useEmissionMap", 0);
+		SP.Set1i("useReflectionMap", 0);
+		SP.Set1i("useBumpMap", 0);
 
-		const size_t size = texMaps.size();
-		for(size_t i = 0; i < size; ++i){
-			if(!std::get<uint>(texMaps[i])){
+		short diffuseCount = 0;
+		for(std::tuple<str, TexType, uint>& texMap: texMaps){
+			if(!std::get<uint>(texMap)){
 				SetUpTex({
-					std::get<cstr>(texMaps[i]),
-					true,
+					std::get<str>(texMap),
+					type != MeshType::None,
 					GL_TEXTURE_2D,
 					GL_REPEAT,
 					GL_LINEAR_MIPMAP_LINEAR,
 					GL_LINEAR,
-				}, std::get<uint>(texMaps[i]));
+				}, std::get<uint>(texMap));
 			}
 
-			switch(std::get<TexType>(texMaps[i])){
+			switch(std::get<TexType>(texMap)){
 				case TexType::Diffuse:
 					SP.Set1i("useDiffuseMap", 1);
-					SP.UseTex(std::get<uint>(texMaps[i]), ("diffuseMaps[" + std::to_string(i) + ']').c_str());
+					SP.UseTex(std::get<uint>(texMap), ("diffuseMaps[" + std::to_string(diffuseCount++) + ']').c_str());
 					break;
 				case TexType::Spec:
 					SP.Set1i("useSpecMap", 1);
-					SP.UseTex(std::get<uint>(texMaps[i]), "specMap");
+					SP.UseTex(std::get<uint>(texMap), "specMap");
 					break;
 				case TexType::Emission:
 					SP.Set1i("useEmissionMap", 1);
-					SP.UseTex(std::get<uint>(texMaps[i]), "emissionMap");
+					SP.UseTex(std::get<uint>(texMap), "emissionMap");
 					break;
 				case TexType::Reflection:
 					SP.Set1i("useReflectionMap", 1);
-					SP.UseTex(std::get<uint>(texMaps[i]), "reflectionMap");
+					SP.UseTex(std::get<uint>(texMap), "reflectionMap");
 					break;
 				case TexType::Bump:
 					SP.Set1i("useBumpMap", 1);
-					SP.UseTex(std::get<uint>(texMaps[i]), "bumpMap");
+					SP.UseTex(std::get<uint>(texMap), "bumpMap");
 					break;
 			}
 		}
@@ -260,16 +305,17 @@ void Mesh::Render(ShaderProg& SP, const glm::mat4& PV, const bool& useTexMaps){
 	}
 }
 
-void Mesh::AddTexMap(const std::tuple<cstr, TexType, uint>& texMap){
+void Mesh::AddTexMap(const std::tuple<str, TexType, uint>& texMap){
 	texMaps.emplace_back(texMap);
 }
 
-void Mesh::RemoveTexMap(cstr const& texPath){
+void Mesh::RemoveTexMap(str const& texPath){
 	const size_t size = texMaps.size();
 	for(size_t i = 0; i < size; ++i){
-		if(std::get<cstr>(texMaps[i]) == texPath){
+		if(std::get<str>(texMaps[i]) == texPath){
 			glDeleteTextures(1, &std::get<uint>(texMaps[i]));
 			texMaps.erase(texMaps.begin() + i);
+			break; //Prevents vec subscript from going out of range due to size
 		}
 	}
 }

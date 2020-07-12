@@ -5,7 +5,6 @@ Model::Model(cstr const& fPath, const std::initializer_list<aiTextureType>& iL):
     modelPath(fPath),
     meshes({}),
     texTypes(iL),
-    allTexMaps(nullptr),
     allVertices({}),
     allIndices({}),
     VAO(0),
@@ -15,10 +14,6 @@ Model::Model(cstr const& fPath, const std::initializer_list<aiTextureType>& iL):
 }
 
 Model::~Model(){
-    if(allTexMaps){
-        delete[] allTexMaps;
-        allTexMaps = nullptr;
-    }
     if(VAO){
         glDeleteVertexArrays(1, &VAO);
     }
@@ -43,14 +38,14 @@ void Model::LoadModel() const{ //Load model into a DS of Assimp called a scene o
 void Model::ProcessNode(const aiScene* const& scene, const aiNode* const& node) const{ //Process all of the scene obj's nodes recursively to translate the loaded data to an arr of Mesh objs //For parent-child relation between meshes
     for(uint i = 0; i < node->mNumMeshes; ++i){ //Process all the nodes' meshes (if any)
         const aiMesh* const mesh = scene->mMeshes[node->mMeshes[i]]; //Check a node's mesh indices and retrieve the corresponding mesh by indexing the scene's mMeshes array
-        meshes.emplace_back(ProcessMesh(scene, mesh, i)); //Store mesh obj
+        meshes.emplace_back(ProcessMesh(scene, mesh)); //Store mesh obj
     }
     for(uint i = 0; i < node->mNumChildren; ++i){ //node->mNumChildren is base case/exit condition/terminating condition
         ProcessNode(scene, node->mChildren[i]); //Each node contains a set of mesh indices where each points to a specific mesh located in the scene obj
     }
 }
 
-Mesh Model::ProcessMesh(const aiScene* const& scene, const aiMesh* const& meshObj, const uint& index) const{
+Mesh Model::ProcessMesh(const aiScene* const& scene, const aiMesh* const& meshObj) const{
     Mesh mesh;
     mesh.vertices = new std::vector<Vertex>();
     mesh.indices = new std::vector<uint>();
@@ -75,31 +70,35 @@ Mesh Model::ProcessMesh(const aiScene* const& scene, const aiMesh* const& meshOb
             mesh.indices->emplace_back(meshObj->mFaces[i].mIndices[j]);
         }
     }
-    if(meshObj->mMaterialIndex >= 0){ //Query the mesh's mtl index to check if the mesh contains a mtl
-        LoadMtlTexs(scene->mMaterials[meshObj->mMaterialIndex], index); //scene->mMaterials[meshObj->mMaterialIndex] is mtlObj
+    if(meshObj->mMaterialIndex >= 0){ //LoadMtlTexs //Query the mesh's mtl index to check if the mesh contains a mtl
+        for(size_t i = 0; i < texTypes.size(); ++i){
+            for(uint j = 0; j < scene->mMaterials[meshObj->mMaterialIndex]->GetTextureCount(texTypes[i]); ++j){
+                aiString aiStr;
+                scene->mMaterials[meshObj->mMaterialIndex]->GetTexture(texTypes[i], j, &aiStr);
+                switch(texTypes[i]){
+                    case aiTextureType_DIFFUSE:
+                        mesh.AddTexMap({"Imgs/" + str{aiStr.C_Str()}, Mesh::TexType::Diffuse, 0});
+                        break;
+                    case aiTextureType_SPECULAR:
+                        mesh.AddTexMap({"Imgs/" + str{aiStr.C_Str()}, Mesh::TexType::Spec, 0});
+                        break;
+                    case aiTextureType_EMISSIVE:
+                        mesh.AddTexMap({"Imgs/" + str{aiStr.C_Str()}, Mesh::TexType::Emission, 0});
+                        break;
+                    case aiTextureType_AMBIENT:
+                        mesh.AddTexMap({"Imgs/" + str{aiStr.C_Str()}, Mesh::TexType::Reflection, 0});
+                        break;
+                    case aiTextureType_HEIGHT:
+                        mesh.AddTexMap({"Imgs/" + str{aiStr.C_Str()}, Mesh::TexType::Bump, 0});
+                        break;
+                }
+            }
+        }
     }
     return mesh;
 }
 
-void Model::LoadMtlTexs(const aiMaterial* const& mtl, const uint& index) const{ //Helper func to retrieve texs from mtl
-    for(size_t i = 0; i < texTypes.size(); ++i){
-        for(uint j = 0; j < mtl->GetTextureCount(texTypes[i]); ++j){
-            aiString aiStr;
-            mtl->GetTexture(texTypes[i], j, &aiStr);
-            allTexMaps[index].push_back({0, texTypes[i]});
-            SetUpTex({
-                ("Client/Imgs/" + str(aiStr.C_Str())).c_str(),
-                false, //No need to flip tex as aiProcess_FlipUVs flag is set
-                GL_TEXTURE_2D,
-                GL_REPEAT,
-                GL_LINEAR_MIPMAP_LINEAR,
-                GL_LINEAR,
-            }, allTexMaps[index][i + j].first);
-        }
-    }
-}
-
-void Model::BatchRender(const int& primitive){
+void Model::BatchRender(const int& primitive){ //Old and not working??
     if(primitive < 0){
         puts("Invalid primitive!\n");
         return;
@@ -162,7 +161,7 @@ void Model::BatchRender(const int& primitive){
     glBindVertexArray(0);
 }
 
-void Model::Render(const int& primitive){
+void Model::Render(ShaderProg& SP, const glm::mat4& PV, const int& primitive){
     if(primitive < 0){
         puts("Invalid primitive!\n");
         return;
@@ -170,8 +169,9 @@ void Model::Render(const int& primitive){
     if(!meshes.size()){
         LoadModel();
     }
-    //const size_t size = meshes.size();
-    //for(size_t i = 0; i < size; ++i){
-    //    meshes[i].Render();
-    //}
+    const size_t size = meshes.size();
+    for(size_t i = 0; i < size; ++i){
+        meshes[i].primitive = primitive;
+        meshes[i].Render(SP, PV);
+    }
 }

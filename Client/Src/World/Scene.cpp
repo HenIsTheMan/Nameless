@@ -17,10 +17,10 @@ Scene::Scene():
 	}),
 	model("ObjsAndMtls/nanosuit.obj", {
 		aiTextureType_DIFFUSE,
-		//aiTextureType_SPECULAR,
-		//aiTextureType_EMISSIVE,
+		aiTextureType_SPECULAR,
+		aiTextureType_EMISSIVE,
 		//aiTextureType_HEIGHT,
-		//aiTextureType_AMBIENT,
+		aiTextureType_AMBIENT,
 	}),
 	geoPassSP{"Shaders/GeoPass.vs", "Shaders/GeoPass.fs"},
 	lightingPassSP{"Shaders/Quad.vs", "Shaders/LightingPass.fs"},
@@ -100,17 +100,12 @@ void Scene::Update(){
 }
 
 void Scene::GeoPassRender(){
+	//mesh.RemoveTexMap("Imgs/BoxAlbedo.png");
+	//mesh.AddTexMap({"Imgs/BoxAlbedo.png", Mesh::TexType::Diffuse, 0});
+	//mesh.Render(geoPassSP, projection * view);
 	//mesh.BatchRender(params);
 
-	mesh.RemoveTexMap("Imgs/BoxEmission.png");
-	mesh.AddTexMap({"Imgs/BoxEmission.png", Mesh::TexType::Emission, 0});
-	mesh.Render(geoPassSP, projection * view);
-
-	//glm::mat4 modelMat = glm::mat4(1.f);
-	//geoPassSP.SetMat4fv("model", &modelMat[0][0]);
-	//glm::mat4 PV = projection * view;
-	//geoPassSP.SetMat4fv("PV", &(PV)[0][0]);
-	//model.Render(GL_TRIANGLES);
+	model.Render(geoPassSP, projection * view, GL_TRIANGLES);
 }
 
 void Scene::LightingPassRender(const uint& posTexRefID, const uint& normalsTexRefID, const uint& albedoSpecTexRefID){
