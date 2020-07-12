@@ -6,7 +6,7 @@ Mesh::Mesh():
 	primitive(GL_TRIANGLES),
 	vertices(nullptr),
 	indices(nullptr),
-	texMaps{},
+	texMaps({}),
 	batchVAO(0),
 	batchVBO(0),
 	batchEBO(0),
@@ -72,6 +72,9 @@ Mesh::~Mesh(){
 		delete indices;
 		indices = nullptr;
 	}
+	for(const std::tuple<cstr, TexType, uint>& texMap: texMaps){
+		glDeleteTextures(1, &std::get<uint>(texMap));
+	}
 	if(batchVAO){
 		glDeleteVertexArrays(1, &batchVAO);
 	}
@@ -113,7 +116,7 @@ void Mesh::BatchRender(const std::vector<BatchRenderParams>& paramsVec){
 			allVertices[i * verticesSize + j] = (*vertices)[j];
 			allVertices[i * verticesSize + j].pos = glm::vec3(paramsVec[i].model * glm::vec4((*vertices)[j].pos, 1.f));
 			allVertices[i * verticesSize + j].colour = paramsVec[i].colour;
-			allVertices[i * verticesSize + j].texIndex = paramsVec[i].texIndex;
+			allVertices[i * verticesSize + j].diffuseTexIndex = paramsVec[i].diffuseTexIndex;
 		}
 	}
 	if(!batchVAO){
@@ -136,7 +139,7 @@ void Mesh::BatchRender(const std::vector<BatchRenderParams>& paramsVec){
 		glEnableVertexAttribArray(4);
 		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, tangent));
 		glEnableVertexAttribArray(5);
-		glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, texIndex));
+		glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, diffuseTexIndex));
 	} else{
 		glBindBuffer(GL_ARRAY_BUFFER, batchVBO);
 	}
@@ -238,7 +241,7 @@ void Mesh::Render(ShaderProg& SP, const glm::mat4& PV, const bool& useTexMaps){
 			glEnableVertexAttribArray(4);
 			glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, tangent));
 			glEnableVertexAttribArray(5);
-			glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, texIndex));
+			glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, diffuseTexIndex));
 
 			if(indices){
 				glGenBuffers(1, &EBO);

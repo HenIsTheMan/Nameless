@@ -12,9 +12,9 @@ GLFWwindow* App::win = nullptr;
 App::App():
 	lastFrameTime(0.f),
 	scene(),
-	FBORefIDs{},
-	texRefIDs{},
-	RBORefIDs{}
+	FBORefIDs(),
+	texRefIDs(),
+	RBORefIDs()
 {
 	if(!InitAPI(win)){
 		puts("Failed to init API\n");

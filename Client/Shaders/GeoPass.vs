@@ -4,7 +4,7 @@ layout (location = 1) in vec4 colour;
 layout (location = 2) in vec2 texCoords;
 layout (location = 3) in vec3 normal;
 layout (location = 4) in vec3 tangent;
-layout (location = 5) in int texIndex;
+layout (location = 5) in int diffuseTexIndex;
 
 out myInterface{
 	vec4 worldSpacePos;
@@ -12,7 +12,7 @@ out myInterface{
 	vec2 texCoords;
 	vec3 normal;
 	vec3 tangent;
-	flat int texIndex;
+	flat int diffuseTexIndex;
 } vsOut;
 
 uniform mat4 model;
@@ -24,6 +24,6 @@ void main(){
 	vsOut.texCoords = texCoords;
 	vsOut.normal = normal;
 	vsOut.tangent = tangent;
-	vsOut.texIndex = texIndex;
+	vsOut.diffuseTexIndex = diffuseTexIndex;
 	gl_Position = PV * vsOut.worldSpacePos;
 }

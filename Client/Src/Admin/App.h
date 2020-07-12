@@ -2,6 +2,12 @@
 #include "../World/Scene.h"
 
 class App final: public Singleton<App>{
+	explicit App(const App&) = delete;
+	explicit App(App&&) noexcept = delete;
+	App& operator=(const App&) = delete;
+	App& operator=(App&&) noexcept = delete;
+
+	friend Singleton<App>;
 public:
 	enum struct FBO{
 		GeoPass = 0,
@@ -23,12 +29,6 @@ public:
 	void Render();
 	void PostRender() const;
 private:
-	explicit App(const App&) = delete;
-	explicit App(App&&) noexcept = delete;
-	App& operator=(const App&) = delete;
-	App& operator=(App&&) noexcept = delete;
-
-	friend Singleton<App>;
 	App();
 	bool InitOptions() const;
 	float lastFrameTime;

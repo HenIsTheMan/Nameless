@@ -226,7 +226,7 @@ private:
     void IPrintStructured(const BinTreeNode<T>* const& node, const BinTree<T>::TraversalType& type, const T& amtOfSpaces, const T& spaceWidth){
         if(node){
             IPrintStructured(node->right, type, amtOfSpaces + spaceWidth, spaceWidth);
-            for(short i = 0; i < amtOfSpaces; ++i){
+            for(int i = 0; i < amtOfSpaces; ++i){
                 std::cout << " ";
             }
             std::cout << node->data << std::endl;
@@ -260,7 +260,7 @@ protected:
     int maxSize;
     T* container;
 
-    BinHeap(): BinHeap(999){} //Ctor Delegation
+    BinHeap(): BinHeap(999){}
     BinHeap(const int& myMaxSize):
         size(0),
         maxSize(myMaxSize),
@@ -307,7 +307,7 @@ private:
     void IPrintStructured(const int& index, const BinTree<T>::TraversalType& type, const T& amtOfSpaces, const T& spaceWidth){
         if(index >= 0 && index < this->size){
             IPrintStructured(GetRightIndex(index), type, amtOfSpaces + spaceWidth, spaceWidth);
-            for(short i = 0; i < amtOfSpaces; ++i){
+            for(int i = 0; i < amtOfSpaces; ++i){
                 std::cout << " ";
             }
             std::cout << this->container[index] << std::endl;

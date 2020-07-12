@@ -3,11 +3,11 @@
 Model::Model(cstr const& fPath, const std::initializer_list<aiTextureType>& iL):
     storeIndices(true),
     modelPath(fPath),
-    meshes{},
+    meshes({}),
     texTypes(iL),
     allTexMaps(nullptr),
-    allVertices{},
-    allIndices{},
+    allVertices({}),
+    allIndices({}),
     VAO(0),
     VBO(0),
     EBO(0)
@@ -63,7 +63,7 @@ Mesh Model::ProcessMesh(const aiScene* const& scene, const aiMesh* const& meshOb
         const aiVector3D* const& tangents = meshObj->mTangents;
         mesh.vertices->push_back({
             glm::vec3(vertices.x, vertices.y, vertices.z),
-            colours ? glm::vec4(colours[i].r, colours[i].g, colours[i].b, colours[i].a) : glm::vec4(.5f),
+            colours ? glm::vec4(colours[i].r, colours[i].g, colours[i].b, colours[i].a) : glm::vec4(.7f, .4f, .1f, 1.f),
             texCoords ? glm::vec2(texCoords[i].x, texCoords[i].y) : glm::vec2(0.f),
             normals ? glm::vec3(normals[i].x, normals[i].y, normals[i].z) : glm::vec3(0.f),
             tangents ? glm::vec3(tangents[i].x, tangents[i].y, tangents[i].z) : glm::vec3(0.f),
@@ -134,7 +134,7 @@ void Model::BatchRender(const int& primitive){
         glEnableVertexAttribArray(4);
         glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, tangent));
         glEnableVertexAttribArray(5);
-        glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, texIndex));
+        glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, diffuseTexIndex));
     } else{
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
     }

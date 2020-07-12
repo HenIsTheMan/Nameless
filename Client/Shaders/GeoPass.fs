@@ -9,7 +9,7 @@ in myInterface{
 	vec2 texCoords;
 	vec3 normal;
 	vec3 tangent;
-	flat int texIndex;
+	flat int diffuseTexIndex;
 } fsIn;
 
 uniform sampler2D diffuseMaps[28];
@@ -26,6 +26,6 @@ uniform bool useBumpMap;
 void main(){
     pos = fsIn.worldSpacePos.xyz;
     normal = normalize(fsIn.normal);
-	albedoSpec = fsIn.texIndex < 0 ? vec4(fsIn.colour) : vec4(texture(diffuseMaps[fsIn.texIndex], fsIn.texCoords).rgb
+	albedoSpec = fsIn.diffuseTexIndex < 0 ? vec4(fsIn.colour) : vec4(texture(diffuseMaps[fsIn.diffuseTexIndex], fsIn.texCoords).rgb
 	+ (useEmissionMap ? texture(emissionMap, fsIn.texCoords).rgb : vec3(0.f)), useSpecMap ? texture(specMap, fsIn.texCoords).r : 0.f);
 }

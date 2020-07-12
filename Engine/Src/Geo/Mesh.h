@@ -22,7 +22,7 @@ public:
 	struct BatchRenderParams final{
 		glm::mat4 model;
 		glm::vec4 colour;
-		int texIndex;
+		int diffuseTexIndex;
 	};
 
 	Mesh();
