@@ -55,8 +55,14 @@
     <None Include="Shaders\Quad.vs">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Shaders\Normals.vs" />
-    <None Include="Shaders\Normals.fs" />
-    <None Include="Shaders\Normals.gs" />
+    <None Include="Shaders\Normals.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\Normals.gs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\Normals.vs">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -161,7 +161,7 @@ void Model::BatchRender(const int& primitive){ //Old and not working??
     glBindVertexArray(0);
 }
 
-void Model::Render(ShaderProg& SP, const glm::mat4& PV, const int& primitive){
+void Model::Render(ShaderProg& SP, const int& primitive){
     if(primitive < 0){
         puts("Invalid primitive!\n");
         return;
@@ -172,6 +172,6 @@ void Model::Render(ShaderProg& SP, const glm::mat4& PV, const int& primitive){
     const size_t size = meshes.size();
     for(size_t i = 0; i < size; ++i){
         meshes[i].primitive = primitive;
-        meshes[i].Render(SP, PV);
+        meshes[i].Render(SP);
     }
 }

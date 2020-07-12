@@ -38,7 +38,7 @@ public:
 	void AddTexMap(const std::tuple<str, TexType, uint>& texMap);
 	void RemoveTexMap(str const& texPath);
 	void BatchRender(const std::vector<BatchRenderParams>& params);
-	void Render(ShaderProg& SP, const glm::mat4& PV, const bool& useTexMaps = true);
+	void Render(ShaderProg& SP, const bool& useTexMaps = true);
 	void SetModel(const glm::mat4& model);
 protected:
 	MeshType type;

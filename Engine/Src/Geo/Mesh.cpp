@@ -207,7 +207,7 @@ void Mesh::BatchRender(const std::vector<BatchRenderParams>& paramsVec){ //Old a
 	glBindVertexArray(0);
 }
 
-void Mesh::Render(ShaderProg& SP, const glm::mat4& PV, const bool& useTexMaps){
+void Mesh::Render(ShaderProg& SP, const bool& useTexMaps){
 	if(primitive < 0){
 		puts("Invalid primitive!\n");
 		return;
@@ -216,7 +216,6 @@ void Mesh::Render(ShaderProg& SP, const glm::mat4& PV, const bool& useTexMaps){
 	SP.Use();
 	SP.SetMat4fv("model", &(model)[0][0]);
 	if(useTexMaps){
-		SP.SetMat4fv("PV", &(PV)[0][0]);
 		SP.Set1i("useDiffuseMap", 0);
 		SP.Set1i("useSpecMap", 0);
 		SP.Set1i("useEmissionMap", 0);

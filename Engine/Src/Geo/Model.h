@@ -7,7 +7,7 @@ public:
     Model(cstr const& fPath, const std::initializer_list<aiTextureType>& iL);
     ~Model();
     void BatchRender(const int& primitive);
-    void Render(ShaderProg& SP, const glm::mat4& PV, const int& primitive);
+    void Render(ShaderProg& SP, const int& primitive = GL_TRIANGLES);
 private:
     bool storeIndices;
     cstr modelPath;

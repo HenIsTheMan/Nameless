@@ -24,7 +24,7 @@ Scene::Scene():
 	}),
 	geoPassSP{"Shaders/GeoPass.vs", "Shaders/GeoPass.fs"},
 	lightingPassSP{"Shaders/Quad.vs", "Shaders/LightingPass.fs"},
-	normalsSP{"Shaders/Normals.vs", "Shaders/Normals.fs", "Shaders/Normals.gs"},
+	normalsSP{"Shaders/Normals.vs", "Shaders/Normals.fs", "Shaders/Normals.gs"}, //??
 	screenSP{"Shaders/Quad.vs", "Shaders/Screen.fs"},
 	view(glm::mat4(1.f)),
 	projection(glm::mat4(1.f)),
@@ -40,7 +40,6 @@ Scene::Scene():
 		music->setVolume(0);
 	}
 
-	mesh.SetModel(CreateModelMat(glm::vec3(0.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)));
 	spotlights.emplace_back(CreateLight(LightType::Spot));
 }
 
@@ -103,10 +102,13 @@ void Scene::Update(){
 void Scene::GeoPassRender(){
 	//mesh.RemoveTexMap("Imgs/BoxAlbedo.png");
 	//mesh.AddTexMap({"Imgs/BoxAlbedo.png", Mesh::TexType::Diffuse, 0});
-	//mesh.Render(geoPassSP, projection * view);
 	//mesh.BatchRender(params);
 
-	model.Render(geoPassSP, projection * view, GL_TRIANGLES);
+	geoPassSP.Use();
+	geoPassSP.SetMat4fv("PV", &(projection * view)[0][0]);
+	mesh.SetModel(CreateModelMat(glm::vec3(5.f, 0.f, 0.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)));
+	mesh.Render(geoPassSP);
+	model.Render(geoPassSP);
 }
 
 void Scene::LightingPassRender(const uint& posTexRefID, const uint& normalsTexRefID, const uint& albedoSpecTexRefID){
@@ -153,13 +155,18 @@ void Scene::LightingPassRender(const uint& posTexRefID, const uint& normalsTexRe
 		lightingPassSP.Set1f(("spotlights[" + std::to_string(i) + "].cosOuterCutoff").c_str(), spotlight->cosOuterCutoff);
 	}
 
-	mesh.Render(lightingPassSP, projection * view, false);
+	lightingPassSP.Use();
+	lightingPassSP.SetMat4fv("PV", &(projection * view)[0][0]);
+	mesh.SetModel(CreateModelMat(glm::vec3(0.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)));
+	mesh.Render(lightingPassSP, false);
 	lightingPassSP.ResetTexUnits();
 }
 
 void Scene::RenderToDefaultFB(const uint& texRefID){
 	screenSP.Use();
 	screenSP.UseTex(texRefID, "texSampler");
-	mesh.Render(screenSP, projection * view, false);
+	screenSP.SetMat4fv("PV", &(projection * view)[0][0]);
+	mesh.SetModel(CreateModelMat(glm::vec3(0.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)));
+	mesh.Render(screenSP, false);
 	screenSP.ResetTexUnits();
 }
