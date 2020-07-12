@@ -193,6 +193,7 @@ void Mesh::Render(ShaderProg& SP, const glm::mat4& PV, const bool& useTexMaps){
 
 			switch(std::get<TexType>(texMaps[i])){
 				case TexType::Diffuse:
+					SP.Set1i("useDiffuseMap", 1);
 					SP.UseTex(std::get<uint>(texMaps[i]), ("diffuseMaps[" + std::to_string(i) + ']').c_str());
 					break;
 				case TexType::Spec:
@@ -261,6 +262,16 @@ void Mesh::Render(ShaderProg& SP, const glm::mat4& PV, const bool& useTexMaps){
 
 void Mesh::AddTexMap(const std::tuple<cstr, TexType, uint>& texMap){
 	texMaps.emplace_back(texMap);
+}
+
+void Mesh::RemoveTexMap(cstr const& texPath){
+	const size_t size = texMaps.size();
+	for(size_t i = 0; i < size; ++i){
+		if(std::get<cstr>(texMaps[i]) == texPath){
+			glDeleteTextures(1, &std::get<uint>(texMaps[i]));
+			texMaps.erase(texMaps.begin() + i);
+		}
+	}
 }
 
 void Mesh::SetModel(const glm::mat4& model){

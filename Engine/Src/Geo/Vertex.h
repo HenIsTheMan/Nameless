@@ -7,5 +7,5 @@ struct Vertex final{
     glm::vec2 texCoords;
     glm::vec3 normal;
     glm::vec3 tangent;
-    int diffuseTexIndex = -1;
+    int diffuseTexIndex = 0;
 };

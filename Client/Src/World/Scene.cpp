@@ -102,6 +102,8 @@ void Scene::Update(){
 void Scene::GeoPassRender(){
 	//mesh.BatchRender(params);
 
+	mesh.RemoveTexMap("Imgs/BoxEmission.png");
+	mesh.AddTexMap({"Imgs/BoxEmission.png", Mesh::TexType::Emission, 0});
 	mesh.Render(geoPassSP, projection * view);
 
 	//glm::mat4 modelMat = glm::mat4(1.f);
