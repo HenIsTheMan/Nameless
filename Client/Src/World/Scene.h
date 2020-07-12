@@ -19,6 +19,7 @@ private:
 
 	ShaderProg geoPassSP;
 	ShaderProg lightingPassSP;
+	ShaderProg normalsSP;
 	ShaderProg screenSP;
 
 	std::vector<Light*> ptLights;

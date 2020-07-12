@@ -18,12 +18,13 @@ Scene::Scene():
 	model("ObjsAndMtls/nanosuit.obj", {
 		aiTextureType_DIFFUSE,
 		aiTextureType_SPECULAR,
-		aiTextureType_EMISSIVE,
+		//aiTextureType_EMISSIVE,
+		//aiTextureType_AMBIENT,
 		//aiTextureType_HEIGHT,
-		aiTextureType_AMBIENT,
 	}),
 	geoPassSP{"Shaders/GeoPass.vs", "Shaders/GeoPass.fs"},
 	lightingPassSP{"Shaders/Quad.vs", "Shaders/LightingPass.fs"},
+	normalsSP{"Shaders/Normals.vs", "Shaders/Normals.fs", "Shaders/Normals.gs"},
 	screenSP{"Shaders/Quad.vs", "Shaders/Screen.fs"},
 	view(glm::mat4(1.f)),
 	projection(glm::mat4(1.f)),
@@ -89,7 +90,7 @@ void Scene::Update(){
 	soundEngine->setListenerPosition(vec3df(camPos.x, camPos.y, camPos.z), vec3df(camFront.x, camFront.y, camFront.z));
 	static_cast<Spotlight*>(spotlights[0])->pos = camPos;
 	static_cast<Spotlight*>(spotlights[0])->dir = camFront;
-	//static_cast<Spotlight*>(spotlights[0])->diffuse = glm::vec3(100.f, 100.f, 100.f);
+	static_cast<Spotlight*>(spotlights[0])->diffuse = glm::vec3(100.f, 100.f, 100.f);
 
 	GLint polyMode;
 	glGetIntegerv(GL_POLYGON_MODE, &polyMode);

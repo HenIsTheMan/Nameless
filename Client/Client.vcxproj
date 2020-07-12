@@ -194,6 +194,9 @@
     <None Include="Shaders\GeoPass.fs" />
     <None Include="Shaders\GeoPass.vs" />
     <None Include="Shaders\LightingPass.fs" />
+    <None Include="Shaders\Normals.fs" />
+    <None Include="Shaders\Normals.gs" />
+    <None Include="Shaders\Normals.vs" />
     <None Include="Shaders\Quad.vs" />
     <None Include="Shaders\Screen.fs" />
   </ItemGroup>
