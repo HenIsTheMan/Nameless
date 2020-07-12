@@ -1,6 +1,5 @@
 #pragma once
 #include "../Core.h"
-#include "../Vendor/stb_image.h" //??
 
 bool Key(const char& key);
 bool InitAPI(GLFWwindow*& win);

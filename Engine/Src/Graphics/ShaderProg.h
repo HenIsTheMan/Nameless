@@ -17,7 +17,7 @@ public:
 	void Set1i(cstr const& uniName, const int& val);
 	void SetMat4fv(cstr const& uniName, const float* const& floatPtr, const bool& transpose = false);
 private:
-	static std::vector<int> texTargets; //For every tex unit
+	static std::vector<int> texTargets; //For every active tex unit
 	cstr shaderPaths[3];
 	static ShaderProg* currSP;
 	std::unordered_map<str, int> uniLocationCache;

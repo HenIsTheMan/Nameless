@@ -1,4 +1,5 @@
 #include "GlobalFuncs.h"
+#include "../Vendor/stb_image.h"
 
 extern bool firstCall;
 extern float leftRightMB;
@@ -27,15 +28,6 @@ bool InitAPI(GLFWwindow*& win){
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); //For Mac OS X
     #endif
 
-    //RECT rect;
-    //if(GetWindowRect(hwnd, &rect)){
-    //    winWidth = rect.right - rect.left;
-    //    winHeight = rect.bottom - rect.top;
-    //} else{
-    //    puts("Failed to set winWidth and winHeight\n");
-    //}
-    //HWND hwnd = ::GetActiveWindow();
-    //ShowWindow(hwnd, SW_SHOWMAXIMIZED);
     const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
     SetWindowPos(GetConsoleWindow(), 0,
         int((GetSystemMetrics(SM_CXFULLSCREEN) - float(mode->width - GetSystemMetrics(SM_CXFULLSCREEN)) / 2.f) * 5.f / 6.f),
