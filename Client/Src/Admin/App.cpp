@@ -41,7 +41,7 @@ bool App::Init(){
 			int currTexRefID;
 			glGetIntegerv(GL_TEXTURE_BINDING_2D, &currTexRefID);
 			glBindTexture(GL_TEXTURE_2D, texRefIDs[(int)i]);
-				glTexImage2D(GL_TEXTURE_2D, 0, i == Tex::AlbedoSpec ? GL_RGBA : GL_RGBA16F, winWidth, winHeight, 0, GL_RGBA, i == Tex::AlbedoSpec ? GL_UNSIGNED_BYTE : GL_FLOAT, NULL);
+				glTexImage2D(GL_TEXTURE_2D, 0, i == Tex::AlbedoSpec ? GL_RGBA : GL_RGBA16F, 2048, 2048, 0, GL_RGBA, i == Tex::AlbedoSpec ? GL_UNSIGNED_BYTE : GL_FLOAT, NULL);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + (int)i, GL_TEXTURE_2D, texRefIDs[(int)i], 0);
@@ -49,7 +49,7 @@ bool App::Init(){
 		}
 
 		glBindRenderbuffer(GL_RENDERBUFFER, RBORefIDs[0]);
-			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, winWidth, winHeight);
+			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 2048, 2048);
 			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, RBORefIDs[0]);
 		glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
@@ -63,7 +63,7 @@ bool App::Init(){
 			int currTexRefID;
 			glGetIntegerv(GL_TEXTURE_BINDING_2D, &currTexRefID);
 			glBindTexture(GL_TEXTURE_2D, texRefIDs[(int)i]);
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, winWidth, winHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 2048, 2048, 0, GL_RGBA, GL_FLOAT, NULL);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -137,15 +137,18 @@ void App::Render(){
 		glClear(GL_COLOR_BUFFER_BIT);
 	glDrawBuffers(3, arr2nd);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); //State-using func
+	glViewport(0, 0, 2048, 2048); //For viewport transform
 	scene.GeoPassRender();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)FBO::LightingPass]);
 	glDrawBuffers(2, arr1st);
+	glViewport(0, 0, 2048, 2048);
 	scene.LightingPassRender(texRefIDs[(int)Tex::Pos], texRefIDs[(int)Tex::Normals], texRefIDs[(int)Tex::AlbedoSpec]);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClearColor(1.f, 0.82f, 0.86f, 1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	glViewport(0, 0, winWidth, winHeight);
 	scene.RenderToDefaultFB(texRefIDs[(int)Tex::Lit]);
 }
 

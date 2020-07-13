@@ -115,7 +115,6 @@ void SetUpTex(const SetUpTexsParams& params, uint& texRefID){
 }
 
 static void FramebufferSizeCallback(GLFWwindow*, int width, int height){ //Resize callback
-    glViewport(0, 0, width, height); //For viewport transform
     winWidth = width;
     winHeight = height;
 }
