@@ -98,6 +98,10 @@ Mesh Model::ProcessMesh(const aiScene* const& scene, const aiMesh* const& meshOb
     return mesh;
 }
 
+void Model::AddModelMat(const glm::mat4& modelMat){
+    modelMatsForAll.emplace_back(modelMat);
+}
+
 void Model::BatchRender(const int& primitive){ //Old and not working??
     if(primitive < 0){
         puts("Invalid primitive!\n");
@@ -159,6 +163,22 @@ void Model::BatchRender(const int& primitive){ //Old and not working??
         glDrawArrays(primitive, 0, (int)allVertices.size()); //...
     }
     glBindVertexArray(0);
+}
+
+void Model::InstancedRender(ShaderProg& SP, const int& primitive){
+    if(primitive < 0){
+        puts("Invalid primitive!\n");
+        return;
+    }
+    if(!meshes.size()){
+        LoadModel();
+    }
+    const size_t size = meshes.size();
+    for(size_t i = 0; i < size; ++i){
+        meshes[i].primitive = primitive;
+        meshes[i].modelMats = modelMatsForAll;
+        meshes[i].InstancedRender(SP);
+    }
 }
 
 void Model::Render(ShaderProg& SP, const int& primitive){

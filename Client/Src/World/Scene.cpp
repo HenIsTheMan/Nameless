@@ -22,6 +22,9 @@ Scene::Scene():
 		//aiTextureType_AMBIENT,
 		//aiTextureType_HEIGHT,
 	}),
+	skydome("ObjsAndMtls/Skydome.obj", {
+		aiTextureType_DIFFUSE,
+	}),
 	blurSP{"Shaders/Quad.vs", "Shaders/Blur.fs"},
 	geoPassSP{"Shaders/GeoPass.vs", "Shaders/GeoPass.fs"},
 	lightingPassSP{"Shaders/Quad.vs", "Shaders/LightingPass.fs"},
@@ -71,8 +74,8 @@ bool Scene::Init(){
 			0,
 			});
 	};
-	for(int i = 0; i < 99999; ++i){
-		mesh.AddModelMat(CreateModelMat(glm::vec3(PseudorandMinMax(-1000.f, 1000.f), PseudorandMinMax(-1000.f, 1000.f), -5.f), glm::vec4(0.f, 1.f, 0.f, -45.f), glm::vec3(1.f)));
+	for(int i = 0; i < 999; ++i){
+		model.AddModelMat(CreateModelMat(glm::vec3(PseudorandMinMax(-100.f, 100.f), PseudorandMinMax(-100.f, 100.f), -5.f), glm::vec4(0.f, 1.f, 0.f, -45.f), glm::vec3(1.f)));
 	}
 
 	return true;
@@ -108,9 +111,11 @@ void Scene::GeoPassRender(){
 
 	geoPassSP.Use();
 	geoPassSP.SetMat4fv("PV", &(projection * view)[0][0]);
-	mesh.SetModel(CreateModelMat(glm::vec3(0.f, 1020.f, 0.f), glm::vec4(0.f, 1.f, 0.f, 45.f), glm::vec3(1.f)));
-	mesh.InstancedRender(geoPassSP);
-	model.Render(geoPassSP);
+
+	//mesh.SetModel(CreateModelMat(glm::vec3(0.f, 1020.f, 0.f), glm::vec4(0.f, 1.f, 0.f, 45.f), glm::vec3(1.f)));
+	//mesh.InstancedRender(geoPassSP);
+
+	model.InstancedRender(geoPassSP);
 }
 
 void Scene::LightingPassRender(const uint& posTexRefID, const uint& normalsTexRefID, const uint& albedoSpecTexRefID){

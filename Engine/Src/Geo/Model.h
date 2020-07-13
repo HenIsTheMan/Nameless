@@ -6,7 +6,10 @@ class Model final{ //A model obj acts as a container for several mesh objs
 public:
     Model(cstr const& fPath, const std::initializer_list<aiTextureType>& iL);
     ~Model();
+
+    void AddModelMat(const glm::mat4& modelMat);
     void BatchRender(const int& primitive);
+    void InstancedRender(ShaderProg& SP, const int& primitive = GL_TRIANGLES);
     void Render(ShaderProg& SP, const int& primitive = GL_TRIANGLES);
 private:
     bool storeIndices;
@@ -15,6 +18,7 @@ private:
     mutable std::vector<aiTextureType> texTypes;
     std::vector<Vertex> allVertices;
     std::vector<uint> allIndices;
+    std::vector<glm::mat4> modelMatsForAll;
     uint VAO;
     uint VBO;
     uint EBO;

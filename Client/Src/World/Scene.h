@@ -15,8 +15,10 @@ public:
 private:
 	Cam cam;
 	ISoundEngine* soundEngine;
+
 	Mesh mesh;
 	Model model;
+	Model skydome;
 
 	ShaderProg blurSP;
 	ShaderProg geoPassSP;
