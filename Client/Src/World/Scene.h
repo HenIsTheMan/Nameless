@@ -10,13 +10,15 @@ public:
 	void Update();
 	void GeoPassRender();
 	void LightingPassRender(const uint& posTexRefID, const uint& normalsTexRefID, const uint& albedoSpecTexRefID);
-	void RenderToDefaultFB(const uint& texRefID);
+	void BlurRender(const uint& brightTexRefID, const bool& horizontal);
+	void DefaultRender(const uint& texRefID);
 private:
 	Cam cam;
 	ISoundEngine* soundEngine;
 	Mesh mesh;
 	Model model;
 
+	ShaderProg blurSP;
 	ShaderProg geoPassSP;
 	ShaderProg lightingPassSP;
 	ShaderProg normalsSP;

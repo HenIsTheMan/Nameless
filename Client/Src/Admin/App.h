@@ -12,6 +12,8 @@ public:
 	enum struct FBO{
 		GeoPass = 0,
 		LightingPass,
+		PingPong0,
+		PingPong1,
 		Amt
 	};
 	enum struct Tex{
@@ -19,7 +21,9 @@ public:
 		Normals,
 		AlbedoSpec,
 		Lit,
-		BrightLit,
+		Bright,
+		PingPong0,
+		PingPong1,
 		Amt
 	};
 	~App();
@@ -35,8 +39,8 @@ private:
 	Scene scene;
 	static GLFWwindow* win;
 
-	uint FBORefIDs[2];
-	uint texRefIDs[5];
+	uint FBORefIDs[(int)FBO::Amt];
+	uint texRefIDs[(int)Tex::Amt];
 	uint RBORefIDs[1];
 };
 

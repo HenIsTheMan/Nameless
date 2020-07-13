@@ -189,7 +189,7 @@ void Mesh::BatchRender(const std::vector<BatchRenderParams>& paramsVec){ //Old a
 	glBindVertexArray(0);
 }
 
-void Mesh::InstancedRender(ShaderProg& SP, const bool& useTexMaps){
+void Mesh::InstancedRender(ShaderProg& SP, const bool& autoConfig){
 	if(primitive < 0){
 		puts("Invalid primitive!\n");
 		return;
@@ -197,8 +197,9 @@ void Mesh::InstancedRender(ShaderProg& SP, const bool& useTexMaps){
 
 	SP.Use();
 	SP.SetMat4fv("model", &(model)[0][0]);
-	SP.Set1i("instancing", 1);
-	if(useTexMaps){
+	if(autoConfig){
+		SP.Set1i("instancing", 1);
+
 		SP.Set1i("useDiffuseMap", 0);
 		SP.Set1i("useSpecMap", 0);
 		SP.Set1i("useEmissionMap", 0);
@@ -303,12 +304,12 @@ void Mesh::InstancedRender(ShaderProg& SP, const bool& useTexMaps){
 	glBindVertexArray(VAO);
 		indices ? glDrawElementsInstanced(primitive, (int)indices->size(), GL_UNSIGNED_INT, 0, (int)modelMats.size()) : glDrawArraysInstanced(primitive, 0, (int)vertices->size(), (int)modelMats.size());
 	glBindVertexArray(0);
-	if(useTexMaps){
+	if(autoConfig){
 		SP.ResetTexUnits();
 	}
 }
 
-void Mesh::Render(ShaderProg& SP, const bool& useTexMaps){
+void Mesh::Render(ShaderProg& SP, const bool& autoConfig){
 	if(primitive < 0){
 		puts("Invalid primitive!\n");
 		return;
@@ -316,8 +317,9 @@ void Mesh::Render(ShaderProg& SP, const bool& useTexMaps){
 
 	SP.Use();
 	SP.SetMat4fv("model", &(model)[0][0]);
-	SP.Set1i("instancing", 0);
-	if(useTexMaps){
+	if(autoConfig){
+		SP.Set1i("instancing", 0);
+
 		SP.Set1i("useDiffuseMap", 0);
 		SP.Set1i("useSpecMap", 0);
 		SP.Set1i("useEmissionMap", 0);
@@ -401,7 +403,7 @@ void Mesh::Render(ShaderProg& SP, const bool& useTexMaps){
 	glBindVertexArray(VAO);
 		indices ? glDrawElements(primitive, (int)indices->size(), GL_UNSIGNED_INT, 0) : glDrawArrays(primitive, 0, (int)vertices->size());
 	glBindVertexArray(0);
-	if(useTexMaps){
+	if(autoConfig){
 		SP.ResetTexUnits();
 	}
 }

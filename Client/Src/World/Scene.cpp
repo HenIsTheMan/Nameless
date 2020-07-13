@@ -22,6 +22,7 @@ Scene::Scene():
 		//aiTextureType_AMBIENT,
 		//aiTextureType_HEIGHT,
 	}),
+	blurSP{"Shaders/Quad.vs", "Shaders/Blur.fs"},
 	geoPassSP{"Shaders/GeoPass.vs", "Shaders/GeoPass.fs"},
 	lightingPassSP{"Shaders/Quad.vs", "Shaders/LightingPass.fs"},
 	normalsSP{"Shaders/Normals.vs", "Shaders/Normals.fs", "Shaders/Normals.gs"}, //??
@@ -161,7 +162,16 @@ void Scene::LightingPassRender(const uint& posTexRefID, const uint& normalsTexRe
 	lightingPassSP.ResetTexUnits();
 }
 
-void Scene::RenderToDefaultFB(const uint& texRefID){
+void Scene::BlurRender(const uint& brightTexRefID, const bool& horizontal){
+	blurSP.Use();
+	blurSP.Set1i("horizontal", horizontal);
+	blurSP.UseTex(brightTexRefID, "texSampler");
+	mesh.SetModel(CreateModelMat(glm::vec3(0.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)));
+	mesh.Render(blurSP, false);
+	blurSP.ResetTexUnits();
+}
+
+void Scene::DefaultRender(const uint& texRefID){
 	screenSP.Use();
 	screenSP.UseTex(texRefID, "texSampler");
 	mesh.SetModel(CreateModelMat(glm::vec3(0.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)));

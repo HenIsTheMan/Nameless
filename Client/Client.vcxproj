@@ -191,6 +191,7 @@
     <ClInclude Include="Src\World\Scene.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Shaders\Blur.fs" />
     <None Include="Shaders\GeoPass.fs" />
     <None Include="Shaders\GeoPass.vs" />
     <None Include="Shaders\LightingPass.fs" />
