@@ -169,7 +169,7 @@ void App::Render(){
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClearColor(1.f, 0.82f, 0.86f, 1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-	scene.DefaultRender(texRefIDs[int(Tex::PingPong0) + int(!horizontal)]);
+	scene.DefaultRender(texRefIDs[(int)Tex::Lit], texRefIDs[int(Tex::PingPong0) + int(!horizontal)]);
 }
 
 void App::PostRender() const{

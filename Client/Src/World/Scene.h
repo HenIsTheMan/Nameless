@@ -11,7 +11,7 @@ public:
 	void GeoPassRender();
 	void LightingPassRender(const uint& posTexRefID, const uint& normalsTexRefID, const uint& albedoSpecTexRefID);
 	void BlurRender(const uint& brightTexRefID, const bool& horizontal);
-	void DefaultRender(const uint& texRefID);
+	void DefaultRender(const uint& screenTexRefID, const uint& blurTexRefID);
 private:
 	Cam cam;
 	ISoundEngine* soundEngine;

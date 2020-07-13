@@ -171,9 +171,10 @@ void Scene::BlurRender(const uint& brightTexRefID, const bool& horizontal){
 	blurSP.ResetTexUnits();
 }
 
-void Scene::DefaultRender(const uint& texRefID){
+void Scene::DefaultRender(const uint& screenTexRefID, const uint& blurTexRefID){
 	screenSP.Use();
-	screenSP.UseTex(texRefID, "texSampler");
+	screenSP.UseTex(screenTexRefID, "screenTexSampler");
+	screenSP.UseTex(blurTexRefID, "blurTexSampler");
 	mesh.SetModel(CreateModelMat(glm::vec3(0.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)));
 	mesh.Render(screenSP, false);
 	screenSP.ResetTexUnits();
