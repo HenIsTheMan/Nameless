@@ -7,6 +7,7 @@ Mesh::Mesh():
 	vertices(nullptr),
 	indices(nullptr),
 	texMaps({}),
+	modelMats({}),
 	batchVAO(0),
 	batchVBO(0),
 	batchEBO(0),
@@ -23,6 +24,7 @@ Mesh::Mesh(const MeshType& myType, const int& myPrimitive, const std::initialize
 	vertices(nullptr),
 	indices(nullptr),
 	texMaps(iL),
+	modelMats({}),
 	batchVAO(0),
 	batchVBO(0),
 	batchEBO(0),
@@ -35,35 +37,13 @@ Mesh::Mesh(const MeshType& myType, const int& myPrimitive, const std::initialize
 
 Mesh::Mesh(const Mesh& mesh): Mesh(){
 	if(this != &mesh){
-		type = mesh.type;
-		primitive = mesh.primitive;
-		vertices = new std::vector<Vertex>(mesh.vertices->begin(), mesh.vertices->end());
-		indices = new std::vector<uint>{mesh.indices->begin(), mesh.indices->end()};
-		texMaps = mesh.texMaps;
-		batchVAO = mesh.batchVAO;
-		batchVBO = mesh.batchVBO;
-		batchEBO = mesh.batchEBO;
-		VAO = mesh.VAO;
-		VBO = mesh.VBO;
-		EBO = mesh.EBO;
-		model = mesh.model;
+		*this = mesh;
 	}
 }
 
 Mesh::Mesh(Mesh&& mesh) noexcept: Mesh(){
 	if(this != &mesh){
-		type = mesh.type;
-		primitive = mesh.primitive;
-		vertices = new std::vector<Vertex>(mesh.vertices->begin(), mesh.vertices->end());
-		indices = new std::vector<uint>{mesh.indices->begin(), mesh.indices->end()};
-		texMaps = mesh.texMaps;
-		batchVAO = mesh.batchVAO;
-		batchVBO = mesh.batchVBO;
-		batchEBO = mesh.batchEBO;
-		VAO = mesh.VAO;
-		VBO = mesh.VBO;
-		EBO = mesh.EBO;
-		model = mesh.model;
+		*this = mesh;
 	}
 }
 
@@ -74,6 +54,7 @@ Mesh& Mesh::operator=(const Mesh& mesh){
 		vertices = new std::vector<Vertex>(mesh.vertices->begin(), mesh.vertices->end());
 		indices = new std::vector<uint>{mesh.indices->begin(), mesh.indices->end()};
 		texMaps = mesh.texMaps;
+		modelMats = mesh.modelMats;
 		batchVAO = mesh.batchVAO;
 		batchVBO = mesh.batchVBO;
 		batchEBO = mesh.batchEBO;
@@ -92,6 +73,7 @@ Mesh& Mesh::operator=(Mesh&& mesh) noexcept{
 		vertices = new std::vector<Vertex>(mesh.vertices->begin(), mesh.vertices->end());
 		indices = new std::vector<uint>{mesh.indices->begin(), mesh.indices->end()};
 		texMaps = mesh.texMaps;
+		modelMats = mesh.modelMats;
 		batchVAO = mesh.batchVAO;
 		batchVBO = mesh.batchVBO;
 		batchEBO = mesh.batchEBO;
@@ -207,6 +189,125 @@ void Mesh::BatchRender(const std::vector<BatchRenderParams>& paramsVec){ //Old a
 	glBindVertexArray(0);
 }
 
+void Mesh::InstancedRender(ShaderProg& SP, const bool& useTexMaps){
+	if(primitive < 0){
+		puts("Invalid primitive!\n");
+		return;
+	}
+
+	SP.Use();
+	SP.SetMat4fv("model", &(model)[0][0]);
+	SP.Set1i("instancing", 1);
+	if(useTexMaps){
+		SP.Set1i("useDiffuseMap", 0);
+		SP.Set1i("useSpecMap", 0);
+		SP.Set1i("useEmissionMap", 0);
+		//SP.Set1i("useReflectionMap", 0);
+		SP.Set1i("useBumpMap", 0);
+
+		short diffuseCount = 0;
+		for(std::tuple<str, TexType, uint>& texMap: texMaps){
+			if(!std::get<uint>(texMap)){
+				SetUpTex({
+					std::get<str>(texMap),
+					type != MeshType::None,
+					GL_TEXTURE_2D,
+					GL_REPEAT,
+					GL_LINEAR_MIPMAP_LINEAR,
+					GL_LINEAR,
+					}, std::get<uint>(texMap));
+			}
+
+			switch(std::get<TexType>(texMap)){
+			case TexType::Diffuse:
+				SP.Set1i("useDiffuseMap", 1);
+				SP.UseTex(std::get<uint>(texMap), ("diffuseMaps[" + std::to_string(diffuseCount++) + ']').c_str());
+				break;
+			case TexType::Spec:
+				SP.Set1i("useSpecMap", 1);
+				SP.UseTex(std::get<uint>(texMap), "specMap");
+				break;
+			case TexType::Emission:
+				SP.Set1i("useEmissionMap", 1);
+				SP.UseTex(std::get<uint>(texMap), "emissionMap");
+				break;
+			case TexType::Reflection:
+				SP.Set1i("useReflectionMap", 1);
+				SP.UseTex(std::get<uint>(texMap), "reflectionMap");
+				break;
+			case TexType::Bump:
+				SP.Set1i("useBumpMap", 1);
+				SP.UseTex(std::get<uint>(texMap), "bumpMap");
+				break;
+			}
+		}
+	}
+
+	if(!VAO){
+		switch(type){
+		case MeshType::None:
+			break;
+		case MeshType::Quad:
+			CreateQuad();
+			break;
+		}
+		glGenVertexArrays(1, &VAO);
+		glGenBuffers(1, &VBO);
+
+		glBindVertexArray(VAO);
+			glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+			glBufferData(GL_ARRAY_BUFFER, vertices->size() * sizeof(Vertex) + modelMats.size() * sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
+			glBufferSubData(GL_ARRAY_BUFFER, 0, vertices->size() * sizeof(Vertex), &(*vertices)[0]);
+			glBufferSubData(GL_ARRAY_BUFFER, vertices->size() * sizeof(Vertex), modelMats.size() * sizeof(glm::mat4), &(modelMats)[0]);
+
+			glEnableVertexAttribArray(0);
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, pos));
+			glEnableVertexAttribArray(1);
+			glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, colour));
+			glEnableVertexAttribArray(2);
+			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, texCoords));
+			glEnableVertexAttribArray(3);
+			glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, normal));
+			glEnableVertexAttribArray(4);
+			glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, tangent));
+			glEnableVertexAttribArray(5);
+			glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, diffuseTexIndex));
+
+			size_t mySize = vertices->size() * sizeof(Vertex);
+			glEnableVertexAttribArray(6);
+			glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (const void*)(mySize));
+			mySize += sizeof(glm::vec4);
+			glEnableVertexAttribArray(7);
+			glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (const void*)(mySize));
+			mySize += sizeof(glm::vec4);
+			glEnableVertexAttribArray(8);
+			glVertexAttribPointer(8, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (const void*)(mySize));
+			mySize += sizeof(glm::vec4);
+			glEnableVertexAttribArray(9);
+			glVertexAttribPointer(9, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (const void*)(mySize));
+
+			glVertexAttribDivisor(6, 1);
+			glVertexAttribDivisor(7, 1);
+			glVertexAttribDivisor(8, 1);
+			glVertexAttribDivisor(9, 1);
+
+			if(indices){
+				glGenBuffers(1, &EBO);
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+				glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices->size() * sizeof(uint), &(*indices)[0], GL_STATIC_DRAW);
+			}
+		glBindVertexArray(0);
+	}
+
+	glBindVertexArray(VAO);
+		indices ? glDrawElementsInstanced(primitive, (int)indices->size(), GL_UNSIGNED_INT, 0, (int)modelMats.size()) : glDrawArraysInstanced(primitive, 0, (int)vertices->size(), (int)modelMats.size());
+	glBindVertexArray(0);
+	if(useTexMaps){
+		SP.ResetTexUnits();
+	}
+}
+
 void Mesh::Render(ShaderProg& SP, const bool& useTexMaps){
 	if(primitive < 0){
 		puts("Invalid primitive!\n");
@@ -215,6 +316,7 @@ void Mesh::Render(ShaderProg& SP, const bool& useTexMaps){
 
 	SP.Use();
 	SP.SetMat4fv("model", &(model)[0][0]);
+	SP.Set1i("instancing", 0);
 	if(useTexMaps){
 		SP.Set1i("useDiffuseMap", 0);
 		SP.Set1i("useSpecMap", 0);
@@ -268,10 +370,10 @@ void Mesh::Render(ShaderProg& SP, const bool& useTexMaps){
 				CreateQuad();
 				break;
 		}
-
 		glGenVertexArrays(1, &VAO);
+		glGenBuffers(1, &VBO);
+
 		glBindVertexArray(VAO);
-			glGenBuffers(1, &VBO);
 			glBindBuffer(GL_ARRAY_BUFFER, VBO);
 			glBufferData(GL_ARRAY_BUFFER, vertices->size() * sizeof(Vertex), &(*vertices)[0], GL_STATIC_DRAW);
 
@@ -302,6 +404,10 @@ void Mesh::Render(ShaderProg& SP, const bool& useTexMaps){
 	if(useTexMaps){
 		SP.ResetTexUnits();
 	}
+}
+
+void Mesh::AddModelMat(const glm::mat4& modelMat){
+	modelMats.emplace_back(modelMat);
 }
 
 void Mesh::AddTexMap(const std::tuple<str, TexType, uint>& texMap){

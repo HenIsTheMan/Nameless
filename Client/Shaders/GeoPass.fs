@@ -1,7 +1,7 @@
 #version 330 core
 layout (location = 0) out vec3 pos;
 layout (location = 1) out vec3 normal;
-layout (location = 2) out vec4 albedoSpec;
+layout (location = 2) out vec4 albedoSpec; //Pass spec as vec3 or vec4 for coloured spec highlight
 
 in myInterface{
 	vec3 pos;

@@ -5,6 +5,7 @@ layout (location = 2) in vec2 texCoords;
 layout (location = 3) in vec3 normal;
 layout (location = 4) in vec3 tangent; //Calc in CPU??
 layout (location = 5) in int diffuseTexIndex;
+layout (location = 6) in mat4 modelMat;
 
 out myInterface{
 	vec3 pos;
@@ -17,11 +18,12 @@ out myInterface{
 uniform mat4 PV;
 uniform mat4 model;
 
+uniform bool instancing;
 uniform bool useBumpMap;
 uniform sampler2D bumpMap;
 
 void main(){
-	vsOut.pos = vec3(model * vec4(pos, 1.f));
+	vsOut.pos = vec3((instancing ? model * modelMat : model) * vec4(pos, 1.f));
 	vsOut.colour = colour;
 	vsOut.texCoords = texCoords;
 	vsOut.normal = normalize(mat3(transpose(inverse(model))) * (useBumpMap ? texture(bumpMap, texCoords).rgb : normal));

@@ -35,6 +35,7 @@ public:
 	Mesh& operator=(Mesh&& mesh) noexcept;
 	virtual ~Mesh();
 
+	void AddModelMat(const glm::mat4& modelMat);
 	void AddTexMap(const std::tuple<str, TexType, uint>& texMap);
 	void RemoveTexMap(str const& texPath);
 	void BatchRender(const std::vector<BatchRenderParams>& params);
@@ -47,6 +48,7 @@ protected:
 	std::vector<Vertex>* vertices;
 	std::vector<uint>* indices;
 	std::vector<std::tuple<str, TexType, uint>> texMaps;
+	std::vector<glm::mat4> modelMats;
 
 	uint batchVAO;
 	uint batchVBO;

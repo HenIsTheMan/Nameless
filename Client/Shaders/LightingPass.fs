@@ -74,7 +74,7 @@ vec3 CalcSpec(vec3 lightDir, vec3 lightSpec){
     vec3 viewDir = normalize(WorldSpacePos - camPos);
     vec3 halfwayDir = -normalize(lightDir + viewDir);
     float sImpact = pow(max(dot(Normal, halfwayDir), 0.f), mtl.shininess);
-    return sImpact * lightSpec * vec3(Spec); //texture(mtl.sMap, fsIn.TexCoords).rgb??
+    return sImpact * lightSpec * vec3(Spec);
 }
 
 vec3 CalcPtLight(PtLight light){
