@@ -72,10 +72,13 @@ bool Scene::Init(){
 			CreateModelMat(glm::vec3(PseudorandMinMax(-200.f, 200.f), PseudorandMinMax(-200.f, 200.f), -5.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)),
 			glm::vec4(PseudorandMinMax(0.f, 1.f), PseudorandMinMax(0.f, 1.f), PseudorandMinMax(0.f, 1.f), 1.f),
 			0,
-			});
+		});
 	};
+	for(int i = 0; i < 99999; ++i){
+		mesh.AddModelMat(CreateModelMat(glm::vec3(PseudorandMinMax(-2000.f, 2000.f), PseudorandMinMax(-2000.f, 2000.f), -5.f), glm::vec4(0.f, 1.f, 0.f, -45.f), glm::vec3(1.f)));
+	}
 	for(int i = 0; i < 999; ++i){
-		model.AddModelMat(CreateModelMat(glm::vec3(PseudorandMinMax(-100.f, 100.f), PseudorandMinMax(-100.f, 100.f), -5.f), glm::vec4(0.f, 1.f, 0.f, -45.f), glm::vec3(1.f)));
+		model.AddModelMatForAll(CreateModelMat(glm::vec3(PseudorandMinMax(-100.f, 100.f), PseudorandMinMax(-100.f, 100.f), -5.f), glm::vec4(0.f, 1.f, 0.f, -45.f), glm::vec3(1.f)));
 	}
 
 	return true;
@@ -107,15 +110,22 @@ void Scene::Update(){
 }
 
 void Scene::GeoPassRender(){
-	//mesh.BatchRender(params);
-
 	geoPassSP.Use();
+
+	glDepthFunc(GL_LEQUAL); //Modify comparison operators used for depth test such that frags with depth <= 1.f are shown
+	geoPassSP.SetMat4fv("PV", &(projection * glm::mat4(glm::mat3(view)))[0][0]);
+	geoPassSP.Set1i("sky", 1);
+	skydome.SetModelForAll(CreateModelMat(glm::vec3(0.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)));
+	skydome.Render(geoPassSP);
+	geoPassSP.Set1i("sky", 0);
+	glDepthFunc(GL_LESS);
+
 	geoPassSP.SetMat4fv("PV", &(projection * view)[0][0]);
+	mesh.SetModel(CreateModelMat(glm::vec3(0.f, 1020.f, 0.f), glm::vec4(0.f, 1.f, 0.f, 45.f), glm::vec3(1.f)));
+	mesh.InstancedRender(geoPassSP);
+	//model.InstancedRender(geoPassSP);
 
-	//mesh.SetModel(CreateModelMat(glm::vec3(0.f, 1020.f, 0.f), glm::vec4(0.f, 1.f, 0.f, 45.f), glm::vec3(1.f)));
-	//mesh.InstancedRender(geoPassSP);
-
-	model.InstancedRender(geoPassSP);
+	//mesh.BatchRender(params);
 }
 
 void Scene::LightingPassRender(const uint& posTexRefID, const uint& normalsTexRefID, const uint& albedoSpecTexRefID){

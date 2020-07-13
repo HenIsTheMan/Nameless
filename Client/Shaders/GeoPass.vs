@@ -18,9 +18,11 @@ out myInterface{
 uniform mat4 PV;
 uniform mat4 model;
 
-uniform bool instancing;
 uniform bool useBumpMap;
 uniform sampler2D bumpMap;
+
+uniform bool instancing;
+uniform bool sky;
 
 void main(){
 	vsOut.pos = vec3((instancing ? model * modelMat : model) * vec4(pos, 1.f));
@@ -29,4 +31,9 @@ void main(){
 	vsOut.normal = normalize(mat3(transpose(inverse(model))) * (useBumpMap ? texture(bumpMap, texCoords).rgb : normal));
 	vsOut.diffuseTexIndex = diffuseTexIndex;
 	gl_Position = PV * vec4(vsOut.pos, 1.f);
+
+	if(sky){
+		vsOut.normal = vec3(0.f);
+		gl_Position = gl_Position.xyww; //Resulting NDC after perspective division will have a z value (gl_FragCoord.z) equal to 1.f
+	}
 }

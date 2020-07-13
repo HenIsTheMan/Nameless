@@ -98,7 +98,7 @@ Mesh Model::ProcessMesh(const aiScene* const& scene, const aiMesh* const& meshOb
     return mesh;
 }
 
-void Model::AddModelMat(const glm::mat4& modelMat){
+void Model::AddModelMatForAll(const glm::mat4& modelMat){
     modelMatsForAll.emplace_back(modelMat);
 }
 
@@ -176,6 +176,7 @@ void Model::InstancedRender(ShaderProg& SP, const int& primitive){
     const size_t size = meshes.size();
     for(size_t i = 0; i < size; ++i){
         meshes[i].primitive = primitive;
+        meshes[i].model = modelForAll;
         meshes[i].modelMats = modelMatsForAll;
         meshes[i].InstancedRender(SP);
     }
@@ -192,6 +193,11 @@ void Model::Render(ShaderProg& SP, const int& primitive){
     const size_t size = meshes.size();
     for(size_t i = 0; i < size; ++i){
         meshes[i].primitive = primitive;
+        meshes[i].model = modelForAll;
         meshes[i].Render(SP);
     }
+}
+
+void Model::SetModelForAll(const glm::mat4& model){
+    this->modelForAll = model;
 }
