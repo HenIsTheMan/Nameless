@@ -40,7 +40,7 @@ public:
 	void RemoveTexMap(str const& texPath);
 	void BatchRender(const std::vector<BatchRenderParams>& params);
 	void InstancedRender(ShaderProg& SP, const bool& autoConfig = true);
-	void Render(ShaderProg& SP, const bool& autoConfig = true);
+	virtual void Render(ShaderProg& SP, const bool& autoConfig = true);
 	void SetModel(const glm::mat4& model);
 protected:
 	MeshType type;

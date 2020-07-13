@@ -220,37 +220,37 @@ void Mesh::InstancedRender(ShaderProg& SP, const bool& autoConfig){
 			}
 
 			switch(std::get<TexType>(texMap)){
-			case TexType::Diffuse:
-				SP.Set1i("useDiffuseMap", 1);
-				SP.UseTex(std::get<uint>(texMap), ("diffuseMaps[" + std::to_string(diffuseCount++) + ']').c_str());
-				break;
-			case TexType::Spec:
-				SP.Set1i("useSpecMap", 1);
-				SP.UseTex(std::get<uint>(texMap), "specMap");
-				break;
-			case TexType::Emission:
-				SP.Set1i("useEmissionMap", 1);
-				SP.UseTex(std::get<uint>(texMap), "emissionMap");
-				break;
-			case TexType::Reflection:
-				SP.Set1i("useReflectionMap", 1);
-				SP.UseTex(std::get<uint>(texMap), "reflectionMap");
-				break;
-			case TexType::Bump:
-				SP.Set1i("useBumpMap", 1);
-				SP.UseTex(std::get<uint>(texMap), "bumpMap");
-				break;
+				case TexType::Diffuse:
+					SP.Set1i("useDiffuseMap", 1);
+					SP.UseTex(std::get<uint>(texMap), ("diffuseMaps[" + std::to_string(diffuseCount++) + ']').c_str());
+					break;
+				case TexType::Spec:
+					SP.Set1i("useSpecMap", 1);
+					SP.UseTex(std::get<uint>(texMap), "specMap");
+					break;
+				case TexType::Emission:
+					SP.Set1i("useEmissionMap", 1);
+					SP.UseTex(std::get<uint>(texMap), "emissionMap");
+					break;
+				case TexType::Reflection:
+					SP.Set1i("useReflectionMap", 1);
+					SP.UseTex(std::get<uint>(texMap), "reflectionMap");
+					break;
+				case TexType::Bump:
+					SP.Set1i("useBumpMap", 1);
+					SP.UseTex(std::get<uint>(texMap), "bumpMap");
+					break;
 			}
 		}
 	}
 
 	if(!VAO){
 		switch(type){
-		case MeshType::None:
-			break;
-		case MeshType::Quad:
-			CreateQuad();
-			break;
+			case MeshType::None:
+				break;
+			case MeshType::Quad:
+				CreateQuad();
+				break;
 		}
 		glGenVertexArrays(1, &VAO);
 		glGenBuffers(1, &VBO);

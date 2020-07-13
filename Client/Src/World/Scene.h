@@ -17,6 +17,8 @@ private:
 	ISoundEngine* soundEngine;
 
 	Mesh mesh;
+	Mesh* terrain;
+
 	Model model;
 	Model skydome;
 

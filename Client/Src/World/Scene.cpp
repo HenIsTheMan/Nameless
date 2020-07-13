@@ -15,6 +15,7 @@ Scene::Scene():
 		{"Imgs/BoxSpec.png", Mesh::TexType::Spec, 0},
 		{"Imgs/BoxEmission.png", Mesh::TexType::Emission, 0},
 	}),
+	terrain(new Terrain("Imgs/hMap.raw", 8.f, 8.f)),
 	model("ObjsAndMtls/nanosuit.obj", {
 		aiTextureType_DIFFUSE,
 		aiTextureType_SPECULAR,
@@ -63,6 +64,11 @@ Scene::~Scene(){
 		delete spotlights[i];
 		spotlights[i] = nullptr;
 	}
+	
+	if(terrain){
+		delete terrain;
+		terrain = nullptr;
+	}
 	soundEngine->drop();
 }
 
@@ -80,6 +86,7 @@ bool Scene::Init(){
 	for(int i = 0; i < 999; ++i){
 		model.AddModelMatForAll(CreateModelMat(glm::vec3(PseudorandMinMax(-100.f, 100.f), PseudorandMinMax(-100.f, 100.f), -5.f), glm::vec4(0.f, 1.f, 0.f, -45.f), glm::vec3(1.f)));
 	}
+	terrain->AddTexMap({"Imgs/GrassGround.jpg", Mesh::TexType::Diffuse, 0});
 
 	return true;
 }
@@ -113,14 +120,20 @@ void Scene::GeoPassRender(){
 	geoPassSP.Use();
 
 	glDepthFunc(GL_LEQUAL); //Modify comparison operators used for depth test such that frags with depth <= 1.f are shown
-	geoPassSP.SetMat4fv("PV", &(projection * glm::mat4(glm::mat3(view)))[0][0]);
 	geoPassSP.Set1i("sky", 1);
-	skydome.SetModelForAll(CreateModelMat(glm::vec3(0.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)));
+
+	geoPassSP.SetMat4fv("PV", &(projection * glm::mat4(glm::mat3(view)))[0][0]);
+	skydome.SetModelForAll(CreateModelMat(glm::vec3(0.f, -1.f, 0.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)));
 	skydome.Render(geoPassSP);
+	skydome.SetModelForAll(CreateModelMat(glm::vec3(0.f, 1.f, 0.f), glm::vec4(0.f, 0.f, 1.f, 180.f), glm::vec3(1.f)));
+	skydome.Render(geoPassSP);
+
 	geoPassSP.Set1i("sky", 0);
 	glDepthFunc(GL_LESS);
 
 	geoPassSP.SetMat4fv("PV", &(projection * view)[0][0]);
+	terrain->SetModel(CreateModelMat(glm::vec3(0.f), glm::vec4(0.f, 1.f, 0.f, 45.f), glm::vec3(500.f, 100.f, 500.f)));
+	terrain->Render(geoPassSP);
 	mesh.SetModel(CreateModelMat(glm::vec3(0.f, 1020.f, 0.f), glm::vec4(0.f, 1.f, 0.f, 45.f), glm::vec3(1.f)));
 	mesh.InstancedRender(geoPassSP);
 	//model.InstancedRender(geoPassSP);
