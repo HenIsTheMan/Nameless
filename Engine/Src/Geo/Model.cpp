@@ -1,5 +1,18 @@
 #include "Model.h"
 
+Model::Model():
+    storeIndices(true),
+    modelPath(""),
+    meshes({}),
+    texTypes({}),
+    allVertices({}),
+    allIndices({}),
+    VAO(0),
+    VBO(0),
+    EBO(0)
+{
+}
+
 Model::Model(cstr const& fPath, const std::initializer_list<aiTextureType>& iL):
     storeIndices(true),
     modelPath(fPath),

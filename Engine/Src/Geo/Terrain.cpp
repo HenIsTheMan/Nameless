@@ -1,5 +1,13 @@
 #include "Terrain.h"
 
+Terrain::Terrain(): Mesh(),
+	terrainPath(""),
+	tileH(0.f),
+	tileV(0.f),
+	data({})
+{
+}
+
 Terrain::Terrain(cstr const& fPath, const float& myTileH, const float& myTileV): Mesh(),
 	terrainPath(fPath),
 	tileH(myTileH),
@@ -57,34 +65,32 @@ void Terrain::Create(){
 	}
 
 	std::vector<std::vector<glm::vec3>> normals = std::vector<std::vector<glm::vec3>>(terrainSize, std::vector<glm::vec3>(terrainSize));
-	std::vector<std::vector<glm::vec3>> tempNormals[2];
-	for(short i = 0; i < 2; ++i){
-		tempNormals[i] = std::vector<std::vector<glm::vec3>>(terrainSize, std::vector<glm::vec3>(terrainSize));
-	}
+	std::vector<std::vector<glm::vec3>> tempNormals[2]{std::vector<std::vector<glm::vec3>>(terrainSize, std::vector<glm::vec3>(terrainSize)),
+		std::vector<std::vector<glm::vec3>>(terrainSize, std::vector<glm::vec3>(terrainSize))};
 	for(long long z = 0; z < terrainSize - 1; ++z){
 		for(long long x = 0; x < terrainSize - 1; ++x){
-			const auto& vertexA = pos[z][x];
-			const auto& vertexB = pos[z][x + 1];
-			const auto& vertexC = pos[z + 1][x + 1];
-			const auto& vertexD = pos[z + 1][x];
-			const auto triangleNormalA = glm::cross(vertexB - vertexA, vertexA - vertexD);
-			const auto triangleNormalB = glm::cross(vertexD - vertexC, vertexC - vertexB);
+			const glm::vec3& vertexA = pos[z][x];
+			const glm::vec3& vertexB = pos[z][x + 1];
+			const glm::vec3& vertexC = pos[z + 1][x + 1];
+			const glm::vec3& vertexD = pos[z + 1][x];
+			const glm::vec3 triangleNormalA = glm::cross(vertexB - vertexA, vertexA - vertexD);
+			const glm::vec3 triangleNormalB = glm::cross(vertexD - vertexC, vertexC - vertexB);
 			tempNormals[0][z][x] = triangleNormalA.length() ? glm::normalize(triangleNormalA) : triangleNormalA;
 			tempNormals[1][z][x] = triangleNormalB.length() ? glm::normalize(triangleNormalB) : triangleNormalB;
 		}
 	}
 	for(long long z = 0; z < terrainSize; ++z){
 		for(long long x = 0; x < terrainSize; ++x){
-			const auto isFirstRow = z == 0;
-			const auto isFirstColumn = x == 0;
-			const auto isLastRow = z == terrainSize - 1;
-			const auto isLastColumn = x == terrainSize - 1;
-			auto finalVertexNormal = glm::vec3(0.f);
+			const bool isFirstRow = z == 0;
+			const bool isFirstColumn = x == 0;
+			const bool isLastRow = z == terrainSize - 1;
+			const bool isLastColumn = x == terrainSize - 1;
+			glm::vec3 finalVertexNormal = glm::vec3(0.f);
 			if(!isFirstRow && !isFirstColumn){ //Look for triangle to the upper-left
 				finalVertexNormal += tempNormals[0][z - 1][x - 1];
 			}
 			if(!isFirstRow && !isLastColumn){ //Look for triangles to the upper-right
-				for(auto k = 0; k < 2; ++k){
+				for(short k = 0; k < 2; ++k){
 					finalVertexNormal += tempNormals[k][z - 1][x];
 				}
 			}
@@ -92,7 +98,7 @@ void Terrain::Create(){
 				finalVertexNormal += tempNormals[0][z][x];
 			}
 			if(!isLastRow && !isFirstColumn){ //Look for triangles to the bottom-right
-				for(auto k = 0; k < 2; ++k){
+				for(short k = 0; k < 2; ++k){
 					finalVertexNormal += tempNormals[k][z][x - 1];
 				}
 			}
@@ -100,7 +106,7 @@ void Terrain::Create(){
 			vertices->push_back({
 				pos[z][x],
 				glm::vec4(.7f, .4f, .1f, 1.f),
-				glm::vec2(float(x) / terrainSize * tileH, 1.f - float(z) / terrainSize * tileV),
+				glm::vec2(float(x) / float(terrainSize) * tileH, 1.f - float(z) / float(terrainSize) * tileV),
 				normals[z][x],
 				glm::vec3(0.f), //??
 				0,
@@ -111,14 +117,14 @@ void Terrain::Create(){
 	for(long long z = 0; z < terrainSize - 1; ++z){
 		for(long long x = 0; x < terrainSize - 1; ++x){
 			///Triangle 1
-			indices->emplace_back(terrainSize * z + x + 0);
-			indices->emplace_back(terrainSize * (z + 1) + x + 0);
-			indices->emplace_back(terrainSize * z + x + 1);
+			indices->emplace_back(uint(terrainSize * z + x));
+			indices->emplace_back(uint(terrainSize * (z + 1) + x));
+			indices->emplace_back(uint(terrainSize * z + x + 1));
 
 			///Triangle 2
-			indices->emplace_back(terrainSize * (z + 1) + x + 1);
-			indices->emplace_back(terrainSize * z + x + 1);
-			indices->emplace_back(terrainSize * (z + 1) + x + 0);
+			indices->emplace_back(uint(terrainSize * (z + 1) + x + 1));
+			indices->emplace_back(uint(terrainSize * z + x + 1));
+			indices->emplace_back(uint(terrainSize * (z + 1) + x));
 		}
 	}
 }

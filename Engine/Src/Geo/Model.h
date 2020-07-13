@@ -4,7 +4,7 @@
 
 class Model final{ //A model obj acts as a container for several mesh objs
 public:
-    //Model(); //??
+    Model();
     Model(cstr const& fPath, const std::initializer_list<aiTextureType>& iL);
     ~Model();
 

@@ -3,7 +3,7 @@
 
 class Terrain final: public Mesh{
 public:
-	//Terrain(); //??
+	Terrain();
 	Terrain(cstr const& fPath, const float& hTile, const float& vTile);
 	~Terrain() = default;
 
