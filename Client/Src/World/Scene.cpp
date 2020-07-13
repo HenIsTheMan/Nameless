@@ -10,6 +10,9 @@ glm::vec3 Light::globalAmbient = glm::vec3(.2f);
 
 Scene::Scene():
 	cam(glm::vec3(0.f, 0.f, 5.f), glm::vec3(0.f), glm::vec3(0.f, 1.f, 0.f), 0.f, 150.f),
+	soundEngine(nullptr),
+	music(nullptr),
+	soundFX(nullptr),
 	mesh(Mesh::MeshType::Quad, GL_TRIANGLES, {
 		{"Imgs/BoxAlbedo.png", Mesh::TexType::Diffuse, 0},
 		{"Imgs/BoxSpec.png", Mesh::TexType::Spec, 0},
@@ -34,15 +37,30 @@ Scene::Scene():
 	view(glm::mat4(1.f)),
 	projection(glm::mat4(1.f)),
 	elapsedTime(0.f),
-	polyModeBT(0.f)
+	polyModeBT(0.f),
+	distortionBT(0.f),
+	echoBT(0.f),
+	wavesReverbBT(0.f),
+	resetSoundFXBT(0.f)
 {
 	soundEngine = createIrrKlangDevice(ESOD_AUTO_DETECT, ESEO_MULTI_THREADED | ESEO_LOAD_PLUGINS | ESEO_USE_3D_BUFFERS | ESEO_PRINT_DEBUG_INFO_TO_DEBUGGER);
+	if(!soundEngine){
+		puts("Failed to init soundEngine!\n");
+	}
 	//soundEngine->play2D("Audio/Music/YellowCafe.mp3", true);
-	ISound* music = soundEngine->play3D("Audio/Music/YellowCafe.mp3", vec3df(0.f, 0.f, 0.f), true, false, true);
+
+	music = soundEngine->play3D("Audio/Music/YellowCafe.mp3", vec3df(0.f, 0.f, 0.f), true, false, true, ESM_AUTO_DETECT, true);
 	if(music){
 		//music->setPosition(vec3df(0.f, 0.f, 0.f));
 		music->setMinDistance(5.f);
-		music->setVolume(0);
+		//music->setVolume(0);
+
+		soundFX = music->getSoundEffectControl();
+		if(!soundFX){
+			puts("No soundFX support!\n");
+		}
+	} else{
+		puts("Failed to init music!\n");
 	}
 
 	spotlights.emplace_back(CreateLight(LightType::Spot));
@@ -69,7 +87,12 @@ Scene::~Scene(){
 		delete terrain;
 		terrain = nullptr;
 	}
-	soundEngine->drop();
+	if(music){
+		music->drop();
+	}
+	if(soundEngine){
+		soundEngine->drop();
+	}
 }
 
 bool Scene::Init(){
@@ -113,6 +136,25 @@ void Scene::Update(){
 	if(Key(KEY_2) && polyModeBT <= elapsedTime){
 		glPolygonMode(GL_FRONT_AND_BACK, polyMode + (polyMode == GL_FILL ? -2 : 1));
 		polyModeBT = elapsedTime + .5f;
+	}
+
+	if(soundFX){
+		if(Key(KEY_I) && distortionBT <= elapsedTime){
+			soundFX->isDistortionSoundEffectEnabled() ? soundFX->disableDistortionSoundEffect() : (void)soundFX->enableDistortionSoundEffect();
+			distortionBT = elapsedTime + .5f;
+		}
+		if(Key(KEY_O) && echoBT <= elapsedTime){
+			soundFX->isEchoSoundEffectEnabled() ? soundFX->disableEchoSoundEffect() : (void)soundFX->enableEchoSoundEffect();
+			echoBT = elapsedTime + .5f;
+		}
+		if(Key(KEY_P) && wavesReverbBT <= elapsedTime){
+			soundFX->isWavesReverbSoundEffectEnabled() ? soundFX->disableWavesReverbSoundEffect() : (void)soundFX->enableWavesReverbSoundEffect();
+			wavesReverbBT = elapsedTime + .5f;
+		}
+		if(Key(KEY_L) && resetSoundFXBT <= elapsedTime){
+			soundFX->disableAllEffects();
+			resetSoundFXBT = elapsedTime + .5f;
+		}
 	}
 }
 

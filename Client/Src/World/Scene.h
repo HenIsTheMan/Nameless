@@ -15,6 +15,8 @@ public:
 private:
 	Cam cam;
 	ISoundEngine* soundEngine;
+	ISound* music;
+	ISoundEffectControl* soundFX;
 
 	Mesh mesh;
 	Mesh* terrain;
@@ -38,6 +40,10 @@ private:
 
 	float elapsedTime;
 	float polyModeBT;
+	float distortionBT;
+	float echoBT;
+	float wavesReverbBT;
+	float resetSoundFXBT;
 };
 
 inline glm::mat4 CreateModelMat(const glm::vec3& translate, const glm::vec4& rotate, const glm::vec3& scale){

@@ -20,6 +20,10 @@
 using namespace irrklang;
 
 constexpr auto KEY_2 = 50;
+constexpr auto KEY_I = 73;
+constexpr auto KEY_L = 76;
+constexpr auto KEY_O = 79;
+constexpr auto KEY_P = 80;
 
 #define STR(text) #text
 
