@@ -17,7 +17,7 @@ App::App():
 	RBORefIDs()
 {
 	if(!InitAPI(win)){
-		puts("Failed to init API\n");
+		(void)puts("Failed to init API\n");
 		endLoop = true;
 	}
 	(void)Init();
@@ -55,7 +55,7 @@ bool App::Init(){
 
 		if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE){
 			printf(STR(FBO::GeoPass));
-			puts(" is incomplete!\n");
+			(void)puts(" is incomplete!\n");
 			return false;
 		}
 	glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)FBO::LightingPass]);
@@ -74,7 +74,7 @@ bool App::Init(){
 
 		if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE){
 			printf(STR(FBO::LightingPass));
-			puts(" is incomplete!\n");
+			(void)puts(" is incomplete!\n");
 			return false;
 		}
 	for(FBO i = FBO::PingPong0; i <= FBO::PingPong1; ++i){

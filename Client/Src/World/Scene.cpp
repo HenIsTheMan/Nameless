@@ -45,7 +45,7 @@ Scene::Scene():
 {
 	soundEngine = createIrrKlangDevice(ESOD_AUTO_DETECT, ESEO_MULTI_THREADED | ESEO_LOAD_PLUGINS | ESEO_USE_3D_BUFFERS | ESEO_PRINT_DEBUG_INFO_TO_DEBUGGER);
 	if(!soundEngine){
-		puts("Failed to init soundEngine!\n");
+		(void)puts("Failed to init soundEngine!\n");
 	}
 	//soundEngine->play2D("Audio/Music/YellowCafe.mp3", true);
 
@@ -57,10 +57,10 @@ Scene::Scene():
 
 		soundFX = music->getSoundEffectControl();
 		if(!soundFX){
-			puts("No soundFX support!\n");
+			(void)puts("No soundFX support!\n");
 		}
 	} else{
-		puts("Failed to init music!\n");
+		(void)puts("Failed to init music!\n");
 	}
 
 	spotlights.emplace_back(CreateLight(LightType::Spot));

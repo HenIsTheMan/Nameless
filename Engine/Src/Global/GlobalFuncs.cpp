@@ -41,12 +41,12 @@ bool InitAPI(GLFWwindow*& win){
     glfwSetWindowPos(win, int(float(mode->width - GetSystemMetrics(SM_CXFULLSCREEN)) / 2.f), int(float(mode->height - GetSystemMetrics(SM_CYFULLSCREEN)) / 2.f));
 
     if(win == 0){ //Get a handle to the created window obj
-        puts("Failed to create GLFW win\n");
+        (void)puts("Failed to create GLFW win\n");
         return false;
     }
     glfwMakeContextCurrent(win); //Make context of the window the main context on the curr thread
     if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)){
-        puts("Failed to init GLAD\n");
+        (void)puts("Failed to init GLAD\n");
         return false;
     }
     glfwSetFramebufferSizeCallback(win, &FramebufferSizeCallback);
@@ -84,7 +84,7 @@ bool InitConsole(){
 
     ::ShowWindow(::GetConsoleWindow(), SW_SHOW);
     if(!SetConsoleCtrlHandler((PHANDLER_ROUTINE)ConsoleEventHandler, TRUE)){
-        puts("Failed to install console event handler!\n");
+        (void)puts("Failed to install console event handler!\n");
         return false;
     }
     return true;

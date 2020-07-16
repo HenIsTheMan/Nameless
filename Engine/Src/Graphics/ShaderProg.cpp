@@ -58,7 +58,7 @@ bool ShaderProg::Init(){
 
 void ShaderProg::Link() const{
 	int infoLogLength;
-	puts("Linking prog...\n");
+	(void)puts("Linking prog...\n");
 	glLinkProgram(refID); //Vars in diff shaders are linked here too
 
 	glGetProgramiv(refID, GL_INFO_LOG_LENGTH, &infoLogLength);
