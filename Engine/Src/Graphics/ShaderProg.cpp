@@ -75,8 +75,7 @@ void ShaderProg::ParseShader(cstr const& fPath, const uint& shaderRefID) const{
 	std::ifstream stream(fPath);
 
 	if(!stream.is_open()){
-		printf("Failed to open and read \"%s\"\n", fPath);
-		return;
+		return (void)printf("Failed to open and read \"%s\"\n", fPath);
 	}
 	while(getline(stream, line)){
 		srcCodeStr += "\n" + line;
@@ -108,8 +107,7 @@ void ShaderProg::Use(){
 void ShaderProg::UseTex(const uint& texRefID, const cstr& samplerName, const int& texTarget){
 	const int size = (int)texTargets.size();
 	if(size == 32){
-		puts("Exceeded 32 texs in draw call!\n");
-		return;
+		return (void)puts("Exceeded 32 texs in draw call!\n");
 	}
 	glActiveTexture(GL_TEXTURE0 + size);
 	glBindTexture(texTarget, texRefID);

@@ -337,8 +337,7 @@ public:
         //for(int i = 0; i < this->size; ++i){
         //    if(this->container[index] == data){
         //        SetData(i, std::numeric_limits<T>::min());
-        //        RemoveMin();
-        //        return;
+        //        return RemoveMin();
         //    }
         //}
         //std::cout << "'" << data << "' cannot be found in and hence cannot be removed from MinHeap!\n";

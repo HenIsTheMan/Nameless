@@ -119,8 +119,7 @@ Mesh::~Mesh(){
 
 void Mesh::BatchRender(const std::vector<BatchRenderParams>& paramsVec){ //Old and not working??
 	if(primitive < 0){
-		puts("Invalid primitive!\n");
-		return;
+		return (void)puts("Invalid primitive!\n");
 	}
 	switch(type){
 		case MeshType::None:
@@ -191,8 +190,7 @@ void Mesh::BatchRender(const std::vector<BatchRenderParams>& paramsVec){ //Old a
 
 void Mesh::InstancedRender(ShaderProg& SP, const bool& autoConfig){
 	if(primitive < 0){
-		puts("Invalid primitive!\n");
-		return;
+		return (void)puts("Invalid primitive!\n");
 	}
 
 	SP.Use();
@@ -311,8 +309,7 @@ void Mesh::InstancedRender(ShaderProg& SP, const bool& autoConfig){
 
 void Mesh::Render(ShaderProg& SP, const bool& autoConfig){
 	if(primitive < 0){
-		puts("Invalid primitive!\n");
-		return;
+		return (void)puts("Invalid primitive!\n");
 	}
 
 	SP.Use();

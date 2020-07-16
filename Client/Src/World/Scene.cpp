@@ -53,7 +53,7 @@ Scene::Scene():
 	if(music){
 		//music->setPosition(vec3df(0.f, 0.f, 0.f));
 		music->setMinDistance(5.f);
-		//music->setVolume(0);
+		music->setVolume(0);
 
 		soundFX = music->getSoundEffectControl();
 		if(!soundFX){

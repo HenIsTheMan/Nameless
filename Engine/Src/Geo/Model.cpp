@@ -42,8 +42,7 @@ void Model::LoadModel() const{ //Load model into a DS of Assimp called a scene o
     Assimp::Importer importer;
     const aiScene* const scene = importer.ReadFile(modelPath, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices);
     if(!scene || !scene->mRootNode || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE){ //If !scene || !(root node of scene) || returned data is incomplete (given by 1 of its flags)
-        printf("Assimp error: %s\n", importer.GetErrorString());
-        return;
+        return (void)printf("Assimp error: %s\n", importer.GetErrorString());
     }
     ProcessNode(scene, scene->mRootNode);
 }
@@ -117,8 +116,7 @@ void Model::AddModelMatForAll(const glm::mat4& modelMat){
 
 void Model::BatchRender(const int& primitive){ //Old and not working??
     if(primitive < 0){
-        puts("Invalid primitive!\n");
-        return;
+        return (void)puts("Invalid primitive!\n");
     }
     if(!meshes.size()){
         LoadModel();
@@ -180,8 +178,7 @@ void Model::BatchRender(const int& primitive){ //Old and not working??
 
 void Model::InstancedRender(ShaderProg& SP, const int& primitive){
     if(primitive < 0){
-        puts("Invalid primitive!\n");
-        return;
+        return (void)puts("Invalid primitive!\n");
     }
     if(!meshes.size()){
         LoadModel();
@@ -197,8 +194,7 @@ void Model::InstancedRender(ShaderProg& SP, const int& primitive){
 
 void Model::Render(ShaderProg& SP, const int& primitive){
     if(primitive < 0){
-        puts("Invalid primitive!\n");
-        return;
+        return (void)puts("Invalid primitive!\n");
     }
     if(!meshes.size()){
         LoadModel();
