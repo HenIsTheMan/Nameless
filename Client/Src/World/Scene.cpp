@@ -18,7 +18,7 @@ Scene::Scene():
 		{"Imgs/BoxSpec.png", Mesh::TexType::Spec, 0},
 		{"Imgs/BoxEmission.png", Mesh::TexType::Emission, 0},
 	}),
-	spriteAni(new SpriteAnimation(4, 8)),
+	spriteAni(new SpriteAni(4, 8)),
 	terrain(new Terrain("Imgs/hMap.raw", 8.f, 8.f)),
 	model("ObjsAndMtls/nanosuit.obj", {
 		aiTextureType_DIFFUSE,
@@ -116,8 +116,8 @@ bool Scene::Init(){
 	}
 
 	spriteAni->AddTexMap({"Imgs/Fire.png", Mesh::TexType::Diffuse, 0});
-	static_cast<SpriteAnimation*>(spriteAni)->AddAnimation("FireAni", 0, 32);
-	static_cast<SpriteAnimation*>(spriteAni)->PlayAnimation("FireAni", -1, .5f);
+	static_cast<SpriteAni*>(spriteAni)->AddAni("FireAni", 0, 32);
+	static_cast<SpriteAni*>(spriteAni)->Play("FireAni", -1, .5f);
 
 	terrain->AddTexMap({"Imgs/GrassGround.jpg", Mesh::TexType::Diffuse, 0});
 
@@ -140,7 +140,7 @@ void Scene::Update(){
 	static_cast<Spotlight*>(spotlights[0])->pos = camPos;
 	static_cast<Spotlight*>(spotlights[0])->dir = camFront;
 	static_cast<Spotlight*>(spotlights[0])->diffuse = glm::vec3(100.f, 100.f, 100.f);
-	static_cast<SpriteAnimation*>(spriteAni)->Update();
+	static_cast<SpriteAni*>(spriteAni)->Update();
 
 	GLint polyMode;
 	glGetIntegerv(GL_POLYGON_MODE, &polyMode);

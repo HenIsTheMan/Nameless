@@ -3,92 +3,145 @@
 
 extern float dt;
 
-SpriteAnimation::SpriteAnimation(int row, int col): row(row), col(col), currentTime(0), currentFrame(0), playCount(0), currentAnimation(""){}
+SpriteAni::SpriteAni(): SpriteAni(0, 0){}
 
-SpriteAnimation::~SpriteAnimation(){
-	for(auto iter = animationList.begin(); iter != animationList.end(); ++iter){
+SpriteAni::SpriteAni(const int& myRows, const int& myCols):
+	currTime(0.f),
+	currFrame(0),
+	rows(myRows),
+	cols(myCols),
+	playCount(0),
+	currAni(""),
+	allAnis({})
+{
+}
+
+SpriteAni::~SpriteAni(){
+	const auto& end = allAnis.end();
+	for(auto iter = allAnis.begin(); iter != end; ++iter){
 		if(iter->second){
 			delete iter->second;
+			iter->second = nullptr;
 		}
 	}
 }
 
-void SpriteAnimation::Update(){
-	if(animationList[currentAnimation]->animActive){ //Check if the current animation is active
-		currentTime += dt;
-		int numFrame = (int)animationList[currentAnimation]->frames.size();
-		float frameTime = animationList[currentAnimation]->animTime / numFrame;
-
-		currentFrame = animationList[currentAnimation]->frames[std::min((int)animationList[currentAnimation]->frames.size() - 1, int(currentTime / frameTime))]; //Set curr frame based on curr time
-		if(currentTime >= animationList[currentAnimation]->animTime){ //If curr time >= total animated time...
-			if(playCount < animationList[currentAnimation]->repeatCount){
-				///Increase count and repeat
-				++playCount;
-				currentTime = 0;
-				currentFrame = animationList[currentAnimation]->frames[0];
-			} else{ //If repeat count is 0 || play count == repeat count...
-				animationList[currentAnimation]->animActive = false;
-				animationList[currentAnimation]->ended = true;
-			}
-			if(animationList[currentAnimation]->repeatCount == -1){ //If ani is infinite...
-				currentTime = 0.f;
-				currentFrame = animationList[currentAnimation]->frames[0];
-				animationList[currentAnimation]->animActive = true;
-				animationList[currentAnimation]->ended = false;
-			}
-		}
+void SpriteAni::Play(const str& name, const int& repeat, const float& time){
+	if(allAnis[name]){
+		currAni = name;
+		allAnis[name]->repeatCount = repeat;
+		allAnis[name]->time = time;
+		allAnis[name]->active = true;
 	}
 }
 
-void SpriteAnimation::AddAnimation(std::string anim_name, int start, int end){
-	Animation* anim = new Animation();
-	for(int i = start; i < end; ++i){ //Ad in all the frames in the range
-		anim->AddFrame(i);
-	}
-	animationList[anim_name] = anim; //Link anim to animation list
-	if(currentAnimation == ""){ //Set the current animation if it does not exist
-		currentAnimation = anim_name;
-	}
-	animationList[anim_name]->animActive = false;
+void SpriteAni::Resume(){
+	allAnis[currAni]->active = true;
 }
 
-void SpriteAnimation::AddSequeneAnimation(std::string anim_name, const ::std::initializer_list<int>& frames){
-	Animation* anim = new Animation();
-	for(const int& frame: frames){
-		anim->AddFrame(frame);
-	}
-	animationList[anim_name] = anim; //Link anim to animation list
-	if(currentAnimation == ""){ //Set the current animation if it does not exist
-		currentAnimation = anim_name;
-	}
-	animationList[anim_name]->animActive = false;
+void SpriteAni::Pause(){
+	allAnis[currAni]->active = false;
 }
 
-void SpriteAnimation::PlayAnimation(std::string anim_name, int repeat, float time){
-	if(animationList[anim_name] != nullptr){ //Check if the anim name exist
-		currentAnimation = anim_name;
-		animationList[anim_name]->Set(repeat, time, true);
-	}
-}
-
-void SpriteAnimation::Resume(){
-	animationList[currentAnimation]->animActive = true;
-}
-
-void SpriteAnimation::Pause(){
-	animationList[currentAnimation]->animActive = false;
-}
-
-void SpriteAnimation::Reset(){
-	currentFrame = animationList[currentAnimation]->frames[0];
+void SpriteAni::Reset(){
+	currFrame = allAnis[currAni]->frames[0];
 	playCount = 0;
 }
 
-void SpriteAnimation::Render(ShaderProg& SP, const bool& autoConfig){
+void SpriteAni::AddAni(const str& name, const int& start, const int& end){
+	Ani* anim = new Ani();
+	for(int i = start; i < end; ++i){
+		anim->frames.emplace_back(i);
+	}
+	allAnis[name] = anim; //Link anim to aniList
+	if(currAni == ""){ //Set the curr ani if it does not exist
+		currAni = name;
+	}
+	allAnis[name]->active = false;
+}
+
+void SpriteAni::AddSequenceAni(const str& name, const ::std::initializer_list<int>& frames){
+	Ani* anim = new Ani();
+	for(const int& frame: frames){
+		anim->frames.emplace_back(frame);
+	}
+	allAnis[name] = anim; //...
+	if(currAni == ""){ //...
+		currAni = name;
+	}
+	allAnis[name]->active = false;
+}
+
+void SpriteAni::Create(){
+	vertices = new std::vector<Vertex>();
+	indices = new std::vector<uint>();
+
+	const float width = 1.f / (float)cols;
+	const float height = 1.f / (float)rows;
+	int offset = 0;
+	short myArr[6]{0, 1, 2, 0, 2, 3};
+	std::vector<std::pair<glm::vec3, glm::vec2>> temp;
+
+	for(int i = 0; i < rows; ++i){
+		for(int j = 0; j < cols; ++j){
+			const float U = j * width;
+			const float V = 1.f - height - i * height;
+			temp.push_back({glm::vec3(-.5f, -.5f, 0.f), glm::vec2(U, V)});
+			temp.push_back({glm::vec3(.5f, -.5f, 0.f), glm::vec2(U + width, V)});
+			temp.push_back({glm::vec3(.5f, .5f, 0.f), glm::vec2(U + width, V + height)});
+			temp.push_back({glm::vec3(-.5f, .5f, 0.f), glm::vec2(U, V + height)});
+
+			for(short k = 0; k < 6; ++k){
+				indices->emplace_back(offset + myArr[k]);
+			}
+			offset += 4;
+		}
+	}
+
+	const size_t size = temp.size();
+	for(size_t i = 0; i < size; ++i){
+		vertices->push_back({
+			temp[i].first,
+			glm::vec4(.7f, .4f, .1f, 1.f),
+			temp[i].second,
+			glm::vec3(0.f, 0.f, 1.f),
+			glm::vec3(0.f), //??
+			0,
+		});
+	}
+}
+
+void SpriteAni::Update(){
+	if(allAnis[currAni]->active){ //Check if the curr Ani is active
+		currTime += dt;
+		int numFrame = (int)allAnis[currAni]->frames.size();
+		float frameTime = allAnis[currAni]->time / numFrame;
+
+		currFrame = allAnis[currAni]->frames[std::min((int)allAnis[currAni]->frames.size() - 1, int(currTime / frameTime))]; //Set curr frame based on curr time
+		if(currTime >= allAnis[currAni]->time){ //If curr time >= total animated time...
+			if(playCount < allAnis[currAni]->repeatCount){
+				///Increase play count and repeat
+				++playCount;
+				currTime = 0;
+				currFrame = allAnis[currAni]->frames[0];
+			} else{ //If repeat count is 0 || play count == repeat count...
+				allAnis[currAni]->active = false;
+				allAnis[currAni]->ended = true;
+			}
+			if(allAnis[currAni]->repeatCount == -1){ //If ani is infinite...
+				currTime = 0.f;
+				currFrame = allAnis[currAni]->frames[0];
+				allAnis[currAni]->active = true;
+				allAnis[currAni]->ended = false;
+			}
+		}
+	}
+}
+
+void SpriteAni::Render(ShaderProg& SP, const bool& autoConfig){
 	if(!vertices){
 		Create();
 	}
-
 	if(primitive < 0){
 		return (void)puts("Invalid primitive!\n");
 	}
@@ -179,48 +232,9 @@ void SpriteAnimation::Render(ShaderProg& SP, const bool& autoConfig){
 	}
 
 	glBindVertexArray(VAO);
-		glDrawElements(primitive, 6, GL_UNSIGNED_INT, (const void*)(long long(this->currentFrame) * 6 * sizeof(GLuint))); //more??
+		glDrawElements(primitive, 6, GL_UNSIGNED_INT, (const void*)(long long(this->currFrame) * 6 * sizeof(GLuint))); //more??
 	glBindVertexArray(0);
 	if(autoConfig){
 		SP.ResetTexUnits();
-	}
-}
-
-void SpriteAnimation::Create(){
-	vertices = new std::vector<Vertex>();
-	indices = new std::vector<uint>();
-
-	float width = 1.f / col;
-	float height = 1.f / row;
-	int offset = 0;
-	short myArr[6]{0, 1, 2, 0, 2, 3};
-	std::vector<std::pair<glm::vec3, glm::vec2>> temp;
-
-	for(int i = 0; i < row; ++i){
-		for(int j = 0; j < col; ++j){
-			float U = j * width;
-			float V = 1.f - height - i * height;
-			temp.push_back({glm::vec3(-.5f, -.5f, 0.f), glm::vec2(U, V)});
-			temp.push_back({glm::vec3(.5f, -.5f, 0.f), glm::vec2(U + width, V)});
-			temp.push_back({glm::vec3(.5f, .5f, 0.f), glm::vec2(U + width, V + height)});
-			temp.push_back({glm::vec3(-.5f, .5f, 0.f), glm::vec2(U, V + height)});
-
-			for(short k = 0; k < 6; ++k){
-				indices->emplace_back(offset + myArr[k]);
-			}
-			offset += 4;
-		}
-	}
-
-	size_t size = temp.size();
-	for(size_t i = 0; i < size; ++i){
-		vertices->push_back({
-			temp[i].first,
-			glm::vec4(.7f, .4f, .1f, 1.f),
-			temp[i].second,
-			glm::vec3(0.f, 0.f, 1.f),
-			glm::vec3(0.f), //??
-			0,
-		});
 	}
 }

@@ -1,49 +1,49 @@
 #pragma once
 #include "Mesh.h"
 
-class Animation final{
-	friend class SpriteAnimation;
-	Animation(): repeatCount(0), animTime(0.f), ended(false), animActive(false){}
+class Ani final{
+	friend class SpriteAni;
+private:
+	Ani():
+		active(false),
+		ended(false),
+		time(0.f),
+		repeatCount(0),
+		name(""),
+		frames({})
+	{
+	}
 
-	std::string animationName;
-	std::vector<int> frames;
-	int repeatCount;
-	float animTime;
+	bool active;
 	bool ended;
-	bool animActive;
-
-	void Set(int repeat, float time, bool active){
-		this->repeatCount = repeat;
-		this->animTime = time;
-		this->animActive = active;
-	}
-	void AddFrame(int i){
-		frames.push_back(i);
-	}
+	float time;
+	int repeatCount;
+	str name;
+	std::vector<int> frames;
 };
 
-class SpriteAnimation final: public Mesh{
-	int row;
-	int col;
-	float currentTime;
-	int playCount;
-	std::string currentAnimation;
-	std::unordered_map<std::string, Animation*> animationList;
+class SpriteAni final: public Mesh{
 public:
-	//SpriteAnimation();
-	SpriteAnimation(int row, int col);
-	~SpriteAnimation();
-	void Update();
-	int currentFrame;
+	SpriteAni();
+	SpriteAni(const int& myRows, const int& myCols);
+	~SpriteAni();
 
-	void AddAnimation(std::string name, int start, int end);
-	void AddSequeneAnimation(std::string name, const ::std::initializer_list<int>& frames);
-	void PlayAnimation(std::string name, int repeat, float time);
+	void Play(const str& name, const int& repeat, const float& time);
 	void Pause();
 	void Resume();
 	void Reset();
 
-
+	void AddAni(const str& name, const int& start, const int& end);
+	void AddSequenceAni(const str& name, const ::std::initializer_list<int>& frames);
 	void Create();
+	void Update();
 	void Render(ShaderProg& SP, const bool& autoConfig = true) override;
+private:
+	float currTime;
+	int currFrame;
+	int rows;
+	int cols;
+	int playCount;
+	str currAni;
+	std::unordered_map<str, Ani*> allAnis;
 };
