@@ -16,9 +16,6 @@ public:
 		PingPong1,
 		Amt
 	};
-
-
-
 	enum struct Tex{
 		Pos = 0,
 		Colours,
@@ -31,8 +28,6 @@ public:
 		PingPong1,
 		Amt
 	};
-
-
 
 	~App();
 	bool Init();

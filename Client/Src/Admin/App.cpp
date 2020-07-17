@@ -144,23 +144,25 @@ void App::Render(){
 	glViewport(0, 0, 2048, 2048);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)FBO::GeoPass]);
-	for(short i = 0; i < 5; ++i){
+	for(uint i = 0; i < 5; ++i){
 		uint arr[1]{GL_COLOR_ATTACHMENT0 + i};
 		glDrawBuffers(1, arr);
 		i == 1 ? glClearColor(.5f, 0.32f, 0.86f, 1.f) : glClearColor(0.f, 0.f, 0.f, 1.f); //State-setting func
 		glClear(GL_COLOR_BUFFER_BIT);
 	}
-	uint arr[5]{GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4};
-	glDrawBuffers(5, arr);
+	uint arr1[5]{GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4};
+	glDrawBuffers(sizeof(arr1) / sizeof(arr1[0]), arr1);
 	//glDrawBuffer(GL_COLOR_ATTACHMENT2);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); //State-using func
 	scene.GeoPassRender();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)FBO::LightingPass]);
-	for(short i = 0; i < 2; ++i){
+	for(uint i = 0; i < 2; ++i){
 		uint arr[1]{GL_COLOR_ATTACHMENT0 + i};
 		glDrawBuffers(1, arr);
 	}
+	uint arr2[2]{GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+	glDrawBuffers(sizeof(arr2) / sizeof(arr2[0]), arr2);
 	scene.LightingPassRender(texRefIDs[(int)Tex::Pos], texRefIDs[(int)Tex::Colours], texRefIDs[(int)Tex::Normals], texRefIDs[(int)Tex::Spec], texRefIDs[(int)Tex::Reflection]);
 
 
