@@ -28,7 +28,7 @@ void main(){
 	vsOut.pos = vec3((instancing ? model * modelMat : model) * vec4(pos, 1.f));
 	vsOut.colour = colour;
 	vsOut.texCoords = texCoords;
-	vsOut.normal = normalize(mat3(transpose(inverse(model))) * (useBumpMap ? texture(bumpMap, texCoords).rgb : normal));
+	vsOut.normal = normalize(mat3(transpose(inverse(instancing ? model * modelMat : model))) * (useBumpMap ? texture(bumpMap, texCoords).rgb : normal));
 	vsOut.diffuseTexIndex = diffuseTexIndex;
 	gl_Position = PV * vec4(vsOut.pos, 1.f);
 

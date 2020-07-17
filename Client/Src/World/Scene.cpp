@@ -16,7 +16,7 @@ Scene::Scene():
 	mesh(Mesh::MeshType::Quad, GL_TRIANGLES, {
 		{"Imgs/BoxAlbedo.png", Mesh::TexType::Diffuse, 0},
 		{"Imgs/BoxSpec.png", Mesh::TexType::Spec, 0},
-		{"Imgs/BoxEmission.png", Mesh::TexType::Emission, 0},
+		//{"Imgs/BoxEmission.png", Mesh::TexType::Emission, 0},
 	}),
 	spriteAni(new SpriteAni(4, 8)),
 	terrain(new Terrain("Imgs/hMap.raw", 8.f, 8.f)),
@@ -139,7 +139,8 @@ void Scene::Update(){
 	soundEngine->setListenerPosition(vec3df(camPos.x, camPos.y, camPos.z), vec3df(camFront.x, camFront.y, camFront.z));
 	static_cast<Spotlight*>(spotlights[0])->pos = camPos;
 	static_cast<Spotlight*>(spotlights[0])->dir = camFront;
-	static_cast<Spotlight*>(spotlights[0])->diffuse = glm::vec3(80.f, 80.f, 80.f);
+	//static_cast<Spotlight*>(spotlights[0])->diffuse = glm::vec3(50.f); //Blocky light if too high??
+	//static_cast<Spotlight*>(spotlights[0])->spec = glm::vec3(0.f, 1.f, 1.f); //Coloured specular highlight
 	static_cast<SpriteAni*>(spriteAni)->Update();
 
 	GLint polyMode;
@@ -192,8 +193,6 @@ void Scene::GeoPassRender(){
 	mesh.SetModel(CreateModelMat(glm::vec3(0.f, 1020.f, 0.f), glm::vec4(0.f, 1.f, 0.f, 45.f), glm::vec3(1.f)));
 	mesh.InstancedRender(geoPassSP);
 	//model.InstancedRender(geoPassSP);
-
-	//mesh.BatchRender(params);
 }
 
 void Scene::LightingPassRender(const uint& posTexRefID, const uint& coloursTexRefID, const uint& normalsTexRefID, const uint& specTexRefID, const uint& reflectionTexRefID){
