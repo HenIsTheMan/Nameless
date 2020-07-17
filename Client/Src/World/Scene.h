@@ -19,6 +19,7 @@ private:
 	ISoundEffectControl* soundFX;
 
 	Mesh mesh;
+	Mesh* spriteAni;
 	Mesh* terrain;
 
 	Model model;

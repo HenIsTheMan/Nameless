@@ -181,7 +181,7 @@ void Mesh::BatchRender(const std::vector<BatchRenderParams>& paramsVec){ //Old a
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, batchEBO);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, paramsVecSize * indicesSize * sizeof(uint), &allIndices[0], GL_STATIC_DRAW); //Alloc/Reserve a piece of GPU mem and add data into it
-		glDrawElements(primitive, (int)allIndices.size(), GL_UNSIGNED_INT, 0); //Draw/Render call/command
+		glDrawElements(primitive, (int)allIndices.size(), GL_UNSIGNED_INT, nullptr); //Draw/Render call/command
 	} else{
 		glDrawArrays(primitive, 0, (int)allVertices.size()); //...
 	}
@@ -300,7 +300,7 @@ void Mesh::InstancedRender(ShaderProg& SP, const bool& autoConfig){
 	}
 
 	glBindVertexArray(VAO);
-		indices ? glDrawElementsInstanced(primitive, (int)indices->size(), GL_UNSIGNED_INT, 0, (int)modelMats.size()) : glDrawArraysInstanced(primitive, 0, (int)vertices->size(), (int)modelMats.size());
+		indices ? glDrawElementsInstanced(primitive, (int)indices->size(), GL_UNSIGNED_INT, nullptr, (int)modelMats.size()) : glDrawArraysInstanced(primitive, 0, (int)vertices->size(), (int)modelMats.size());
 	glBindVertexArray(0);
 	if(autoConfig){
 		SP.ResetTexUnits();
@@ -398,7 +398,7 @@ void Mesh::Render(ShaderProg& SP, const bool& autoConfig){
 	}
 	
 	glBindVertexArray(VAO);
-		indices ? glDrawElements(primitive, (int)indices->size(), GL_UNSIGNED_INT, 0) : glDrawArrays(primitive, 0, (int)vertices->size());
+		indices ? glDrawElements(primitive, (int)indices->size(), GL_UNSIGNED_INT, nullptr) : glDrawArrays(primitive, 0, (int)vertices->size());
 	glBindVertexArray(0);
 	if(autoConfig){
 		SP.ResetTexUnits();

@@ -18,6 +18,7 @@ Scene::Scene():
 		{"Imgs/BoxSpec.png", Mesh::TexType::Spec, 0},
 		{"Imgs/BoxEmission.png", Mesh::TexType::Emission, 0},
 	}),
+	spriteAni(new SpriteAnimation(4, 8)),
 	terrain(new Terrain("Imgs/hMap.raw", 8.f, 8.f)),
 	model("ObjsAndMtls/nanosuit.obj", {
 		aiTextureType_DIFFUSE,
@@ -83,6 +84,10 @@ Scene::~Scene(){
 		spotlights[i] = nullptr;
 	}
 	
+	if(spriteAni){
+		delete spriteAni;
+		spriteAni = nullptr;
+	}
 	if(terrain){
 		delete terrain;
 		terrain = nullptr;
@@ -109,6 +114,11 @@ bool Scene::Init(){
 	for(int i = 0; i < 999; ++i){
 		model.AddModelMatForAll(CreateModelMat(glm::vec3(PseudorandMinMax(-100.f, 100.f), PseudorandMinMax(-100.f, 100.f), -5.f), glm::vec4(0.f, 1.f, 0.f, -45.f), glm::vec3(1.f)));
 	}
+
+	spriteAni->AddTexMap({"Imgs/Fire.png", Mesh::TexType::Diffuse, 0});
+	static_cast<SpriteAnimation*>(spriteAni)->AddAnimation("FireAni", 0, 32);
+	static_cast<SpriteAnimation*>(spriteAni)->PlayAnimation("FireAni", -1, .5f);
+
 	terrain->AddTexMap({"Imgs/GrassGround.jpg", Mesh::TexType::Diffuse, 0});
 
 	return true;
@@ -130,6 +140,7 @@ void Scene::Update(){
 	static_cast<Spotlight*>(spotlights[0])->pos = camPos;
 	static_cast<Spotlight*>(spotlights[0])->dir = camFront;
 	static_cast<Spotlight*>(spotlights[0])->diffuse = glm::vec3(100.f, 100.f, 100.f);
+	static_cast<SpriteAnimation*>(spriteAni)->Update();
 
 	GLint polyMode;
 	glGetIntegerv(GL_POLYGON_MODE, &polyMode);
@@ -174,6 +185,8 @@ void Scene::GeoPassRender(){
 	glDepthFunc(GL_LESS);
 
 	geoPassSP.SetMat4fv("PV", &(projection * view)[0][0]);
+	spriteAni->SetModel(CreateModelMat(glm::vec3(0.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(20.f, 40.f, 20.f)));
+	spriteAni->Render(geoPassSP);
 	terrain->SetModel(CreateModelMat(glm::vec3(0.f), glm::vec4(0.f, 1.f, 0.f, 45.f), glm::vec3(500.f, 100.f, 500.f)));
 	terrain->Render(geoPassSP);
 	mesh.SetModel(CreateModelMat(glm::vec3(0.f, 1020.f, 0.f), glm::vec4(0.f, 1.f, 0.f, 45.f), glm::vec3(1.f)));
