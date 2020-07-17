@@ -42,7 +42,8 @@ Scene::Scene():
 	distortionBT(0.f),
 	echoBT(0.f),
 	wavesReverbBT(0.f),
-	resetSoundFXBT(0.f)
+	resetSoundFXBT(0.f),
+	modelStack()
 {
 	soundEngine = createIrrKlangDevice(ESOD_AUTO_DETECT, ESEO_MULTI_THREADED | ESEO_LOAD_PLUGINS | ESEO_USE_3D_BUFFERS | ESEO_PRINT_DEBUG_INFO_TO_DEBUGGER);
 	if(!soundEngine){
@@ -102,17 +103,31 @@ Scene::~Scene(){
 
 bool Scene::Init(){
 	for(int i = 0; i < 5000; ++i){
-		params.push_back({
-			CreateModelMat(glm::vec3(PseudorandMinMax(-200.f, 200.f), PseudorandMinMax(-200.f, 200.f), -5.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)),
-			glm::vec4(PseudorandMinMax(0.f, 1.f), PseudorandMinMax(0.f, 1.f), PseudorandMinMax(0.f, 1.f), 1.f),
-			0,
+		PushModel({
+			Translate(glm::vec3(PseudorandMinMax(-200.f, 200.f), PseudorandMinMax(-200.f, 200.f), -5.f)),
 		});
+			params.push_back({
+				GetTopModel(),
+				glm::vec4(PseudorandMinMax(0.f, 1.f), PseudorandMinMax(0.f, 1.f), PseudorandMinMax(0.f, 1.f), 1.f),
+				0,
+			});
+		PopModel();
 	};
 	for(int i = 0; i < 99999; ++i){
-		mesh.AddModelMat(CreateModelMat(glm::vec3(PseudorandMinMax(-2000.f, 2000.f), PseudorandMinMax(-2000.f, 2000.f), -5.f), glm::vec4(0.f, 1.f, 0.f, -45.f), glm::vec3(1.f)));
+		PushModel({
+			Translate(glm::vec3(PseudorandMinMax(-2000.f, 2000.f), PseudorandMinMax(-2000.f, 2000.f), -5.f)),
+			Rotate(glm::vec4(0.f, 1.f, 0.f, -45.f)),
+		});
+			mesh.AddModelMat(GetTopModel());
+		PopModel();
 	}
 	for(int i = 0; i < 999; ++i){
-		model.AddModelMatForAll(CreateModelMat(glm::vec3(PseudorandMinMax(-100.f, 100.f), PseudorandMinMax(-100.f, 100.f), -5.f), glm::vec4(0.f, 1.f, 0.f, -45.f), glm::vec3(1.f)));
+		PushModel({
+			Translate(glm::vec3(PseudorandMinMax(-100.f, 100.f), PseudorandMinMax(-100.f, 100.f), -5.f)),
+			Rotate(glm::vec4(0.f, 1.f, 0.f, -45.f)),
+		});
+			model.AddModelMatForAll(GetTopModel());
+		PopModel();
 	}
 
 	spriteAni->AddTexMap({"Imgs/Fire.png", Mesh::TexType::Diffuse, 0});
@@ -175,24 +190,48 @@ void Scene::GeoPassRender(){
 
 	glDepthFunc(GL_LEQUAL); //Modify comparison operators used for depth test such that frags with depth <= 1.f are shown
 	geoPassSP.Set1i("sky", 1);
-
 	geoPassSP.SetMat4fv("PV", &(projection * glm::mat4(glm::mat3(view)))[0][0]);
-	skydome.SetModelForAll(CreateModelMat(glm::vec3(0.f, -1.f, 0.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)));
-	skydome.Render(geoPassSP);
-	skydome.SetModelForAll(CreateModelMat(glm::vec3(0.f, 1.f, 0.f), glm::vec4(0.f, 0.f, 1.f, 180.f), glm::vec3(1.f)));
-	skydome.Render(geoPassSP);
-
+	PushModel({
+		Translate(glm::vec3(0.f, -1.f, 0.f)),
+	});
+		skydome.SetModelForAll(GetTopModel());
+		skydome.Render(geoPassSP);
+	PopModel();
+	PushModel({
+		Translate(glm::vec3(0.f, 1.f, 0.f)),
+		Rotate(glm::vec4(0.f, 0.f, 1.f, 180.f)),
+	});
+		skydome.SetModelForAll(GetTopModel());
+		skydome.Render(geoPassSP);
+	PopModel();
 	geoPassSP.Set1i("sky", 0);
 	glDepthFunc(GL_LESS);
 
 	geoPassSP.SetMat4fv("PV", &(projection * view)[0][0]);
-	spriteAni->SetModel(CreateModelMat(glm::vec3(0.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(20.f, 40.f, 20.f)));
-	spriteAni->Render(geoPassSP);
-	terrain->SetModel(CreateModelMat(glm::vec3(0.f), glm::vec4(0.f, 1.f, 0.f, 45.f), glm::vec3(500.f, 100.f, 500.f)));
-	terrain->Render(geoPassSP);
-	mesh.SetModel(CreateModelMat(glm::vec3(0.f, 1020.f, 0.f), glm::vec4(0.f, 1.f, 0.f, 45.f), glm::vec3(1.f)));
-	mesh.InstancedRender(geoPassSP);
-	//model.InstancedRender(geoPassSP);
+	PushModel({
+		Rotate(glm::vec4(0.f, 1.f, 0.f, 45.f)),
+		Scale(glm::vec3(500.f, 100.f, 500.f)),
+	});
+		terrain->SetModel(GetTopModel());
+		terrain->Render(geoPassSP);
+	PopModel();
+	PushModel({
+		Translate(glm::vec3(0.f, 1020.f, 0.f)),
+		Rotate(glm::vec4(0.f, 1.f, 0.f, 45.f)),
+	});
+		mesh.SetModel(GetTopModel());
+		mesh.InstancedRender(geoPassSP);
+	PopModel();
+
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
+	PushModel({
+		Translate(glm::vec3(0.f, 50.f, 0.f)),
+		Scale(glm::vec3(20.f, 40.f, 20.f)),
+	});
+		spriteAni->SetModel(GetTopModel());
+		spriteAni->Render(geoPassSP);
+	PopModel();
+	glBlendFunc(GL_ONE, GL_ZERO);  
 }
 
 void Scene::LightingPassRender(const uint& posTexRefID, const uint& coloursTexRefID, const uint& normalsTexRefID, const uint& specTexRefID, const uint& reflectionTexRefID){
@@ -241,7 +280,7 @@ void Scene::LightingPassRender(const uint& posTexRefID, const uint& coloursTexRe
 		lightingPassSP.Set1f(("spotlights[" + std::to_string(i) + "].cosOuterCutoff").c_str(), spotlight->cosOuterCutoff);
 	}
 
-	mesh.SetModel(CreateModelMat(glm::vec3(0.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)));
+	mesh.SetModel(GetTopModel());
 	mesh.Render(lightingPassSP, false);
 	lightingPassSP.ResetTexUnits();
 }
@@ -250,7 +289,7 @@ void Scene::BlurRender(const uint& brightTexRefID, const bool& horizontal){
 	blurSP.Use();
 	blurSP.Set1i("horizontal", horizontal);
 	blurSP.UseTex(brightTexRefID, "texSampler");
-	mesh.SetModel(CreateModelMat(glm::vec3(0.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)));
+	mesh.SetModel(GetTopModel());
 	mesh.Render(blurSP, false);
 	blurSP.ResetTexUnits();
 }
@@ -259,7 +298,35 @@ void Scene::DefaultRender(const uint& screenTexRefID, const uint& blurTexRefID){
 	screenSP.Use();
 	screenSP.UseTex(screenTexRefID, "screenTexSampler");
 	screenSP.UseTex(blurTexRefID, "blurTexSampler");
-	mesh.SetModel(CreateModelMat(glm::vec3(0.f), glm::vec4(0.f, 1.f, 0.f, 0.f), glm::vec3(1.f)));
+	mesh.SetModel(GetTopModel());
 	mesh.Render(screenSP, false);
 	screenSP.ResetTexUnits();
+}
+
+glm::mat4 Scene::Translate(const glm::vec3& translate){
+	return glm::translate(glm::mat4(1.f), translate);
+}
+
+glm::mat4 Scene::Rotate(const glm::vec4& rotate){
+	return glm::rotate(glm::mat4(1.f), glm::radians(rotate.w), glm::vec3(rotate));
+}
+
+glm::mat4 Scene::Scale(const glm::vec3& scale){
+	return glm::scale(glm::mat4(1.f), scale);
+}
+
+glm::mat4 Scene::GetTopModel() const{
+	return modelStack.empty() ? glm::mat4(1.f) : modelStack.top();
+}
+
+void Scene::PushModel(const std::vector<glm::mat4>& vec) const{
+	modelStack.push(modelStack.empty() ? glm::mat4(1.f) : modelStack.top());
+	const size_t size = vec.size();
+	for(size_t i = 0; i < size; ++i){
+		modelStack.top() = modelStack.top() * vec[i];
+	}
+}
+
+void Scene::PopModel() const{
+	modelStack.pop();
 }

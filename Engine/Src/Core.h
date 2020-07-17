@@ -13,6 +13,7 @@
 
 #include <functional>
 #include <fstream>
+#include <stack>
 #include <thread>
 #include <unordered_map>
 #include <vector>

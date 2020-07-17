@@ -45,8 +45,12 @@ private:
 	float echoBT;
 	float wavesReverbBT;
 	float resetSoundFXBT;
-};
 
-inline glm::mat4 CreateModelMat(const glm::vec3& translate, const glm::vec4& rotate, const glm::vec3& scale){
-	return glm::scale(glm::rotate(glm::translate(glm::mat4(1.f), translate), glm::radians(rotate.w), glm::vec3(rotate)), scale);
-}
+	mutable std::stack<glm::mat4> modelStack;
+	glm::mat4 Translate(const glm::vec3& translate);
+	glm::mat4 Rotate(const glm::vec4& rotate);
+	glm::mat4 Scale(const glm::vec3& scale);
+	glm::mat4 GetTopModel() const;
+	void PushModel(const std::vector<glm::mat4>& vec) const;
+	void PopModel() const;
+};
