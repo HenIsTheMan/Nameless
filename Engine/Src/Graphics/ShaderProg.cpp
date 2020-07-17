@@ -30,7 +30,7 @@ int ShaderProg::GetUniLocation(cstr const& uniName){
 	if(!uniLocationCache.count(str{uniName})){ //If not cached...
 		uniLocationCache[str{uniName}] = glGetUniformLocation(refID, uniName); //Query location of uni
 		if(uniLocationCache[str{uniName}] == -1){
-			printf("%u: Failed to find uni '%s'\n", this->refID, uniName);
+			(void)printf("%u: Failed to find uni '%s'\n", this->refID, uniName);
 		}
 	}
 	return uniLocationCache[str{uniName}];
@@ -43,7 +43,7 @@ bool ShaderProg::Init(){
 	refID = glCreateProgram();
 	for(short i = 0; i < sizeof(shaderPaths) / sizeof(shaderPaths[0]) - (shaderPaths[2] == ""); ++i){
 		if(shaderCache.count(shaderPaths[i])){
-			printf("Reusing \"%s\"...\n", shaderPaths[i]);
+			(void)printf("Reusing \"%s\"...\n", shaderPaths[i]);
 			glAttachShader(refID, shaderCache[shaderPaths[i]]);
 		} else{
 			uint shaderRefID = glCreateShader(i < 2 ? (~i & 1 ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER) : GL_GEOMETRY_SHADER);
@@ -65,7 +65,7 @@ void ShaderProg::Link() const{
 	if(infoLogLength){
 		char* errorMsg = (char*)_malloca(infoLogLength * sizeof(char)); //Allocate memory on the stack dynamically
 		glGetProgramInfoLog(refID, infoLogLength, &infoLogLength, errorMsg);
-		printf("%s\n", errorMsg);
+		(void)printf("%s\n", errorMsg);
 	}
 }
 
@@ -82,7 +82,7 @@ void ShaderProg::ParseShader(cstr const& fPath, const uint& shaderRefID) const{
 	}
 	stream.close();
 
-	printf("Compiling \"%s\"...\n", fPath);
+	(void)printf("Compiling \"%s\"...\n", fPath);
 	cstr srcCodeCStr = srcCodeStr.c_str();
 	glShaderSource(shaderRefID, 1, &srcCodeCStr, 0);
 	glCompileShader(shaderRefID);
@@ -90,13 +90,13 @@ void ShaderProg::ParseShader(cstr const& fPath, const uint& shaderRefID) const{
 	if(infoLogLength){
 		char* errorMsg = (char*)_malloca(infoLogLength * sizeof(char)); //Allocate memory on the stack dynamically
 		glGetShaderInfoLog(shaderRefID, infoLogLength, &infoLogLength, errorMsg);
-		printf("Failed to compile \"%s\"!\n%s\n", fPath, errorMsg);
+		(void)printf("Failed to compile \"%s\"!\n%s\n", fPath, errorMsg);
 	}
 }
 
 void ShaderProg::Use(){
 	if(!refID && !Init()){ //Init on 1st use
-		printf("%u: ShaderProg not initialised\n", this->refID);
+		(void)printf("%u: ShaderProg failed to initialise\n", this->refID);
 	}
 	if(!currSP || currSP->refID != refID){
 		glUseProgram(refID);

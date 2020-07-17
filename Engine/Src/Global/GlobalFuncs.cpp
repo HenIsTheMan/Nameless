@@ -98,15 +98,12 @@ void SetUpTex(const SetUpTexsParams& params, uint& texRefID){
     glBindTexture(params.texTarget, texRefID); //Make tex referenced by 'texRefIDs[i]' the tex currently bound to the currently active tex unit so subsequent tex commands will config it
     int width, height, colourChannelsAmt;
     unsigned char* data = stbi_load(params.texPath.c_str(), &width, &height, &colourChannelsAmt, 0);
-    if(data){
-        GLenum format1 = colourChannelsAmt == 3 ? GL_RGB16F : GL_RGBA16F;
-        GLenum format2 = colourChannelsAmt == 3 ? GL_RGB : GL_RGBA;
-        glTexImage2D(params.texTarget, 0, format1, width, height, 0, format2, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(params.texTarget); //Gen required mipmap lvls for currently bound tex
-        stbi_image_free(data); //Free the img mem
-    } else{
-        printf("Failed to load tex at \"%s\"\n", params.texPath.c_str());
+    if(!data){
+        return (void)printf("Failed to load tex at \"%s\"\n", params.texPath.c_str());
     }
+    glTexImage2D(params.texTarget, 0, colourChannelsAmt == 3 ? GL_RGB16F : GL_RGBA16F, width, height, 0, colourChannelsAmt == 3 ? GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE, data);
+    stbi_image_free(data); //Free the img mem
+    glGenerateMipmap(params.texTarget); //Gen required mipmap lvls for currently bound tex
     glTexParameteri(params.texTarget, GL_TEXTURE_WRAP_S, params.texWrapParam);
     glTexParameteri(params.texTarget, GL_TEXTURE_WRAP_T, params.texWrapParam);
     glTexParameteri(params.texTarget, GL_TEXTURE_MIN_FILTER, params.texFilterMin); //Nearest neighbour/Point filtering/interpolation when textures are scaled downwards

@@ -56,13 +56,13 @@ uniform sampler2D posTex;
 uniform sampler2D coloursTex;
 uniform sampler2D normalsTex;
 uniform sampler2D specTex;
-uniform sampler2D reflectionTex; //??
+uniform sampler2D reflectionTex;
 
 vec3 WorldSpacePos = texture(posTex, TexCoords).rgb;
 vec4 Colour = texture(coloursTex, TexCoords);
 vec3 Normal = texture(normalsTex, TexCoords).rgb;
 vec3 Spec = texture(specTex, TexCoords).rgb;
-vec3 Reflection = texture(reflectionTex, TexCoords).rgb; //??
+vec3 Reflection = texture(reflectionTex, TexCoords).rgb;
 
 vec3 CalcAmbient(vec3 lightAmbient){
     return lightAmbient * Colour.rgb;
@@ -103,10 +103,10 @@ vec3 CalcSpotlight(Spotlight light){
 void main(){
     if(Normal == vec3(0.f)){
         fragColour = Colour;
-        brightFragColour = vec4(vec3(0.f), 1.f); //??
+        brightFragColour = vec4(0.f);
     } else if(pAmt == 0 && dAmt == 0 && sAmt == 0){
         fragColour = vec4(CalcAmbient(globalAmbient), Colour.a);
-        brightFragColour = vec4(vec3(0.f), 1.f); //??
+        brightFragColour = vec4(0.f);
     } else{
         fragColour = vec4(vec3(0.f), Colour.a);
         for(int i = 0; i < pAmt; ++i){

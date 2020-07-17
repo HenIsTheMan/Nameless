@@ -37,7 +37,7 @@ void Terrain::Render(ShaderProg& SP, const bool& autoConfig){
 bool Terrain::Load(){
 	std::ifstream fStream(terrainPath, std::ios::binary);
 	if(!fStream.is_open()){
-		printf("Failed to open and read \"%s\"\n", terrainPath);
+		(void)printf("Failed to open and read \"%s\"\n", terrainPath);
 		return false;
 	}
 

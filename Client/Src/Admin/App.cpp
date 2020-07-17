@@ -54,13 +54,10 @@ bool App::Init(){
 		glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
 		if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE){
-			printf(STR(FBO::GeoPass));
+			(void)printf(STR(FBO::GeoPass));
 			(void)puts(" is incomplete!\n");
 			return false;
 		}
-
-
-
 	glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)FBO::LightingPass]);
 		for(Tex i = Tex::Lit; i <= Tex::Bright; ++i){
 			int currTexRefID;
@@ -76,7 +73,7 @@ bool App::Init(){
 		}
 
 		if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE){
-			printf(STR(FBO::LightingPass));
+			(void)printf(STR(FBO::LightingPass));
 			(void)puts(" is incomplete!\n");
 			return false;
 		}
@@ -145,31 +142,22 @@ void App::Render(){
 
 	glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)FBO::GeoPass]);
 	for(uint i = 0; i < 5; ++i){
-		uint arr[1]{GL_COLOR_ATTACHMENT0 + i};
-		glDrawBuffers(1, arr);
+		glDrawBuffer(GL_COLOR_ATTACHMENT0 + i);
 		i == 1 ? glClearColor(.5f, 0.32f, 0.86f, 1.f) : glClearColor(0.f, 0.f, 0.f, 1.f); //State-setting func
 		glClear(GL_COLOR_BUFFER_BIT);
 	}
 	uint arr1[5]{GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4};
 	glDrawBuffers(sizeof(arr1) / sizeof(arr1[0]), arr1);
-	//glDrawBuffer(GL_COLOR_ATTACHMENT2);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); //State-using func
 	scene.GeoPassRender();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)FBO::LightingPass]);
-	for(uint i = 0; i < 2; ++i){
-		uint arr[1]{GL_COLOR_ATTACHMENT0 + i};
-		glDrawBuffers(1, arr);
-	}
 	uint arr2[2]{GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
 	glDrawBuffers(sizeof(arr2) / sizeof(arr2[0]), arr2);
 	scene.LightingPassRender(texRefIDs[(int)Tex::Pos], texRefIDs[(int)Tex::Colours], texRefIDs[(int)Tex::Normals], texRefIDs[(int)Tex::Spec], texRefIDs[(int)Tex::Reflection]);
 
-
-
-
 	bool horizontal = true;
-	const short amt = 10;
+	const short amt = 8;
 	for(short i = 0; i < amt; ++i){ //Blur... amt / 2 times horizontally and amt / 2 times vertically
 		glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[int(FBO::PingPong0) + int(horizontal)]);
 		scene.BlurRender(!i ? texRefIDs[(int)Tex::Bright] : texRefIDs[int(Tex::PingPong0) + int(horizontal)], horizontal);
