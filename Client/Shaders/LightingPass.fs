@@ -57,6 +57,7 @@ uniform sampler2D coloursTex;
 uniform sampler2D normalsTex;
 uniform sampler2D specTex;
 uniform sampler2D reflectionTex;
+uniform samplerCube cubemapSampler;
 
 vec3 WorldSpacePos = texture(posTex, TexCoords).rgb;
 vec4 Colour = texture(coloursTex, TexCoords);
@@ -118,6 +119,13 @@ void main(){
         for(int i = 0; i < sAmt; ++i){
             fragColour.rgb += CalcSpotlight(spotlights[i]);
         }
+
+        const float ratio = 1.f / 1.52f; //n of air / n of glass (ratio between refractive indices of both materials)
+        vec3 incidentRay = normalize(WorldSpacePos - camPos);
+        vec3 reflectedRay = reflect(incidentRay, Normal);
+        vec3 refractedRay = refract(incidentRay, Normal, ratio);
+        fragColour.rgb += texture(cubemapSampler, reflectedRay).rgb * Reflection;
+
         float brightness = dot(fragColour.rgb, vec3(.2126f, .7152f, .0722f)); //Transform fragColour to grayscale with dot product
         brightFragColour = vec4(fragColour.rgb * vec3(float(brightness > 2.f)), 1.f); //2.f is brightness threshold (outside LDR with HDR rendering so more control over what is considered bright)
     }

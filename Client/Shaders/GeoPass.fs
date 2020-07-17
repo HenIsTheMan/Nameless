@@ -48,5 +48,5 @@ void main(){
 
 	normal = fsIn.normal;
 	spec = useSpecMap ? texture(specMap, fsIn.texCoords).rgb : vec3(0.f);
-	reflection = useReflectionMap ? texture(reflectionMap, fsIn.texCoords).rgb : vec3(1.f);
+	reflection = useReflectionMap ? texture(reflectionMap, fsIn.texCoords).rgb : vec3(0.f);
 }

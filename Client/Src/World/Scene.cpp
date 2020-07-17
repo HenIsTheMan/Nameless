@@ -208,6 +208,7 @@ void Scene::GeoPassRender(){
 	glDepthFunc(GL_LESS);
 
 	geoPassSP.SetMat4fv("PV", &(projection * view)[0][0]);
+
 	PushModel({
 		Rotate(glm::vec4(0.f, 1.f, 0.f, 45.f)),
 		Scale(glm::vec3(500.f, 100.f, 500.f)),
