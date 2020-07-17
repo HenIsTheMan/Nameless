@@ -10,9 +10,12 @@
 #include <GLM/gtc/matrix_transform.hpp>
 #include <GLM/gtc/type_ptr.hpp>
 #include <IRRKLANG/irrKlang.h>
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
 #include <functional>
 #include <fstream>
+#include <map>
 #include <stack>
 #include <thread>
 #include <unordered_map>
@@ -29,6 +32,7 @@ constexpr auto KEY_P = 80;
 #define STR(text) #text
 
 #pragma comment(lib, "assimp-vc142-mtd.lib")
+#pragma comment(lib, "freetype.lib")
 #pragma comment(lib, "glfw3.lib")
 #pragma comment(lib, "irrKlang.lib")
 #pragma comment(lib, "opengl32.lib")

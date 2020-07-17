@@ -148,12 +148,12 @@ void App::Render(){
 	uint arr1[5]{GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4};
 	glDrawBuffers(sizeof(arr1) / sizeof(arr1[0]), arr1);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); //State-using func
-	scene.GeoPassRender();
+	scene.GeoRenderPass();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)FBO::LightingPass]);
 	uint arr2[2]{GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
 	glDrawBuffers(sizeof(arr2) / sizeof(arr2[0]), arr2);
-	scene.LightingPassRender(texRefIDs[(int)Tex::Pos], texRefIDs[(int)Tex::Colours], texRefIDs[(int)Tex::Normals], texRefIDs[(int)Tex::Spec], texRefIDs[(int)Tex::Reflection]);
+	scene.LightingRenderPass(texRefIDs[(int)Tex::Pos], texRefIDs[(int)Tex::Colours], texRefIDs[(int)Tex::Normals], texRefIDs[(int)Tex::Spec], texRefIDs[(int)Tex::Reflection]);
 
 	bool horizontal = true;
 	const short amt = 8;

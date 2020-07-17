@@ -185,7 +185,7 @@ void Scene::Update(){
 	}
 }
 
-void Scene::GeoPassRender(){
+void Scene::GeoRenderPass(){
 	geoPassSP.Use();
 
 	glDepthFunc(GL_LEQUAL); //Modify comparison operators used for depth test such that frags with depth <= 1.f are shown
@@ -235,7 +235,7 @@ void Scene::GeoPassRender(){
 	glBlendFunc(GL_ONE, GL_ZERO);  
 }
 
-void Scene::LightingPassRender(const uint& posTexRefID, const uint& coloursTexRefID, const uint& normalsTexRefID, const uint& specTexRefID, const uint& reflectionTexRefID){
+void Scene::LightingRenderPass(const uint& posTexRefID, const uint& coloursTexRefID, const uint& normalsTexRefID, const uint& specTexRefID, const uint& reflectionTexRefID){
 	lightingPassSP.Use();
 	const int& pAmt = (int)ptLights.size();
 	const int& dAmt = (int)directionalLights.size();
