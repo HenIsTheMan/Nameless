@@ -16,16 +16,24 @@ public:
 		PingPong1,
 		Amt
 	};
+
+
+
 	enum struct Tex{
 		Pos = 0,
+		Colours,
 		Normals,
-		AlbedoSpec,
+		Spec,
+		Reflection,
 		Lit,
 		Bright,
 		PingPong0,
 		PingPong1,
 		Amt
 	};
+
+
+
 	~App();
 	bool Init();
 	void Update();

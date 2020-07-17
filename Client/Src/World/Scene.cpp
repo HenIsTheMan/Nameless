@@ -196,7 +196,7 @@ void Scene::GeoPassRender(){
 	//mesh.BatchRender(params);
 }
 
-void Scene::LightingPassRender(const uint& posTexRefID, const uint& normalsTexRefID, const uint& albedoSpecTexRefID){
+void Scene::LightingPassRender(const uint& posTexRefID, const uint& coloursTexRefID, const uint& normalsTexRefID, const uint& specTexRefID, const uint& reflectionTexRefID){
 	lightingPassSP.Use();
 	const int& pAmt = (int)ptLights.size();
 	const int& dAmt = (int)directionalLights.size();
@@ -206,8 +206,10 @@ void Scene::LightingPassRender(const uint& posTexRefID, const uint& normalsTexRe
 
 	lightingPassSP.Set3fv("camPos", cam.GetPos());
 	lightingPassSP.UseTex(posTexRefID, "posTex");
+	lightingPassSP.UseTex(coloursTexRefID, "coloursTex");
 	lightingPassSP.UseTex(normalsTexRefID, "normalsTex");
-	lightingPassSP.UseTex(albedoSpecTexRefID, "albedoSpecTex");
+	lightingPassSP.UseTex(specTexRefID, "specTex");
+	lightingPassSP.UseTex(reflectionTexRefID, "reflectionTex");
 
 	for(int i = 0; i < pAmt; ++i){
 		lightingPassSP.Set1i("pAmt", pAmt);

@@ -37,11 +37,11 @@ bool App::Init(){
 	stbi_set_flip_vertically_on_load(true);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)FBO::GeoPass]);
-		for(Tex i = Tex::Pos; i <= Tex::AlbedoSpec; ++i){
+		for(Tex i = Tex::Pos; i <= Tex::Reflection; ++i){
 			int currTexRefID;
 			glGetIntegerv(GL_TEXTURE_BINDING_2D, &currTexRefID);
 			glBindTexture(GL_TEXTURE_2D, texRefIDs[(int)i]);
-				glTexImage2D(GL_TEXTURE_2D, 0, i == Tex::AlbedoSpec ? GL_RGBA : GL_RGBA16F, 2048, 2048, 0, GL_RGBA, i == Tex::AlbedoSpec ? GL_UNSIGNED_BYTE : GL_FLOAT, NULL);
+				glTexImage2D(GL_TEXTURE_2D, 0, i == Tex::Reflection ? GL_RGBA : GL_RGBA16F, 2048, 2048, 0, GL_RGBA, i == Tex::Reflection ? GL_UNSIGNED_BYTE : GL_FLOAT, NULL); //??
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + (int)i, GL_TEXTURE_2D, texRefIDs[(int)i], 0);
@@ -58,6 +58,9 @@ bool App::Init(){
 			(void)puts(" is incomplete!\n");
 			return false;
 		}
+
+
+
 	glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)FBO::LightingPass]);
 		for(Tex i = Tex::Lit; i <= Tex::Bright; ++i){
 			int currTexRefID;
@@ -138,24 +141,30 @@ void App::PreRender() const{
 }
 
 void App::Render(){
-	uint arr1st[2]{GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
-	uint arr2nd[3]{GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
 	glViewport(0, 0, 2048, 2048);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)FBO::GeoPass]);
-	glClearColor(0.f, 0.f, 0.f, 1.f); //State-setting func
-		glDrawBuffers(2, arr1st);
+	for(short i = 0; i < 5; ++i){
+		uint arr[1]{GL_COLOR_ATTACHMENT0 + i};
+		glDrawBuffers(1, arr);
+		i == 1 ? glClearColor(.5f, 0.32f, 0.86f, 1.f) : glClearColor(0.f, 0.f, 0.f, 1.f); //State-setting func
 		glClear(GL_COLOR_BUFFER_BIT);
-	glClearColor(.5f, 0.32f, 0.86f, 1.f);
-		glDrawBuffer(GL_COLOR_ATTACHMENT2);
-		glClear(GL_COLOR_BUFFER_BIT);
-	glDrawBuffers(3, arr2nd);
+	}
+	uint arr[5]{GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4};
+	glDrawBuffers(5, arr);
+	//glDrawBuffer(GL_COLOR_ATTACHMENT2);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); //State-using func
 	scene.GeoPassRender();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)FBO::LightingPass]);
-	glDrawBuffers(2, arr1st);
-	scene.LightingPassRender(texRefIDs[(int)Tex::Pos], texRefIDs[(int)Tex::Normals], texRefIDs[(int)Tex::AlbedoSpec]);
+	for(short i = 0; i < 2; ++i){
+		uint arr[1]{GL_COLOR_ATTACHMENT0 + i};
+		glDrawBuffers(1, arr);
+	}
+	scene.LightingPassRender(texRefIDs[(int)Tex::Pos], texRefIDs[(int)Tex::Colours], texRefIDs[(int)Tex::Normals], texRefIDs[(int)Tex::Spec], texRefIDs[(int)Tex::Reflection]);
+
+
+
 
 	bool horizontal = true;
 	const short amt = 10;

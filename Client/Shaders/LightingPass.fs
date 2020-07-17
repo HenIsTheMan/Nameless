@@ -53,28 +53,31 @@ uniform Spotlight spotlights[maxAmtS];
 
 uniform vec3 camPos;
 uniform sampler2D posTex;
+uniform sampler2D coloursTex;
 uniform sampler2D normalsTex;
-uniform sampler2D albedoSpecTex;
+uniform sampler2D specTex;
+uniform sampler2D reflectionTex; //??
 
 vec3 WorldSpacePos = texture(posTex, TexCoords).rgb;
+vec4 Colour = texture(coloursTex, TexCoords);
 vec3 Normal = texture(normalsTex, TexCoords).rgb;
-vec3 Albedo = texture(albedoSpecTex, TexCoords).rgb;
-float Spec = texture(albedoSpecTex, TexCoords).a;
+vec3 Spec = texture(specTex, TexCoords).rgb;
+vec3 Reflection = texture(reflectionTex, TexCoords).rgb; //??
 
 vec3 CalcAmbient(vec3 lightAmbient){
-    return lightAmbient * Albedo;
+    return lightAmbient * Colour.rgb;
 }
 
 vec3 CalcDiffuse(vec3 lightDir, vec3 lightDiffuse){
     float dImpact = max(dot(Normal, -lightDir), 0.f); //Diffuse impact of light on curr frag
-    return dImpact * lightDiffuse * pow(Albedo, vec3(gamma)); //Diffuse component (> 0.f && <= 1.f when angle between... (>= 0.f && < 90.f) || (> 270.f && <= 360.f)) of frag
+    return dImpact * lightDiffuse * pow(Colour.rgb, vec3(gamma)); //Diffuse component (> 0.f && <= 1.f when angle between... (>= 0.f && < 90.f) || (> 270.f && <= 360.f)) of frag
 }
 
 vec3 CalcSpec(vec3 lightDir, vec3 lightSpec){
     vec3 viewDir = normalize(WorldSpacePos - camPos);
     vec3 halfwayDir = -normalize(lightDir + viewDir);
     float sImpact = pow(max(dot(Normal, halfwayDir), 0.f), mtl.shininess);
-    return sImpact * lightSpec * vec3(Spec);
+    return sImpact * lightSpec * Spec;
 }
 
 vec3 CalcPtLight(PtLight light){
@@ -99,13 +102,13 @@ vec3 CalcSpotlight(Spotlight light){
 
 void main(){
     if(Normal == vec3(0.f)){
-        fragColour = vec4(Albedo, 1.f);
-        brightFragColour = vec4(vec3(0.f), 1.f);
+        fragColour = Colour;
+        brightFragColour = vec4(vec3(0.f), 1.f); //??
     } else if(pAmt == 0 && dAmt == 0 && sAmt == 0){
-        fragColour = vec4(CalcAmbient(globalAmbient), 1.f);
-        brightFragColour = vec4(vec3(0.f), 1.f);
+        fragColour = vec4(CalcAmbient(globalAmbient), Colour.a);
+        brightFragColour = vec4(vec3(0.f), 1.f); //??
     } else{
-        fragColour = vec4(vec3(0.f), 1.f);
+        fragColour = vec4(vec3(0.f), Colour.a);
         for(int i = 0; i < pAmt; ++i){
             fragColour.rgb += CalcPtLight(ptLights[i]);
         }
