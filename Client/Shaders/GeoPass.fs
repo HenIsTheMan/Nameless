@@ -11,6 +11,14 @@ in myInterface{
 	flat int diffuseTexIndex;
 } fsIn;
 
+///Can be set by client
+uniform bool useCustomColour;
+uniform bool useCustomDiffuseTexIndex;
+uniform vec4 customColour;
+uniform int customDiffuseTexIndex;
+
+//Opacity??
+
 uniform bool useDiffuseMap;
 uniform bool useSpecMap;
 uniform bool useEmissionMap;
@@ -24,6 +32,12 @@ uniform sampler2D reflectionMap;
 void main(){
     pos = fsIn.pos;
 	normal = fsIn.normal;
-	albedoSpec = !useDiffuseMap ? fsIn.colour : vec4(texture(diffuseMaps[fsIn.diffuseTexIndex], fsIn.texCoords).rgb
-	+ (useEmissionMap ? texture(emissionMap, fsIn.texCoords).rgb : vec3(0.f)), useSpecMap ? texture(specMap, fsIn.texCoords).r : 0.f);
+	if(!useDiffuseMap){
+		albedoSpec = useCustomColour ? customColour : fsIn.colour;
+	} else{
+		albedoSpec = vec4(texture(diffuseMaps[useCustomDiffuseTexIndex ? customDiffuseTexIndex : fsIn.diffuseTexIndex], fsIn.texCoords).rgb, useSpecMap ? texture(specMap, fsIn.texCoords).r : 0.f);
+		if(useEmissionMap){
+			albedoSpec.rgb += texture(emissionMap, fsIn.texCoords).rgb;
+		}
+	}
 }
