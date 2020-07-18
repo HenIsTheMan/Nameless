@@ -16,7 +16,7 @@ Scene::Scene():
 	mesh(Mesh::MeshType::Quad, GL_TRIANGLES, {
 		{"Imgs/BoxAlbedo.png", Mesh::TexType::Diffuse, 0},
 		{"Imgs/BoxSpec.png", Mesh::TexType::Spec, 0},
-		//{"Imgs/BoxEmission.png", Mesh::TexType::Emission, 0},
+		{"Imgs/BoxEmission.png", Mesh::TexType::Emission, 0},
 	}),
 	spriteAni(new SpriteAni(4, 8)),
 	terrain(new Terrain("Imgs/hMap.raw", 8.f, 8.f)),
@@ -129,9 +129,6 @@ bool Scene::Init(){
 		});
 			model.AddModelMatForAll(GetTopModel());
 		PopModel();
-	}
-	if(!textChief.Init()){
-		puts("Failed to init TextChief!\n");
 	}
 
 	spriteAni->AddTexMap({"Imgs/Fire.png", Mesh::TexType::Diffuse, 0});
@@ -309,7 +306,7 @@ void Scene::DefaultRender(const uint& screenTexRefID, const uint& blurTexRefID){
 
 	glDepthFunc(GL_LEQUAL);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	textChief.RenderText(textSP, "Yes", 25.0f, 25.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
+	textChief.RenderText(textSP, "Yes", 25.f, 25.f, 1.f, glm::vec3(1.f));
 	glBlendFunc(GL_ONE, GL_ZERO);
 	glDepthFunc(GL_LESS);
 }

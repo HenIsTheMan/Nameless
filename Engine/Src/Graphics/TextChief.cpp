@@ -6,7 +6,7 @@ extern int winHeight;
 TextChief::TextChief():
     ft(),
     face(),
-    Characters({}),
+    allChars({}),
     VAO(0),
     VBO(0)
 {
@@ -19,11 +19,11 @@ TextChief::~TextChief(){
 
 bool TextChief::Init(){
     if(FT_Init_FreeType(&ft)){
-        puts("Failed to init FreeType!\n");
+        (void)puts("Failed to init FreeType!\n");
         return false;
     }
     if(FT_New_Face(ft, "Fonts/Yes.ttf", 0, &face)){
-        puts("Failed to load font as face\n");
+        (void)puts("Failed to load font as face\n");
         return false;
     }
 
@@ -32,7 +32,7 @@ bool TextChief::Init(){
 
     for(unsigned char c = 0; c < 128; ++c){ //Load 1st 128 ASCII chars
         if(FT_Load_Char(face, c, FT_LOAD_RENDER)){ //Load char glyph and set it as active
-            printf("Failed to load \'%c\' as char glyph\n", char(c));
+            (void)printf("Failed to load \'%c\' as char glyph\n", char(c));
             continue;
         }
 
@@ -56,7 +56,7 @@ bool TextChief::Init(){
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        Characters.insert(std::pair<char, Character>(c, {
+        allChars.insert(std::pair<char, CharMetrics>(c, {
             texRefID, 
             glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
             glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
@@ -80,20 +80,22 @@ bool TextChief::Init(){
 }
 
 void TextChief::RenderText(ShaderProg& SP, const str& text, const float& x, const float& y, const float& scaleFactor, const glm::vec3& colour){
+    if(!ft && !Init()){
+        puts("Failed to init TextChief!\n");
+    }
+
     SP.Use();
     SP.Set3fv("textColour", colour);
     SP.SetMat4fv("projection", &glm::ortho(0.0f, (float)winWidth, 0.0f, (float)winHeight)[0][0]);
 
-    //glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(VAO);
-
     for(std::string::const_iterator c = text.begin(); c != text.end(); ++c){
-        Character ch = Characters[*c];
-        float xpos = x + ch.Bearing.x * scaleFactor;
-        float ypos = y - (ch.Size.y - ch.Bearing.y) * scaleFactor;
+        CharMetrics ch = allChars[*c];
+        float xpos = x + ch.bearing.x * scaleFactor;
+        float ypos = y - (ch.size.y - ch.bearing.y) * scaleFactor;
 
-        float w = ch.Size.x * scaleFactor;
-        float h = ch.Size.y * scaleFactor;
+        float w = ch.size.x * scaleFactor;
+        float h = ch.size.y * scaleFactor;
 
         float vertices[6][4] = {
             { xpos,     ypos + h,   0.0f, 0.0f },            
@@ -113,7 +115,7 @@ void TextChief::RenderText(ShaderProg& SP, const str& text, const float& x, cons
 
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
-        const_cast<float&>(x) += (ch.Advance >> 6) * scaleFactor; // now advance cursors for next glyph (note that advance is number of 1/64 pixels) // bitshift by 6 to get value in pixels (2^6 = 64)
+        const_cast<float&>(x) += (ch.advance >> 6) * scaleFactor; // now advance cursors for next glyph (note that advance is number of 1/64 pixels) // bitshift by 6 to get value in pixels (2^6 = 64)
     }
 
     SP.ResetTexUnits();
