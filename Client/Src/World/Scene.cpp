@@ -306,7 +306,14 @@ void Scene::DefaultRender(const uint& screenTexRefID, const uint& blurTexRefID){
 
 	glDepthFunc(GL_LEQUAL);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	textChief.RenderText(textSP, "Yes", 25.f, 25.f, 1.f, glm::vec3(1.f));
+	textChief.RenderText(textSP, {
+		"Wow",
+		25.f,
+		25.f,
+		1.f,
+		glm::vec4(1.f),
+		0
+	});
 	glBlendFunc(GL_ONE, GL_ZERO);
 	glDepthFunc(GL_LESS);
 }

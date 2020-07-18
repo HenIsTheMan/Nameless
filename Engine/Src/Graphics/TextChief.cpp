@@ -26,7 +26,6 @@ bool TextChief::Init(){
         (void)puts("Failed to load font as face\n");
         return false;
     }
-
     FT_Set_Pixel_Sizes(face, 0, 48); //Define pixel font size to extract from font face //0 for w so dynamically calc w based on h
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1); //Disable byte-alignment restriction
 
@@ -39,29 +38,18 @@ bool TextChief::Init(){
         uint texRefID;
         glGenTextures(1, &texRefID);
         glBindTexture(GL_TEXTURE_2D, texRefID);
-        glTexImage2D(
-            GL_TEXTURE_2D,
-            0,
-            GL_RED,
-            face->glyph->bitmap.width,
-            face->glyph->bitmap.rows,
-            0,
-            GL_RED,
-            GL_UNSIGNED_BYTE,
-            face->glyph->bitmap.buffer
-        );
-
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, face->glyph->bitmap.width, face->glyph->bitmap.rows, 0, GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         allChars.insert(std::pair<char, CharMetrics>(c, {
-            texRefID, 
-            glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
+            texRefID,
+            uint(face->glyph->advance.x),
             glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-            uint(face->glyph->advance.x)
-            }));
+            glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
+        }));
 
         glGenVertexArrays(1, &VAO);
         glGenBuffers(1, &VBO);
@@ -79,23 +67,24 @@ bool TextChief::Init(){
     return true;
 }
 
-void TextChief::RenderText(ShaderProg& SP, const str& text, const float& x, const float& y, const float& scaleFactor, const glm::vec3& colour){
+void TextChief::RenderText(ShaderProg& SP, const TextAttribs& attribs){
     if(!ft && !Init()){
         puts("Failed to init TextChief!\n");
     }
 
     SP.Use();
-    SP.Set3fv("textColour", colour);
+    SP.Set4fv("textColour", attribs.colour);
+    SP.UseTex(attribs.texRefID, "textTex");
     SP.SetMat4fv("projection", &glm::ortho(0.0f, (float)winWidth, 0.0f, (float)winHeight)[0][0]);
 
     glBindVertexArray(VAO);
-    for(std::string::const_iterator c = text.begin(); c != text.end(); ++c){
+    for(std::string::const_iterator c = attribs.text.begin(); c != attribs.text.end(); ++c){
         CharMetrics ch = allChars[*c];
-        float xpos = x + ch.bearing.x * scaleFactor;
-        float ypos = y - (ch.size.y - ch.bearing.y) * scaleFactor;
+        float xpos = attribs.x + ch.bearing.x * attribs.scaleFactor;
+        float ypos = attribs.y - (ch.size.y - ch.bearing.y) * attribs.scaleFactor;
 
-        float w = ch.size.x * scaleFactor;
-        float h = ch.size.y * scaleFactor;
+        float w = ch.size.x * attribs.scaleFactor;
+        float h = ch.size.y * attribs.scaleFactor;
 
         float vertices[6][4] = {
             { xpos,     ypos + h,   0.0f, 0.0f },            
@@ -115,7 +104,7 @@ void TextChief::RenderText(ShaderProg& SP, const str& text, const float& x, cons
 
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
-        const_cast<float&>(x) += (ch.advance >> 6) * scaleFactor; // now advance cursors for next glyph (note that advance is number of 1/64 pixels) // bitshift by 6 to get value in pixels (2^6 = 64)
+        const_cast<float&>(attribs.x) += (ch.advance >> 6) * attribs.scaleFactor; // now advance cursors for next glyph (note that advance is number of 1/64 pixels) // bitshift by 6 to get value in pixels (2^6 = 64)
     }
 
     SP.ResetTexUnits();

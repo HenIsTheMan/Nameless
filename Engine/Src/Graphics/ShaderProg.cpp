@@ -135,6 +135,10 @@ void ShaderProg::Set3fv(cstr const& uniName, const glm::vec3& vec){
 	glUniform3fv(GetUniLocation(uniName), 1, &vec[0]);
 }
 
+void ShaderProg::Set4fv(cstr const& uniName, const glm::vec4& vec){
+	glUniform4fv(GetUniLocation(uniName), 1, &vec[0]);
+}
+
 void ShaderProg::Set1i(cstr const& uniName, const int& val){
 	glUniform1i(GetUniLocation(uniName), val);
 }

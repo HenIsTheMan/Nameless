@@ -3,10 +3,15 @@ out vec4 fragColour;
 
 in vec2 TexCoords;
 
+uniform vec4 textColour;
+uniform sampler2D textTex;
 uniform sampler2D texSampler;
-uniform vec3 textColour;
-//tex??
 
 void main(){
-	fragColour = vec4(textColour, texture(texSampler, TexCoords).r);
+	fragColour = textColour;
+	vec4 colourFromTex = texture(textTex, TexCoords);
+	if(colourFromTex.rgb != vec3(0.f)){
+		fragColour *= colourFromTex;
+	}
+	fragColour.a *= texture(texSampler, TexCoords).r;
 }

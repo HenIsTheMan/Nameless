@@ -5,16 +5,25 @@
 
 class TextChief final{
 public:
+	struct TextAttribs final{
+		str text;
+		float x;
+		float y;
+		float scaleFactor;
+		glm::vec4 colour;
+		uint texRefID;
+	};
+
 	TextChief();
 	~TextChief();
 
-	void RenderText(ShaderProg& SP, const str& text, const float& x, const float& y, const float& scaleFactor, const glm::vec3& colour); //vec4 colour??
+	void RenderText(ShaderProg& SP, const TextAttribs& attribs);
 private:
 	struct CharMetrics final{
 		uint texRefID;
-		glm::ivec2 size;
-		glm::ivec2 bearing;
 		uint advance;
+		glm::ivec2 bearing;
+		glm::ivec2 size;
 	};
 
 	FT_Library ft;
