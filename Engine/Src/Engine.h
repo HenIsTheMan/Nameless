@@ -12,4 +12,5 @@
 #include "Global/GlobalFuncs.h"
 #include "Graphics/Light.h"
 #include "Graphics/ShaderProg.h"
+#include "Graphics/TextChief.h"
 #include "SDPs/Singleton.h"

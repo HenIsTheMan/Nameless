@@ -67,5 +67,11 @@
     <None Include="Shaders\Blur.fs">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="Shaders\Text.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\Text.vs">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

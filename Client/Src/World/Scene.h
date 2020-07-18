@@ -17,6 +17,7 @@ private:
 	ISoundEngine* soundEngine;
 	ISound* music;
 	ISoundEffectControl* soundFX;
+	TextChief textChief;
 
 	Mesh mesh;
 	Mesh* spriteAni;
@@ -30,6 +31,7 @@ private:
 	ShaderProg lightingPassSP;
 	ShaderProg normalsSP;
 	ShaderProg screenSP;
+	ShaderProg textSP;
 
 	std::vector<Light*> ptLights;
 	std::vector<Light*> directionalLights;

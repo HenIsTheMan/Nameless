@@ -187,6 +187,7 @@
     <ClInclude Include="Src\Geo\Vertex.h" />
     <ClInclude Include="Src\Graphics\Light.h" />
     <ClInclude Include="Src\Graphics\ShaderProg.h" />
+    <ClInclude Include="Src\Graphics\TextChief.h" />
     <ClInclude Include="Src\SDPs\Singleton.h" />
     <ClInclude Include="Src\Vendor\stb_image.h" />
   </ItemGroup>
@@ -197,6 +198,7 @@
     <ClCompile Include="Src\Global\GlobalFuncs.cpp" />
     <ClCompile Include="Src\Geo\Mesh.cpp" />
     <ClCompile Include="Src\Graphics\ShaderProg.cpp" />
+    <ClCompile Include="Src\Graphics\TextChief.cpp" />
     <ClCompile Include="Src\Vendor\glad.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

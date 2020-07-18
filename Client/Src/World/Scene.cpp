@@ -35,6 +35,7 @@ Scene::Scene():
 	lightingPassSP{"Shaders/Quad.vs", "Shaders/LightingPass.fs"},
 	normalsSP{"Shaders/Normals.vs", "Shaders/Normals.fs", "Shaders/Normals.gs"}, //??
 	screenSP{"Shaders/Quad.vs", "Shaders/Screen.fs"},
+	textSP{"Shaders/Text.vs", "Shaders/Text.fs"},
 	view(glm::mat4(1.f)),
 	projection(glm::mat4(1.f)),
 	elapsedTime(0.f),
@@ -128,6 +129,9 @@ bool Scene::Init(){
 		});
 			model.AddModelMatForAll(GetTopModel());
 		PopModel();
+	}
+	if(!textChief.Init()){
+		puts("Failed to init TextChief!\n");
 	}
 
 	spriteAni->AddTexMap({"Imgs/Fire.png", Mesh::TexType::Diffuse, 0});
@@ -302,6 +306,12 @@ void Scene::DefaultRender(const uint& screenTexRefID, const uint& blurTexRefID){
 	mesh.SetModel(GetTopModel());
 	mesh.Render(screenSP, false);
 	screenSP.ResetTexUnits();
+
+	glDepthFunc(GL_LEQUAL);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	textChief.RenderText(textSP, "Yes", 25.0f, 25.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
+	glBlendFunc(GL_ONE, GL_ZERO);
+	glDepthFunc(GL_LESS);
 }
 
 glm::mat4 Scene::Translate(const glm::vec3& translate){
