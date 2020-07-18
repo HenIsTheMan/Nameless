@@ -101,6 +101,25 @@ vec3 CalcSpotlight(Spotlight light){
     return CalcAmbient(light.ambient) + lightIntensity * (CalcDiffuse(lightDir, light.diffuse) + CalcSpec(lightDir, light.spec));
 }
 
+struct Fog{
+    vec3 colour;
+    float start; //For linear fog
+    float end; //For linear fog
+    float density; //For exponential fog
+    int type;
+};
+uniform Fog fog;
+
+float CalcFogFactor(Fog fog, float fogDist){
+    float fogInverseFactor = 0.f;
+    switch(fog.type){
+        case 0: fogInverseFactor = (fog.end - fogDist) / (fog.end - fog.start); break; //Linear
+        case 1: fogInverseFactor = exp(-fog.density * fogDist); break; //Exponential
+        case 2: fogInverseFactor = exp(-pow(fog.density * fogDist, 2.f)); //Exponential Squared
+    }
+    return 1.f - clamp(fogInverseFactor, 0.f, 1.f);
+}
+
 void main(){
     if(Normal == vec3(0.f)){
         fragColour = Colour;
@@ -120,11 +139,13 @@ void main(){
             fragColour.rgb += CalcSpotlight(spotlights[i]);
         }
 
-        const float ratio = 1.f / 1.52f; //n of air / n of glass (ratio between refractive indices of both materials)
-        vec3 incidentRay = normalize(WorldSpacePos - camPos);
-        vec3 reflectedRay = reflect(incidentRay, Normal);
-        vec3 refractedRay = refract(incidentRay, Normal, ratio);
-        fragColour.rgb += texture(cubemapSampler, reflectedRay).rgb * Reflection;
+        if(Reflection != 0.f){
+            const float ratio = 1.f / 1.52f; //n of air / n of glass (ratio between refractive indices of both materials)
+            vec3 incidentRay = normalize(WorldSpacePos - camPos);
+            vec3 reflectedRay = reflect(incidentRay, Normal);
+            vec3 refractedRay = refract(incidentRay, Normal, ratio);
+            fragColour.rgb += texture(cubemapSampler, reflectedRay).rgb * Reflection;
+        }
 
         float brightness = dot(fragColour.rgb, vec3(.2126f, .7152f, .0722f)); //Transform fragColour to grayscale with dot product
         brightFragColour = vec4(fragColour.rgb * vec3(float(brightness > 2.f)), 1.f); //2.f is brightness threshold (outside LDR with HDR rendering so more control over what is considered bright)
