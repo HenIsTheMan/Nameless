@@ -42,11 +42,11 @@ void main(){
 		if(useEmissionMap){
 			colour.rgb += texture(emissionMap, fsIn.texCoords).rgb;
 		}
-	} else{
+	} else{ //Blend??
 		colour = useCustomColour ? customColour : fsIn.colour;
 	}
 
 	normal = fsIn.normal;
-	spec = useSpecMap ? texture(specMap, fsIn.texCoords).rgb : vec3(0.f);
-	reflection = useReflectionMap ? texture(reflectionMap, fsIn.texCoords).rgb : vec3(0.f);
+	spec = useSpecMap ? texture(specMap, fsIn.texCoords).rgb : vec3(0.f); //Full spec??
+	reflection = useReflectionMap ? texture(reflectionMap, fsIn.texCoords).rgb : vec3(0.f); //Full reflection??
 }

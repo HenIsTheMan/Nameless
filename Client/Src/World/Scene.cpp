@@ -14,9 +14,9 @@ Scene::Scene():
 	music(nullptr),
 	soundFX(nullptr),
 	mesh(Mesh::MeshType::Quad, GL_TRIANGLES, {
-		//{"Imgs/BoxAlbedo.png", Mesh::TexType::Diffuse, 0},
-		//{"Imgs/BoxSpec.png", Mesh::TexType::Spec, 0},
-		//{"Imgs/BoxEmission.png", Mesh::TexType::Emission, 0},
+		{"Imgs/BoxAlbedo.png", Mesh::TexType::Diffuse, 0},
+		{"Imgs/BoxSpec.png", Mesh::TexType::Spec, 0},
+		{"Imgs/BoxEmission.png", Mesh::TexType::Emission, 0},
 	}),
 	spriteAni(new SpriteAni(4, 8)),
 	terrain(new Terrain("Imgs/hMap.raw", 8.f, 8.f)),
@@ -226,8 +226,8 @@ void Scene::GeoRenderPass(){
 		Translate(glm::vec3(0.f, 1020.f, 0.f)),
 		Rotate(glm::vec4(0.f, 1.f, 0.f, 45.f)),
 	});
-		geoPassSP.Set1i("useCustomColour", 1);
-		geoPassSP.Set4fv("customColour", glm::vec4(20.f, 60.f, 20.f, 1.f));
+		//geoPassSP.Set1i("useCustomColour", 1);
+		//geoPassSP.Set4fv("customColour", glm::vec4(20.f, 60.f, 20.f, 1.f));
 		mesh.SetModel(GetTopModel());
 		mesh.InstancedRender(geoPassSP);
 	PopModel();
