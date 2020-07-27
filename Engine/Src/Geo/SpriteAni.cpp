@@ -49,11 +49,11 @@ void SpriteAni::Reset(){
 }
 
 void SpriteAni::AddAni(const str& name, const int& start, const int& end){
-	Ani* anim = new Ani();
+	Ani* ani = new Ani();
 	for(int i = start; i < end; ++i){
-		anim->frames.emplace_back(i);
+		ani->frames.emplace_back(i);
 	}
-	allAnis[name] = anim; //Link anim to aniList
+	allAnis[name] = ani; //Link ani to aniList
 	if(currAni == ""){ //Set the curr ani if it does not exist
 		currAni = name;
 	}
@@ -61,11 +61,11 @@ void SpriteAni::AddAni(const str& name, const int& start, const int& end){
 }
 
 void SpriteAni::AddSequenceAni(const str& name, const ::std::initializer_list<int>& frames){
-	Ani* anim = new Ani();
+	Ani* ani = new Ani();
 	for(const int& frame: frames){
-		anim->frames.emplace_back(frame);
+		ani->frames.emplace_back(frame);
 	}
-	allAnis[name] = anim; //...
+	allAnis[name] = ani; //...
 	if(currAni == ""){ //...
 		currAni = name;
 	}
