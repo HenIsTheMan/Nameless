@@ -18,8 +18,8 @@ private:
     {
     }
 
-    BinTreeNode(const T& myData):
-        data(myData),
+    BinTreeNode(const T& data):
+        data(data),
         left(nullptr),
         right(nullptr)
     {
@@ -261,9 +261,9 @@ protected:
     T* container;
 
     BinHeap(): BinHeap(999){}
-    BinHeap(const int& myMaxSize):
+    BinHeap(const int& maxSize):
         size(0),
-        maxSize(myMaxSize),
+        maxSize(maxSize),
         container(new T[maxSize])
     {
     }

@@ -19,11 +19,11 @@ protected:
 
 struct PtLight final: Light{
     PtLight(): PtLight(glm::vec3(0.f), 1.f, .09f, .032f){}
-    PtLight(const glm::vec3& myPos, const float& myConstant, const float& myLinear, const float& myQuadratic):
-        pos(myPos),
-        constant(myConstant),
-        linear(myLinear),
-        quadratic(myQuadratic)
+    PtLight(const glm::vec3& pos, const float& constant, const float& linear, const float& quadratic):
+        pos(pos),
+        constant(constant),
+        linear(linear),
+        quadratic(quadratic)
     {
     }
     glm::vec3 pos;
@@ -34,8 +34,8 @@ struct PtLight final: Light{
 
 struct DirectionalLight final: Light{
     DirectionalLight(): DirectionalLight(glm::vec3(0.f, -1.f, 0.f)){}
-    DirectionalLight(const glm::vec3& myDir):
-        dir(myDir)
+    DirectionalLight(const glm::vec3& dir):
+        dir(dir)
     {
     }
     glm::vec3 dir;
@@ -43,11 +43,11 @@ struct DirectionalLight final: Light{
 
 struct Spotlight final: Light{
     Spotlight(): Spotlight(glm::vec3(0.f), glm::vec3(0.f), glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(17.5f))){}
-    Spotlight(const glm::vec3& myPos, const glm::vec3& myDir, const float& myCosInnerCutoff, const float& myCosOuterCutoff):
-        pos(myPos),
-        dir(myDir),
-        cosInnerCutoff(myCosInnerCutoff),
-        cosOuterCutoff(myCosOuterCutoff)
+    Spotlight(const glm::vec3& pos, const glm::vec3& dir, const float& cosInnerCutoff, const float& cosOuterCutoff):
+        pos(pos),
+        dir(dir),
+        cosInnerCutoff(cosInnerCutoff),
+        cosOuterCutoff(cosOuterCutoff)
     {
     }
     glm::vec3 pos;

@@ -5,11 +5,11 @@ extern float dt;
 
 SpriteAni::SpriteAni(): SpriteAni(0, 0){}
 
-SpriteAni::SpriteAni(const int& myRows, const int& myCols):
+SpriteAni::SpriteAni(const int& rows, const int& cols):
 	currTime(0.f),
 	currFrame(0),
-	rows(myRows),
-	cols(myCols),
+	rows(rows),
+	cols(cols),
 	playCount(0),
 	currAni(""),
 	allAnis({})

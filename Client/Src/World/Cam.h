@@ -4,7 +4,7 @@
 class Cam final{
 public:
 	Cam();
-	Cam(const glm::vec3& myPos, const glm::vec3& myTarget, const glm::vec3& myUp, const float& myAspectRatio, const float& mySpd);
+	Cam(const glm::vec3& pos, const glm::vec3& target, const glm::vec3& up, const float& aspectRatio, const float& spd);
 	~Cam() = default;
 	glm::vec3 CalcFront(const bool& normalised = true) const;
 	glm::vec3 CalcRight() const;

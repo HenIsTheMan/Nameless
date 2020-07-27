@@ -16,17 +16,17 @@ Cam::Cam():
 {
 }
 
-Cam::Cam(const glm::vec3& myPos, const glm::vec3& myTarget, const glm::vec3& myUp, const float& myAspectRatio, const float& mySpd):
-	aspectRatio(myAspectRatio),
-	spd(mySpd),
-	pos(myPos),
-	target(myTarget),
-	up(myUp),
-	defaultAspectRatio(myAspectRatio),
-	defaultSpd(mySpd),
-	defaultPos(myPos),
-	defaultTarget(myTarget),
-	defaultUp(myUp)
+Cam::Cam(const glm::vec3& pos, const glm::vec3& target, const glm::vec3& up, const float& aspectRatio, const float& spd):
+	aspectRatio(aspectRatio),
+	spd(spd),
+	pos(pos),
+	target(target),
+	up(up),
+	defaultAspectRatio(aspectRatio),
+	defaultSpd(spd),
+	defaultPos(pos),
+	defaultTarget(target),
+	defaultUp(up)
 {
 }
 

@@ -345,7 +345,7 @@ void Scene::PushModel(const std::vector<glm::mat4>& vec) const{
 	modelStack.push(modelStack.empty() ? glm::mat4(1.f) : modelStack.top());
 	const size_t size = vec.size();
 	for(size_t i = 0; i < size; ++i){
-		modelStack.top() = modelStack.top() * vec[i];
+		modelStack.top() *= vec[i];
 	}
 }
 

@@ -26,7 +26,7 @@ public:
 	};
 
 	Mesh();
-	Mesh(const MeshType& myType, const int& myPrimitive, const std::initializer_list<std::tuple<str, TexType, uint>>& iL);
+	Mesh(const MeshType& type, const int& primitive, const std::initializer_list<std::tuple<str, TexType, uint>>& iL);
 
 	///Rule of 5 (prevents shallow copy)
 	Mesh(const Mesh& mesh);

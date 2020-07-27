@@ -25,7 +25,7 @@ private:
 class SpriteAni final: public Mesh{
 public:
 	SpriteAni();
-	SpriteAni(const int& myRows, const int& myCols);
+	SpriteAni(const int& rows, const int& cols);
 	~SpriteAni();
 
 	void Play(const str& name, const int& repeat, const float& time);

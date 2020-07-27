@@ -8,10 +8,10 @@ Terrain::Terrain(): Mesh(),
 {
 }
 
-Terrain::Terrain(cstr const& fPath, const float& myTileH, const float& myTileV): Mesh(),
+Terrain::Terrain(cstr const& fPath, const float& tileH, const float& tileV): Mesh(),
 	terrainPath(fPath),
-	tileH(myTileH),
-	tileV(myTileV),
+	tileH(tileH),
+	tileV(tileV),
 	data({})
 {
 	Load();

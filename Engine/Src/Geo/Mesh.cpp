@@ -18,9 +18,9 @@ Mesh::Mesh():
 {
 }
 
-Mesh::Mesh(const MeshType& myType, const int& myPrimitive, const std::initializer_list<std::tuple<str, TexType, uint>>& iL):
-	type(myType),
-	primitive(myPrimitive),
+Mesh::Mesh(const MeshType& type, const int& primitive, const std::initializer_list<std::tuple<str, TexType, uint>>& iL):
+	type(type),
+	primitive(primitive),
 	vertices(nullptr),
 	indices(nullptr),
 	texMaps(iL),

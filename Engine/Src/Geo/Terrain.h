@@ -4,7 +4,7 @@
 class Terrain final: public Mesh{
 public:
 	Terrain();
-	Terrain(cstr const& fPath, const float& hTile, const float& vTile);
+	Terrain(cstr const& fPath, const float& tileH, const float& tileV);
 	~Terrain() = default;
 
 	float GetHeightAtPt(const float& x, const float& z) const;
