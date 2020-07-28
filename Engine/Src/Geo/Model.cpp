@@ -74,7 +74,7 @@ Mesh Model::ProcessMesh(const aiScene* const& scene, const aiMesh* const& meshOb
             texCoords ? glm::vec2(texCoords[i].x, texCoords[i].y) : glm::vec2(0.f),
             normals ? glm::vec3(normals[i].x, normals[i].y, normals[i].z) : glm::vec3(0.f),
             tangents ? glm::vec3(tangents[i].x, tangents[i].y, tangents[i].z) : glm::vec3(0.f),
-            0
+            0,
         });
     }
     for(uint i = 0; i < meshObj->mNumFaces; ++i){ //For each face of the mesh... //Each mesh has an arr of primitive faces (triangles due to the aiProcess_Triangulate post-processing option)
