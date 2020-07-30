@@ -6,8 +6,7 @@ class Mesh{ //Single drawable geo
 	friend class Model;
 public:
 	enum struct MeshType{ //Pt, Line, 2D (circle, ring and 2D polygons with >= 3 vertices), 3D (sphere, torus and 3D polyhedrons with >= 3 flat polygonal faces)
-		None = 0,
-		Quad,
+		Quad = 0,
 		Cuboid,
 		Amt
 	};

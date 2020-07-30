@@ -199,8 +199,6 @@ void SpriteAni::Render(ShaderProg& SP, const bool& autoConfig){
 
 	if(!VAO){
 		switch(type){
-			case MeshType::None:
-				break;
 			case MeshType::Quad:
 				CreateQuad();
 				break;

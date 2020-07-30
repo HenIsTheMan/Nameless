@@ -2,7 +2,7 @@
 #include "../Global/GlobalFuncs.h"
 
 Mesh::Mesh():
-	type(MeshType::None),
+	type(MeshType::Amt),
 	primitive(GL_TRIANGLES),
 	vertices(nullptr),
 	indices(nullptr),
@@ -122,8 +122,6 @@ void Mesh::BatchRender(const std::vector<BatchRenderParams>& paramsVec){ //Old a
 		return (void)puts("Invalid primitive!\n");
 	}
 	switch(type){
-		case MeshType::None:
-			break;
 		case MeshType::Quad:
 			CreateQuad();
 			break;
@@ -209,7 +207,7 @@ void Mesh::InstancedRender(ShaderProg& SP, const bool& autoConfig){
 			if(!std::get<uint>(texMap)){
 				SetUpTex({
 					std::get<str>(texMap),
-					type != MeshType::None,
+					type != MeshType::Amt,
 					GL_TEXTURE_2D,
 					GL_REPEAT,
 					GL_LINEAR_MIPMAP_LINEAR,
@@ -244,8 +242,6 @@ void Mesh::InstancedRender(ShaderProg& SP, const bool& autoConfig){
 
 	if(!VAO){
 		switch(type){
-			case MeshType::None:
-				break;
 			case MeshType::Quad:
 				CreateQuad();
 				break;
@@ -328,7 +324,7 @@ void Mesh::Render(ShaderProg& SP, const bool& autoConfig){
 			if(!std::get<uint>(texMap)){
 				SetUpTex({
 					std::get<str>(texMap),
-					type != MeshType::None,
+					type != MeshType::Amt,
 					GL_TEXTURE_2D,
 					GL_REPEAT,
 					GL_LINEAR_MIPMAP_LINEAR,
@@ -363,8 +359,6 @@ void Mesh::Render(ShaderProg& SP, const bool& autoConfig){
 
 	if(!VAO){
 		switch(type){
-			case MeshType::None:
-				break;
 			case MeshType::Quad:
 				CreateQuad();
 				break;
@@ -457,17 +451,18 @@ void Mesh::CreateQuad(){
 			tangent[i].z = reciprocal * (deltaUVs[1].y * edges[0].x - deltaUVs[0].y * edges[1].x);
 		}
 
-		vertices = new std::vector<Vertex>();
+		vertices = new std::vector<Vertex>(4);
 		for(short i = 0; i < 4; ++i){
-			vertices->push_back({
+			(*vertices)[i] = {
 				pos[i],
 				glm::vec4(.7f, .4f, .1f, 1.f),
 				UVs[i],
 				glm::vec3(0.f, 0.f, 1.f),
 				tangent[!(i % 3)],
 				0,
-			});
+			};
 		}
+
 		if(indices){
 			delete indices;
 			indices = nullptr;
