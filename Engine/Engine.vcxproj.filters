@@ -58,6 +58,9 @@
     <ClInclude Include="Src\Graphics\TextChief.h">
       <Filter>Src\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Global\GlobalStructs.h">
+      <Filter>Src\Global</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\Vendor\glad.c">

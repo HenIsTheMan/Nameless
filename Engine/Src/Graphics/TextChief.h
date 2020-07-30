@@ -3,6 +3,8 @@
 #include "../Global/GlobalFuncs.h"
 #include "ShaderProg.h"
 
+///Can be improved
+
 class TextChief final{
 public:
 	struct TextAttribs final{

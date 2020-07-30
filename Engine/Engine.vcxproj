@@ -180,6 +180,7 @@
     <ClInclude Include="Src\Geo\SpriteAni.h" />
     <ClInclude Include="Src\Geo\Terrain.h" />
     <ClInclude Include="Src\Global\GlobalFuncs.h" />
+    <ClInclude Include="Src\Global\GlobalStructs.h" />
     <ClInclude Include="Src\Global\GlobalVars.h" />
     <ClInclude Include="Src\Core.h" />
     <ClInclude Include="Src\Engine.h" />

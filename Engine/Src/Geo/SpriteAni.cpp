@@ -1,6 +1,8 @@
 #include "SpriteAni.h"
 #include "../Engine.h"
 
+///Can be improved
+
 extern float dt;
 
 SpriteAni::SpriteAni(): SpriteAni(0, 0){}

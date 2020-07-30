@@ -3,6 +3,8 @@
 #include "../Algs/Pseudorand.h"
 #include "../Algs/Swapping.h"
 
+///Can be improved
+
 ///Forward declaration
 template <class T>
 class BST;

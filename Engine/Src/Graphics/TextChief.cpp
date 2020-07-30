@@ -1,5 +1,7 @@
 #include "TextChief.h"
 
+///Can be improved
+
 extern int winWidth;
 extern int winHeight;
 

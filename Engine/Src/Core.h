@@ -35,7 +35,6 @@ constexpr auto KEY_P = 80;
 #pragma comment(lib, "freetype.lib")
 #pragma comment(lib, "glfw3.lib")
 #pragma comment(lib, "irrKlang.lib")
-#pragma comment(lib, "opengl32.lib")
 
 typedef const char* cstr;
 typedef unsigned int uint;
