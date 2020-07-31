@@ -7,7 +7,9 @@ class Mesh{ //Single drawable geo
 public:
 	enum struct MeshType{ //Pt, Line, 2D (circle, ring and 2D polygons with >= 3 vertices), 3D (sphere, torus and 3D polyhedrons with >= 3 flat polygonal faces)
 		Quad = 0,
-		Cuboid,
+		Cube,
+		Sphere,
+		Cylinder,
 		Amt
 	};
 	enum struct TexType{
@@ -57,5 +59,8 @@ protected:
 	uint EBO;
 
 	glm::mat4 model;
-	void CreateQuad();
+	void CreateQuad(); //2x2
+	void CreateCube(); //2x2x2
+	void CreateSphere(); //2x2x2
+	void CreateCylinder(); //2x2x2
 };

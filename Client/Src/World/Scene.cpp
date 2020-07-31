@@ -13,13 +13,22 @@ Scene::Scene():
 	soundEngine(nullptr),
 	music(nullptr),
 	soundFX(nullptr),
-	mesh(Mesh::MeshType::Quad, GL_TRIANGLES, {
-		{"Imgs/BoxAlbedo.png", Mesh::TexType::Diffuse, 0},
-		{"Imgs/BoxSpec.png", Mesh::TexType::Spec, 0},
-		{"Imgs/BoxEmission.png", Mesh::TexType::Emission, 0},
-	}),
-	spriteAni(new SpriteAni(4, 8)),
-	terrain(new Terrain("Imgs/hMap.raw", 8.f, 8.f)),
+	meshes{
+		new Mesh(Mesh::MeshType::Quad, GL_TRIANGLES, {
+			{"Imgs/BoxAlbedo.png", Mesh::TexType::Diffuse, 0},
+			{"Imgs/BoxSpec.png", Mesh::TexType::Spec, 0},
+			{"Imgs/BoxEmission.png", Mesh::TexType::Emission, 0},
+		}),
+		new Mesh(Mesh::MeshType::Cube, GL_TRIANGLES, {
+		}),
+		new Mesh(Mesh::MeshType::Sphere, GL_TRIANGLE_STRIP, {
+		}),
+		new Mesh(Mesh::MeshType::Cylinder, GL_TRIANGLE_STRIP, {
+			{"Imgs/BoxAlbedo.png", Mesh::TexType::Diffuse, 0},
+		}),
+		new SpriteAni(4, 8),
+		new Terrain("Imgs/hMap.raw", 8.f, 8.f),
+	},
 	model("ObjsAndMtls/nanosuit.obj", {
 		aiTextureType_DIFFUSE,
 		aiTextureType_SPECULAR,
@@ -86,13 +95,11 @@ Scene::~Scene(){
 		spotlights[i] = nullptr;
 	}
 	
-	if(spriteAni){
-		delete spriteAni;
-		spriteAni = nullptr;
-	}
-	if(terrain){
-		delete terrain;
-		terrain = nullptr;
+	for(int i = 0; i < (int)GeoType::Amt; ++i){
+		if(meshes[i]){
+			delete meshes[i];
+			meshes[i] = nullptr;
+		}
 	}
 	if(music){
 		music->drop();
@@ -119,7 +126,7 @@ bool Scene::Init(){
 			Translate(glm::vec3(PseudorandMinMax(-2000.f, 2000.f), PseudorandMinMax(-2000.f, 2000.f), -5.f)),
 			Rotate(glm::vec4(0.f, 1.f, 0.f, -45.f)),
 		});
-			mesh.AddModelMat(GetTopModel());
+			meshes[(int)GeoType::Quad]->AddModelMat(GetTopModel());
 		PopModel();
 	}
 	for(int i = 0; i < 999; ++i){
@@ -131,11 +138,11 @@ bool Scene::Init(){
 		PopModel();
 	}
 
-	spriteAni->AddTexMap({"Imgs/Fire.png", Mesh::TexType::Diffuse, 0});
-	static_cast<SpriteAni*>(spriteAni)->AddAni("FireAni", 0, 32);
-	static_cast<SpriteAni*>(spriteAni)->Play("FireAni", -1, .5f);
+	meshes[(int)GeoType::SpriteAni]->AddTexMap({"Imgs/Fire.png", Mesh::TexType::Diffuse, 0});
+	static_cast<SpriteAni*>(meshes[(int)GeoType::SpriteAni])->AddAni("FireSpriteAni", 0, 32);
+	static_cast<SpriteAni*>(meshes[(int)GeoType::SpriteAni])->Play("FireSpriteAni", -1, .5f);
 
-	terrain->AddTexMap({"Imgs/GrassGround.jpg", Mesh::TexType::Diffuse, 0});
+	meshes[(int)GeoType::Terrain]->AddTexMap({"Imgs/GrassGround.jpg", Mesh::TexType::Diffuse, 0});
 
 	return true;
 }
@@ -157,7 +164,7 @@ void Scene::Update(){
 	static_cast<Spotlight*>(spotlights[0])->dir = camFront;
 	//static_cast<Spotlight*>(spotlights[0])->diffuse = glm::vec3(50.f); //Blocky light if too high??
 	//static_cast<Spotlight*>(spotlights[0])->spec = glm::vec3(0.f, 1.f, 1.f); //Coloured specular highlight
-	static_cast<SpriteAni*>(spriteAni)->Update();
+	static_cast<SpriteAni*>(meshes[(int)GeoType::SpriteAni])->Update();
 
 	GLint polyMode;
 	glGetIntegerv(GL_POLYGON_MODE, &polyMode);
@@ -215,30 +222,54 @@ void Scene::GeoRenderPass(){
 
 	geoPassSP.SetMat4fv("PV", &(projection * view)[0][0]);
 
+	///Terrain
 	PushModel({
 		Rotate(glm::vec4(0.f, 1.f, 0.f, 45.f)),
 		Scale(glm::vec3(500.f, 100.f, 500.f)),
 	});
-		terrain->SetModel(GetTopModel());
-		terrain->Render(geoPassSP);
+		meshes[(int)GeoType::Terrain]->SetModel(GetTopModel());
+		meshes[(int)GeoType::Terrain]->Render(geoPassSP);
 	PopModel();
+
+	///Shapes
 	PushModel({
-		Translate(glm::vec3(0.f, 1020.f, 0.f)),
-		Rotate(glm::vec4(0.f, 1.f, 0.f, 45.f)),
+		Translate(glm::vec3(0.f, 100.f, 0.f)),
+		Rotate(glm::vec4(0.f, 1.f, 0.f, 0.f)),
+		Scale(glm::vec3(10.f)),
 	});
 		//geoPassSP.Set1i("useCustomColour", 1);
 		//geoPassSP.Set4fv("customColour", glm::vec4(20.f, 60.f, 20.f, 1.f));
-		mesh.SetModel(GetTopModel());
-		mesh.InstancedRender(geoPassSP);
+		meshes[(int)GeoType::Cylinder]->SetModel(GetTopModel());
+		meshes[(int)GeoType::Cylinder]->Render(geoPassSP);
+		//geoPassSP.Set1i("useCustomColour", 0);
+		PushModel({
+			Translate(glm::vec3(-3.f, 0.f, 0.f)),
+		});
+			meshes[(int)GeoType::Sphere]->SetModel(GetTopModel());
+			meshes[(int)GeoType::Sphere]->Render(geoPassSP);
+		PopModel();
+		PushModel({
+			Translate(glm::vec3(3.f, 0.f, 0.f)),
+		});
+			meshes[(int)GeoType::Cube]->SetModel(GetTopModel());
+			meshes[(int)GeoType::Cube]->Render(geoPassSP);
+		PopModel();
+		PushModel({
+			Translate(glm::vec3(6.f, 0.f, 0.f)),
+		});
+			meshes[(int)GeoType::Quad]->SetModel(GetTopModel());
+			meshes[(int)GeoType::Quad]->Render(geoPassSP);
+		PopModel();
 	PopModel();
 
+	///SpriteAni
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
 	PushModel({
 		Translate(glm::vec3(0.f, 50.f, 0.f)),
 		Scale(glm::vec3(20.f, 40.f, 20.f)),
 	});
-		spriteAni->SetModel(GetTopModel());
-		spriteAni->Render(geoPassSP);
+		meshes[(int)GeoType::SpriteAni]->SetModel(GetTopModel());
+		meshes[(int)GeoType::SpriteAni]->Render(geoPassSP);
 	PopModel();
 	glBlendFunc(GL_ONE, GL_ZERO);  
 }
@@ -289,8 +320,8 @@ void Scene::LightingRenderPass(const uint& posTexRefID, const uint& coloursTexRe
 		lightingPassSP.Set1f(("spotlights[" + std::to_string(i) + "].cosOuterCutoff").c_str(), spotlight->cosOuterCutoff);
 	}
 
-	mesh.SetModel(GetTopModel());
-	mesh.Render(lightingPassSP, false);
+	meshes[(int)GeoType::Quad]->SetModel(GetTopModel());
+	meshes[(int)GeoType::Quad]->Render(lightingPassSP, false);
 	lightingPassSP.ResetTexUnits();
 }
 
@@ -298,8 +329,8 @@ void Scene::BlurRender(const uint& brightTexRefID, const bool& horizontal){
 	blurSP.Use();
 	blurSP.Set1i("horizontal", horizontal);
 	blurSP.UseTex(brightTexRefID, "texSampler");
-	mesh.SetModel(GetTopModel());
-	mesh.Render(blurSP, false);
+	meshes[(int)GeoType::Quad]->SetModel(GetTopModel());
+	meshes[(int)GeoType::Quad]->Render(blurSP, false);
 	blurSP.ResetTexUnits();
 }
 
@@ -307,8 +338,8 @@ void Scene::DefaultRender(const uint& screenTexRefID, const uint& blurTexRefID){
 	screenSP.Use();
 	screenSP.UseTex(screenTexRefID, "screenTexSampler");
 	screenSP.UseTex(blurTexRefID, "blurTexSampler");
-	mesh.SetModel(GetTopModel());
-	mesh.Render(screenSP, false);
+	meshes[(int)GeoType::Quad]->SetModel(GetTopModel());
+	meshes[(int)GeoType::Quad]->Render(screenSP, false);
 	screenSP.ResetTexUnits();
 
 	glDepthFunc(GL_LEQUAL);

@@ -19,9 +19,16 @@ private:
 	ISoundEffectControl* soundFX;
 	TextChief textChief;
 
-	Mesh mesh;
-	Mesh* spriteAni;
-	Mesh* terrain;
+	enum struct GeoType{
+		Quad,
+		Cube,
+		Sphere,
+		Cylinder,
+		SpriteAni,
+		Terrain,
+		Amt
+	};
+	Mesh* meshes[(int)GeoType::Amt];
 
 	Model model;
 	Model skydome;

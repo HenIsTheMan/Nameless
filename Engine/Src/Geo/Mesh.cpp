@@ -245,6 +245,15 @@ void Mesh::InstancedRender(ShaderProg& SP, const bool& autoConfig){
 			case MeshType::Quad:
 				CreateQuad();
 				break;
+			case MeshType::Cube:
+				CreateCube();
+				break;
+			case MeshType::Sphere:
+				CreateSphere();
+				break;
+			case MeshType::Cylinder:
+				CreateCylinder();
+				break;
 		}
 		glGenVertexArrays(1, &VAO);
 		glGenBuffers(1, &VBO);
@@ -362,6 +371,15 @@ void Mesh::Render(ShaderProg& SP, const bool& autoConfig){
 			case MeshType::Quad:
 				CreateQuad();
 				break;
+			case MeshType::Cube:
+				CreateCube();
+				break;
+			case MeshType::Sphere:
+				CreateSphere();
+				break;
+			case MeshType::Cylinder:
+				CreateCylinder();
+				break;
 		}
 		glGenVertexArrays(1, &VAO);
 		glGenBuffers(1, &VBO);
@@ -436,15 +454,15 @@ void Mesh::SetModel(const glm::mat4& model){
 
 void Mesh::CreateQuad(){
 	if(!vertices){
-		glm::vec3 pos[4]{glm::vec3(-1.f, 1.f, 0.f), glm::vec3(-1.f, -1.f, 0.f), glm::vec3(1.f, -1.f, 0.f), glm::vec3(1.f, 1.f, 0.f)};
-		glm::vec2 UVs[4]{glm::vec2(0.f, 1.f), glm::vec2(0.f, 0.f), glm::vec2(1.f, 0.f), glm::vec2(1.f, 1.f)};
+		const glm::vec3 pos[4]{glm::vec3(-1.f, 1.f, 0.f), glm::vec3(-1.f, -1.f, 0.f), glm::vec3(1.f, -1.f, 0.f), glm::vec3(1.f, 1.f, 0.f)};
+		const glm::vec2 UVs[4]{glm::vec2(0.f, 1.f), glm::vec2(0.f, 0.f), glm::vec2(1.f, 0.f), glm::vec2(1.f, 1.f)};
 
 		///T and B lie on the same plane as normal map surface and align with tex axes U and V so calc them with vertices (to get edges of...) and texCoords (since in tangent space) of primitives
 		glm::vec3 tangent[2];
 		for(short i = 0; i < 2; ++i){
-			glm::vec3 edges[2]{pos[!i ? 1 : 3] - pos[2 * i], pos[2 * !i] - pos[2 * i]};
-			glm::vec2 deltaUVs[2]{UVs[!i ? 1 : 3] - UVs[2 * i], UVs[2 * !i] - UVs[2 * i]};
-			const float&& reciprocal = 1.f / (deltaUVs[0].x * deltaUVs[1].y - deltaUVs[1].x * deltaUVs[0].y);
+			const glm::vec3 edges[2]{pos[!i ? 1 : 3] - pos[2 * i], pos[2 * !i] - pos[2 * i]};
+			const glm::vec2 deltaUVs[2]{UVs[!i ? 1 : 3] - UVs[2 * i], UVs[2 * !i] - UVs[2 * i]};
+			const float reciprocal = 1.f / (deltaUVs[0].x * deltaUVs[1].y - deltaUVs[1].x * deltaUVs[0].y);
 
 			tangent[i].x = reciprocal * (deltaUVs[1].y * edges[0].x - deltaUVs[0].y * edges[1].x);
 			tangent[i].y = reciprocal * (deltaUVs[1].y * edges[0].x - deltaUVs[0].y * edges[1].x);
@@ -459,7 +477,6 @@ void Mesh::CreateQuad(){
 				UVs[i],
 				glm::vec3(0.f, 0.f, 1.f),
 				tangent[!(i % 3)],
-				0,
 			};
 		}
 
@@ -468,5 +485,188 @@ void Mesh::CreateQuad(){
 			indices = nullptr;
 		}
 		indices = new std::vector<uint>{0, 1, 2, 0, 2, 3};
+	}
+}
+
+void Mesh::CreateCube(){
+	if(!vertices){
+		vertices = new std::vector<Vertex>(24);
+
+		for(short i = 0; i < 4; ++i){
+			(*vertices)[i].normal = glm::vec3(0.f, 1.f, 0.f);
+		}
+		(*vertices)[0].pos = glm::vec3(1.f);
+		(*vertices)[0].texCoords = glm::vec2(1.f, 0.f);
+		(*vertices)[1].pos = glm::vec3(1.f, 1.f, -1.f);
+		(*vertices)[1].texCoords = glm::vec2(1.f);
+		(*vertices)[2].pos = glm::vec3(-1.f, 1.f, -1.f);
+		(*vertices)[2].texCoords = glm::vec2(0.f, 1.f);
+		(*vertices)[3].pos = glm::vec3(-1.f, 1.f, 1.f);
+		(*vertices)[3].texCoords = glm::vec2(0.f);
+
+		for(short i = 4; i < 8; ++i){
+			(*vertices)[i].normal = glm::vec3(1.f, 0.f, 0.f);
+		}
+		(*vertices)[4].pos = glm::vec3(1.f, -1.f, 1.f);
+		(*vertices)[4].texCoords = glm::vec2(0.f);
+		(*vertices)[5].pos = glm::vec3(1.f, -1.f, -1.f);
+		(*vertices)[5].texCoords = glm::vec2(1.f, 0.f);
+		(*vertices)[6].pos = glm::vec3(1.f, 1.f, -1.f);
+		(*vertices)[6].texCoords = glm::vec2(1.f);
+		(*vertices)[7].pos = glm::vec3(1.f);
+		(*vertices)[7].texCoords = glm::vec2(0.f, 1.f);
+
+		for(short i = 8; i < 12; ++i){
+			(*vertices)[i].normal = glm::vec3(0.f, 0.f, 1.f);
+		}
+		(*vertices)[8].pos = glm::vec3(1.f);
+		(*vertices)[8].texCoords = glm::vec2(1.f);
+		(*vertices)[9].pos = glm::vec3(-1.f, 1.f, 1.f);
+		(*vertices)[9].texCoords = glm::vec2(0.f, 1.f);
+		(*vertices)[10].pos = glm::vec3(-1.f, -1.f, 1.f);
+		(*vertices)[10].texCoords = glm::vec2(0.f);
+		(*vertices)[11].pos = glm::vec3(1.f, -1.f, 1.f);
+		(*vertices)[11].texCoords = glm::vec2(1.f, 0.f);
+
+		for(short i = 12; i < 16; ++i){
+			(*vertices)[i].normal = glm::vec3(0.f, 0.f, -1.f);
+		}
+		(*vertices)[12].pos = glm::vec3(1.f, -1.f, -1.f);
+		(*vertices)[12].texCoords = glm::vec2(0.f);
+		(*vertices)[13].pos = glm::vec3(-1.f);
+		(*vertices)[13].texCoords = glm::vec2(1.f, 0.f);
+		(*vertices)[14].pos = glm::vec3(-1.f, 1.f, -1.f);
+		(*vertices)[14].texCoords = glm::vec2(1.f);
+		(*vertices)[15].pos = glm::vec3(1.f, 1.f, -1.f);
+		(*vertices)[15].texCoords = glm::vec2(0.f, 1.f);
+
+		for(short i = 16; i < 20; ++i){
+			(*vertices)[i].normal = glm::vec3(-1.f, 0.f, 0.f);
+		}
+		(*vertices)[16].pos = glm::vec3(-1.f);
+		(*vertices)[16].texCoords = glm::vec2(0.f);
+		(*vertices)[17].pos = glm::vec3(-1.f, -1.f, 1.f);
+		(*vertices)[17].texCoords = glm::vec2(1.f, 0.f);
+		(*vertices)[18].pos = glm::vec3(-1.f, 1.f, 1.f);
+		(*vertices)[18].texCoords = glm::vec2(1.f);
+		(*vertices)[19].pos = glm::vec3(-1.f, 1.f, -1.f);
+		(*vertices)[19].texCoords = glm::vec2(0.f, 1.f);
+
+		for(short i = 20; i < 24; ++i){
+			(*vertices)[i].normal = glm::vec3(0.f, -1.f, 0.f);
+		}
+		(*vertices)[20].pos = glm::vec3(-1.f);
+		(*vertices)[20].texCoords = glm::vec2(0.f);
+		(*vertices)[21].pos = glm::vec3(1.f, -1.f, -1.f);
+		(*vertices)[21].texCoords = glm::vec2(1.f, 0.f);
+		(*vertices)[22].pos = glm::vec3(1.f, -1.f, 1.f);
+		(*vertices)[22].texCoords = glm::vec2(1.f);
+		(*vertices)[23].pos = glm::vec3(-1.f, -1.f, 1.f);
+		(*vertices)[23].texCoords = glm::vec2(0.f, 1.f);
+
+		if(indices){
+			delete indices;
+			indices = nullptr;
+		}
+		indices = new std::vector<uint>(36);
+		const short myArr[6]{0, 1, 2, 2, 3, 0};
+		for(long long i = 0; i < 6; ++i){
+			for(long long j = 0; j < 6; ++j){
+				(*indices)[i * 6 + j] = uint(i * 4 + myArr[j]);
+			}
+		}
+	}
+}
+
+void Mesh::CreateSphere(){
+	if(!vertices){
+		const uint stackAmt = 50;
+		const uint sliceAmt = 50;
+		vertices = new std::vector<Vertex>();
+		if(indices){
+			delete indices;
+			indices = nullptr;
+		}
+		indices = new std::vector<uint>();
+
+		const float stackAngle = 180.f / stackAmt;
+		const float sliceAngle = 360.f / sliceAmt;
+		for(unsigned stack = 0; stack < stackAmt + 1; ++stack){
+			const float phi = -90.f + stack * stackAngle;
+			for(unsigned slice = 0; slice < sliceAmt + 1; ++slice){
+				const float theta = slice * sliceAngle;
+				const glm::vec3 pos(cos(glm::radians(phi)) * cos(glm::radians(theta)), sin(glm::radians(phi)), cos(glm::radians(phi)) * sin(glm::radians(theta)));
+				vertices->push_back({
+					pos,
+					glm::vec4(.7f, .4f, .1f, 1.f),
+					glm::vec2(0.f),
+					glm::normalize(pos),
+					});
+
+				indices->emplace_back(stack * (sliceAmt + 1) + slice);
+				indices->emplace_back((stack + 1) * (sliceAmt + 1) + slice);
+			}
+		}
+	}
+}
+
+void Mesh::CreateCylinder(){
+	if(!vertices){
+		Vertex v;
+		const uint sliceAmt = 50;
+		const float sliceAngle = -360.f / sliceAmt;
+		vertices = new std::vector<Vertex>();
+		if(indices){
+			delete indices;
+			indices = nullptr;
+		}
+		indices = new std::vector<uint>();
+
+		v.normal = v.pos = glm::vec3(0.f, 1.f, 0.f);
+		v.texCoords = glm::vec3(.5f);
+		vertices->emplace_back(v);
+
+		for(unsigned slice = 0; slice < sliceAmt + 1; ++slice){
+			const float theta = slice * sliceAngle;
+
+			v.pos = glm::vec3(cos(glm::radians(theta)), 1.f, sin(glm::radians(theta)));
+			v.texCoords = glm::vec2((v.pos.x + 1.f) / 2.f, (v.pos.z + 1.f) / 2.f);
+			vertices->emplace_back(v);
+
+			indices->emplace_back(0);
+			indices->emplace_back(slice + 1);
+		}
+
+		for(unsigned slice = 0; slice < sliceAmt + 1; ++slice){
+			const float theta = slice * sliceAngle;
+
+			v.pos = glm::vec3(cos(glm::radians(theta)), 1.f, sin(glm::radians(theta)));
+			v.texCoords = glm::vec2(float(slice) / float(sliceAmt), 1.f);
+			v.normal = glm::normalize(glm::vec3(v.pos.x, 0.f, v.pos.z));
+			vertices->emplace_back(v);
+
+			v.pos = glm::vec3(cos(glm::radians(theta)), -1.f, sin(glm::radians(theta)));
+			v.texCoords = glm::vec2(float(slice) / float(sliceAmt), 0.f);
+			v.normal = glm::normalize(glm::vec3(v.pos.x, 0.f, v.pos.z));
+			vertices->emplace_back(v);
+
+			indices->emplace_back(slice * 2 + sliceAmt + 2);
+			indices->emplace_back(slice * 2 + 1 + sliceAmt + 2);
+		}
+
+		v.normal = v.pos = glm::vec3(0.f, -1.f, 0.f);
+		v.texCoords = glm::vec3(.5f);
+		vertices->emplace_back(v);
+
+		for(unsigned slice = 0; slice < sliceAmt + 1; ++slice){
+			const float theta = slice * sliceAngle;
+
+			v.pos = glm::vec3(cos(glm::radians(theta)), -1.f, sin(glm::radians(theta)));
+			v.texCoords = glm::vec2((v.pos.x + 1.f) / 2.f, (v.pos.z + 1.f) / 2.f);
+			vertices->emplace_back(v);
+
+			indices->emplace_back(slice + 1 + sliceAmt * 3 + 3 + 1); //+1 at the end as +1 vertex before for loop
+			indices->emplace_back(0 + sliceAmt * 3 + 3 + 1); //...
+		}
 	}
 }
