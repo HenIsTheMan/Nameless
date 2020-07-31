@@ -204,6 +204,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Blur.fs" />
+    <None Include="Shaders\Forward.fs" />
+    <None Include="Shaders\Forward.vs" />
     <None Include="Shaders\GeoPass.fs" />
     <None Include="Shaders\GeoPass.vs" />
     <None Include="Shaders\LightingPass.fs" />
