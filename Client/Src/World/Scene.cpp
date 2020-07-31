@@ -233,16 +233,19 @@ void Scene::GeoRenderPass(){
 		Rotate(glm::vec4(0.f, 1.f, 0.f, 0.f)),
 		Scale(glm::vec3(10.f)),
 	});
-		//geoPassSP.Set1i("useCustomColour", 1);
-		//geoPassSP.Set4fv("customColour", glm::vec4(20.f, 60.f, 20.f, 1.f));
+		geoPassSP.Set1i("useCustomColour", 1);
+		geoPassSP.Set4fv("customColour", glm::vec4(10.f, 20.f, 10.f, 1.f));
 		meshes[(int)GeoType::Cylinder]->SetModel(GetTopModel());
 		meshes[(int)GeoType::Cylinder]->Render(geoPassSP);
-		//geoPassSP.Set1i("useCustomColour", 0);
+		geoPassSP.Set1i("useCustomColour", 0);
 		PushModel({
 			Translate(glm::vec3(-3.f, 0.f, 0.f)),
 		});
+			geoPassSP.Set1i("useCustomColour", 1);
+			geoPassSP.Set4fv("customColour", glm::vec4(glm::vec3(7.f), 1.f));
 			meshes[(int)GeoType::Sphere]->SetModel(GetTopModel());
 			meshes[(int)GeoType::Sphere]->Render(geoPassSP);
+			geoPassSP.Set1i("useCustomColour", 0);
 		PopModel();
 		PushModel({
 			Translate(glm::vec3(3.f, 0.f, 0.f)),
@@ -256,6 +259,24 @@ void Scene::GeoRenderPass(){
 			meshes[(int)GeoType::Quad]->SetModel(GetTopModel());
 			meshes[(int)GeoType::Quad]->Render(geoPassSP);
 		PopModel();
+	PopModel();
+
+	PushModel({
+		Translate(glm::vec3(0.f, 100.f, 0.f)),
+		Rotate(glm::vec4(0.f, 1.f, 0.f, 0.f)),
+		Scale(glm::vec3(.5f)),
+	});
+		model.SetModelForAll(GetTopModel());
+		model.InstancedRender(geoPassSP);
+	PopModel();
+
+	PushModel({
+		Translate(glm::vec3(0.f, 200.f, 0.f)),
+		Rotate(glm::vec4(0.f, 1.f, 0.f, 0.f)),
+		Scale(glm::vec3(5.f)),
+	});
+		model.SetModelForAll(GetTopModel());
+		model.Render(geoPassSP);
 	PopModel();
 
 	///SpriteAni
