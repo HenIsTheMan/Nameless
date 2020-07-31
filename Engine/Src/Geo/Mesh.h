@@ -54,6 +54,9 @@ protected:
 	uint batchVAO;
 	uint batchVBO;
 	uint batchEBO;
+	uint instancingVAO;
+	uint instancingVBO;
+	uint instancingEBO;
 	uint VAO;
 	uint VBO;
 	uint EBO;

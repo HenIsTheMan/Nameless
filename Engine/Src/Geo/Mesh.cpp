@@ -11,6 +11,9 @@ Mesh::Mesh():
 	batchVAO(0),
 	batchVBO(0),
 	batchEBO(0),
+	instancingVAO(0),
+	instancingVBO(0),
+	instancingEBO(0),
 	VAO(0),
 	VBO(0),
 	EBO(0),
@@ -28,6 +31,9 @@ Mesh::Mesh(const MeshType& type, const int& primitive, const std::initializer_li
 	batchVAO(0),
 	batchVBO(0),
 	batchEBO(0),
+	instancingVAO(0),
+	instancingVBO(0),
+	instancingEBO(0),
 	VAO(0),
 	VBO(0),
 	EBO(0),
@@ -58,6 +64,9 @@ Mesh& Mesh::operator=(const Mesh& mesh){
 		batchVAO = mesh.batchVAO;
 		batchVBO = mesh.batchVBO;
 		batchEBO = mesh.batchEBO;
+		instancingVAO = mesh.instancingVAO;
+		instancingVBO = mesh.instancingVBO;
+		instancingEBO = mesh.instancingEBO;
 		VAO = mesh.VAO;
 		VBO = mesh.VBO;
 		EBO = mesh.EBO;
@@ -77,6 +86,9 @@ Mesh& Mesh::operator=(Mesh&& mesh) noexcept{
 		batchVAO = mesh.batchVAO;
 		batchVBO = mesh.batchVBO;
 		batchEBO = mesh.batchEBO;
+		instancingVAO = mesh.instancingVAO;
+		instancingVBO = mesh.instancingVBO;
+		instancingEBO = mesh.instancingEBO;
 		VAO = mesh.VAO;
 		VBO = mesh.VBO;
 		EBO = mesh.EBO;
@@ -105,6 +117,15 @@ Mesh::~Mesh(){
 	}
 	if(batchEBO){
 		glDeleteBuffers(1, &batchEBO);
+	}
+	if(instancingVAO){
+		glDeleteVertexArrays(1, &instancingVAO);
+	}
+	if(instancingVBO){
+		glDeleteBuffers(1, &instancingVBO);
+	}
+	if(instancingEBO){
+		glDeleteBuffers(1, &instancingEBO);
 	}
 	if(VAO){
 		glDeleteVertexArrays(1, &VAO);
@@ -240,7 +261,7 @@ void Mesh::InstancedRender(ShaderProg& SP, const bool& autoConfig){
 		}
 	}
 
-	if(!VAO){
+	if(!instancingVAO){
 		switch(type){
 			case MeshType::Quad:
 				CreateQuad();
@@ -255,11 +276,11 @@ void Mesh::InstancedRender(ShaderProg& SP, const bool& autoConfig){
 				CreateCylinder();
 				break;
 		}
-		glGenVertexArrays(1, &VAO);
-		glGenBuffers(1, &VBO);
+		glGenVertexArrays(1, &instancingVAO);
+		glGenBuffers(1, &instancingVBO);
 
-		glBindVertexArray(VAO);
-			glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBindVertexArray(instancingVAO);
+			glBindBuffer(GL_ARRAY_BUFFER, instancingVBO);
 
 			glBufferData(GL_ARRAY_BUFFER, vertices->size() * sizeof(Vertex) + modelMats.size() * sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
 			glBufferSubData(GL_ARRAY_BUFFER, 0, vertices->size() * sizeof(Vertex), &(*vertices)[0]);
@@ -297,12 +318,12 @@ void Mesh::InstancedRender(ShaderProg& SP, const bool& autoConfig){
 			glVertexAttribDivisor(9, 1);
 
 			if(indices){
-				glGenBuffers(1, &EBO);
-				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+				glGenBuffers(1, &instancingEBO);
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, instancingEBO);
 				glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices->size() * sizeof(uint), &(*indices)[0], GL_STATIC_DRAW);
 			}
 	} else{
-		glBindVertexArray(VAO);
+		glBindVertexArray(instancingVAO);
 	}
 
 	indices ? glDrawElementsInstanced(primitive, (int)indices->size(), GL_UNSIGNED_INT, nullptr, (int)modelMats.size()) : glDrawArraysInstanced(primitive, 0, (int)vertices->size(), (int)modelMats.size());

@@ -262,21 +262,21 @@ void Scene::GeoRenderPass(){
 	PopModel();
 
 	PushModel({
-		Translate(glm::vec3(0.f, 100.f, 0.f)),
-		Rotate(glm::vec4(0.f, 1.f, 0.f, 0.f)),
-		Scale(glm::vec3(.5f)),
-	});
-		model.SetModelForAll(GetTopModel());
-		model.InstancedRender(geoPassSP);
-	PopModel();
-
-	PushModel({
 		Translate(glm::vec3(0.f, 200.f, 0.f)),
 		Rotate(glm::vec4(0.f, 1.f, 0.f, 0.f)),
 		Scale(glm::vec3(5.f)),
 	});
 		model.SetModelForAll(GetTopModel());
 		model.Render(geoPassSP);
+	PopModel();
+
+	PushModel({
+		Translate(glm::vec3(0.f, 100.f, 0.f)),
+		Rotate(glm::vec4(0.f, 1.f, 0.f, 0.f)),
+		Scale(glm::vec3(.5f)),
+	});
+		model.SetModelForAll(GetTopModel());
+		model.InstancedRender(geoPassSP);
 	PopModel();
 
 	///SpriteAni
