@@ -13,7 +13,7 @@ extern int winWidth;
 extern int winHeight;
 
 bool Key(const char& key){
-    return GetAsyncKeyState((unsigned short)key) & 0x8000;
+    return GetAsyncKeyState(int(key)) & 0x8000;
 }
 
 bool InitAPI(GLFWwindow*& win){

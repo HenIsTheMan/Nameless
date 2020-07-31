@@ -353,6 +353,7 @@ void Scene::BlurRender(const uint& brightTexRefID, const bool& horizontal){
 
 void Scene::DefaultRender(const uint& screenTexRefID, const uint& blurTexRefID){
 	screenSP.Use();
+	screenSP.Set1f("exposure", 1.2f);
 	screenSP.UseTex(screenTexRefID, "screenTexSampler");
 	screenSP.UseTex(blurTexRefID, "blurTexSampler");
 	meshes[(int)GeoType::Quad]->SetModel(GetTopModel());
