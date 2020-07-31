@@ -216,6 +216,24 @@ void Scene::GeoRenderPass(){
 		meshes[(int)GeoType::Terrain]->Render(geoPassSP);
 	PopModel();
 
+	///Nanosuits
+	PushModel({
+		Translate(glm::vec3(0.f, 200.f, 0.f)),
+		Rotate(glm::vec4(0.f, 1.f, 0.f, 0.f)),
+		Scale(glm::vec3(5.f)),
+	});
+		model.SetModelForAll(GetTopModel());
+		model.Render(geoPassSP);
+	PopModel();
+	PushModel({
+		Translate(glm::vec3(0.f, 100.f, 0.f)),
+		Rotate(glm::vec4(0.f, 1.f, 0.f, 0.f)),
+		Scale(glm::vec3(.5f)),
+	});
+		model.SetModelForAll(GetTopModel());
+		model.InstancedRender(geoPassSP);
+	PopModel();
+
 	///Shapes
 	PushModel({
 		Translate(glm::vec3(0.f, 100.f, 0.f)),
@@ -223,7 +241,7 @@ void Scene::GeoRenderPass(){
 		Scale(glm::vec3(10.f)),
 	});
 		geoPassSP.Set1i("useCustomColour", 1);
-		geoPassSP.Set4fv("customColour", glm::vec4(10.f, 20.f, 10.f, 1.f));
+		geoPassSP.Set4fv("customColour", glm::vec4(10.f, 20.f, 10.f, .3f));
 		meshes[(int)GeoType::Cylinder]->SetModel(GetTopModel());
 		meshes[(int)GeoType::Cylinder]->Render(geoPassSP);
 		geoPassSP.Set1i("useCustomColour", 0);
@@ -231,7 +249,7 @@ void Scene::GeoRenderPass(){
 			Translate(glm::vec3(-3.f, 0.f, 0.f)),
 		});
 			geoPassSP.Set1i("useCustomColour", 1);
-			geoPassSP.Set4fv("customColour", glm::vec4(glm::vec3(7.f), 1.f));
+			geoPassSP.Set4fv("customColour", glm::vec4(glm::vec3(7.f), .3f));
 			meshes[(int)GeoType::Sphere]->SetModel(GetTopModel());
 			meshes[(int)GeoType::Sphere]->Render(geoPassSP);
 			geoPassSP.Set1i("useCustomColour", 0);
@@ -250,26 +268,8 @@ void Scene::GeoRenderPass(){
 		PopModel();
 	PopModel();
 
-	PushModel({
-		Translate(glm::vec3(0.f, 200.f, 0.f)),
-		Rotate(glm::vec4(0.f, 1.f, 0.f, 0.f)),
-		Scale(glm::vec3(5.f)),
-	});
-		model.SetModelForAll(GetTopModel());
-		model.Render(geoPassSP);
-	PopModel();
-
-	PushModel({
-		Translate(glm::vec3(0.f, 100.f, 0.f)),
-		Rotate(glm::vec4(0.f, 1.f, 0.f, 0.f)),
-		Scale(glm::vec3(.5f)),
-	});
-		model.SetModelForAll(GetTopModel());
-		model.InstancedRender(geoPassSP);
-	PopModel();
-
-	///SpriteAni
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
+	///SpriteAni 
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	PushModel({
 		Translate(glm::vec3(0.f, 50.f, 0.f)),
 		Scale(glm::vec3(20.f, 40.f, 20.f)),
@@ -277,7 +277,7 @@ void Scene::GeoRenderPass(){
 		meshes[(int)GeoType::SpriteAni]->SetModel(GetTopModel());
 		meshes[(int)GeoType::SpriteAni]->Render(geoPassSP);
 	PopModel();
-	glBlendFunc(GL_ONE, GL_ZERO);  
+	glBlendFunc(GL_ONE, GL_ZERO);
 }
 
 void Scene::LightingRenderPass(const uint& posTexRefID, const uint& coloursTexRefID, const uint& normalsTexRefID, const uint& specTexRefID, const uint& reflectionTexRefID){
@@ -352,7 +352,7 @@ void Scene::DefaultRender(const uint& screenTexRefID, const uint& blurTexRefID){
 	glDepthFunc(GL_LEQUAL);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	textChief.RenderText(textSP, {
-		"Wow",
+		"Cool",
 		25.f,
 		25.f,
 		1.f,
