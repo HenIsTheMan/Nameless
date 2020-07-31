@@ -40,6 +40,7 @@ Scene::Scene():
 		aiTextureType_DIFFUSE,
 	}),
 	blurSP{"Shaders/Quad.vs", "Shaders/Blur.fs"},
+	forwardSP{"Shaders/Forward.vs", "Shaders/Forward.fs"},
 	geoPassSP{"Shaders/GeoPass.vs", "Shaders/GeoPass.fs"},
 	lightingPassSP{"Shaders/Quad.vs", "Shaders/LightingPass.fs"},
 	normalsSP{"Shaders/Normals.vs", "Shaders/Normals.fs", "Shaders/Normals.gs"}, //??
@@ -233,51 +234,6 @@ void Scene::GeoRenderPass(){
 		model.SetModelForAll(GetTopModel());
 		model.InstancedRender(geoPassSP);
 	PopModel();
-
-	///Shapes
-	PushModel({
-		Translate(glm::vec3(0.f, 100.f, 0.f)),
-		Rotate(glm::vec4(0.f, 1.f, 0.f, 0.f)),
-		Scale(glm::vec3(10.f)),
-	});
-		geoPassSP.Set1i("useCustomColour", 1);
-		geoPassSP.Set4fv("customColour", glm::vec4(10.f, 20.f, 10.f, .3f));
-		meshes[(int)GeoType::Cylinder]->SetModel(GetTopModel());
-		meshes[(int)GeoType::Cylinder]->Render(geoPassSP);
-		geoPassSP.Set1i("useCustomColour", 0);
-		PushModel({
-			Translate(glm::vec3(-3.f, 0.f, 0.f)),
-		});
-			geoPassSP.Set1i("useCustomColour", 1);
-			geoPassSP.Set4fv("customColour", glm::vec4(glm::vec3(7.f), .3f));
-			meshes[(int)GeoType::Sphere]->SetModel(GetTopModel());
-			meshes[(int)GeoType::Sphere]->Render(geoPassSP);
-			geoPassSP.Set1i("useCustomColour", 0);
-		PopModel();
-		PushModel({
-			Translate(glm::vec3(3.f, 0.f, 0.f)),
-		});
-			meshes[(int)GeoType::Cube]->SetModel(GetTopModel());
-			meshes[(int)GeoType::Cube]->Render(geoPassSP);
-		PopModel();
-		PushModel({
-			Translate(glm::vec3(6.f, 0.f, 0.f)),
-		});
-			meshes[(int)GeoType::Quad]->SetModel(GetTopModel());
-			meshes[(int)GeoType::Quad]->Render(geoPassSP);
-		PopModel();
-	PopModel();
-
-	///SpriteAni 
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	PushModel({
-		Translate(glm::vec3(0.f, 50.f, 0.f)),
-		Scale(glm::vec3(20.f, 40.f, 20.f)),
-	});
-		meshes[(int)GeoType::SpriteAni]->SetModel(GetTopModel());
-		meshes[(int)GeoType::SpriteAni]->Render(geoPassSP);
-	PopModel();
-	glBlendFunc(GL_ONE, GL_ZERO);
 }
 
 void Scene::LightingRenderPass(const uint& posTexRefID, const uint& coloursTexRefID, const uint& normalsTexRefID, const uint& specTexRefID, const uint& reflectionTexRefID){
@@ -338,6 +294,102 @@ void Scene::BlurRender(const uint& brightTexRefID, const bool& horizontal){
 	meshes[(int)GeoType::Quad]->SetModel(GetTopModel());
 	meshes[(int)GeoType::Quad]->Render(blurSP, false);
 	blurSP.ResetTexUnits();
+}
+
+void Scene::ForwardRender(){
+	forwardSP.Use();
+
+	const int& pAmt = (int)ptLights.size();
+	const int& dAmt = (int)directionalLights.size();
+	const int& sAmt = (int)spotlights.size();
+	forwardSP.Set1f("shininess", 32.f); //More light scattering if lower //??
+	forwardSP.Set3fv("globalAmbient", Light::globalAmbient);
+	forwardSP.Set3fv("camPos", cam.GetPos());
+
+	for(int i = 0; i < pAmt; ++i){
+		forwardSP.Set1i("pAmt", pAmt);
+		const PtLight* const& ptLight = static_cast<PtLight*>(ptLights[i]);
+		forwardSP.Set3fv(("ptLights[" + std::to_string(i) + "].ambient").c_str(), ptLight->ambient);
+		forwardSP.Set3fv(("ptLights[" + std::to_string(i) + "].diffuse").c_str(), ptLight->diffuse);
+		forwardSP.Set3fv(("ptLights[" + std::to_string(i) + "].spec").c_str(), ptLight->spec);
+		forwardSP.Set3fv(("ptLights[" + std::to_string(i) + "].pos").c_str(), ptLight->pos);
+		forwardSP.Set1f(("ptLights[" + std::to_string(i) + "].constant").c_str(), ptLight->constant);
+		forwardSP.Set1f(("ptLights[" + std::to_string(i) + "].linear").c_str(), ptLight->linear);
+		forwardSP.Set1f(("ptLights[" + std::to_string(i) + "].quadratic").c_str(), ptLight->quadratic);
+	}
+	for(int i = 0; i < dAmt; ++i){
+		forwardSP.Set1i("dAmt", dAmt);
+		const DirectionalLight* const& directionalLight = static_cast<DirectionalLight*>(ptLights[i]);
+		forwardSP.Set3fv(("directionalLights[" + std::to_string(i) + "].ambient").c_str(), directionalLight->ambient);
+		forwardSP.Set3fv(("directionalLights[" + std::to_string(i) + "].diffuse").c_str(), directionalLight->diffuse);
+		forwardSP.Set3fv(("directionalLights[" + std::to_string(i) + "].spec").c_str(), directionalLight->spec);
+		forwardSP.Set3fv(("directionalLights[" + std::to_string(i) + "].dir").c_str(), directionalLight->dir);
+	}
+	for(int i = 0; i < sAmt; ++i){
+		forwardSP.Set1i("sAmt", sAmt);
+		const Spotlight* const& spotlight = static_cast<Spotlight*>(spotlights[i]);
+		forwardSP.Set3fv(("spotlights[" + std::to_string(i) + "].ambient").c_str(), spotlight->ambient);
+		forwardSP.Set3fv(("spotlights[" + std::to_string(i) + "].diffuse").c_str(), spotlight->diffuse);
+		forwardSP.Set3fv(("spotlights[" + std::to_string(i) + "].spec").c_str(), spotlight->spec);
+		forwardSP.Set3fv(("spotlights[" + std::to_string(i) + "].pos").c_str(), spotlight->pos);
+		forwardSP.Set3fv(("spotlights[" + std::to_string(i) + "].dir").c_str(), spotlight->dir);
+		forwardSP.Set1f(("spotlights[" + std::to_string(i) + "].cosInnerCutoff").c_str(), spotlight->cosInnerCutoff);
+		forwardSP.Set1f(("spotlights[" + std::to_string(i) + "].cosOuterCutoff").c_str(), spotlight->cosOuterCutoff);
+	}
+
+	forwardSP.SetMat4fv("PV", &(projection * view)[0][0]);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	///Shapes
+	PushModel({
+		Translate(glm::vec3(0.f, 100.f, 0.f)),
+		Rotate(glm::vec4(0.f, 1.f, 0.f, 0.f)),
+		Scale(glm::vec3(10.f)),
+	});
+		forwardSP.Set1i("useCustomColour", 1);
+		forwardSP.Set4fv("customColour", glm::vec4(0.f, 1.f, 0.f, .7f));
+		meshes[(int)GeoType::Cylinder]->SetModel(GetTopModel());
+		meshes[(int)GeoType::Cylinder]->Render(forwardSP);
+		forwardSP.Set1i("useCustomColour", 0);
+		PushModel({
+			Translate(glm::vec3(-3.f, 0.f, 0.f)),
+		});
+			forwardSP.Set1i("useCustomColour", 1);
+			forwardSP.Set4fv("customColour", glm::vec4(glm::vec3(7.f), .3f));
+			meshes[(int)GeoType::Sphere]->SetModel(GetTopModel());
+			meshes[(int)GeoType::Sphere]->Render(forwardSP);
+			forwardSP.Set1i("useCustomColour", 0);
+		PopModel();
+		PushModel({
+			Translate(glm::vec3(3.f, 0.f, 0.f)),
+		});
+			forwardSP.Set1i("useCustomColour", 1);
+			forwardSP.Set4fv("customColour", glm::vec4(glm::vec3(.5f), .3f));
+			meshes[(int)GeoType::Cube]->SetModel(GetTopModel());
+			meshes[(int)GeoType::Cube]->Render(forwardSP);
+			forwardSP.Set1i("useCustomColour", 0);
+		PopModel();
+		PushModel({
+			Translate(glm::vec3(6.f, 0.f, 0.f)),
+		});
+			forwardSP.Set1i("useCustomColour", 1);
+			forwardSP.Set4fv("customColour", glm::vec4(glm::vec3(.5f), .3f));
+			meshes[(int)GeoType::Quad]->SetModel(GetTopModel());
+			meshes[(int)GeoType::Quad]->Render(forwardSP);
+			forwardSP.Set1i("useCustomColour", 0);
+		PopModel();
+	PopModel();
+
+	///SpriteAni
+	PushModel({
+		Translate(glm::vec3(0.f, 50.f, 0.f)),
+		Scale(glm::vec3(20.f, 40.f, 20.f)),
+	});
+		meshes[(int)GeoType::SpriteAni]->SetModel(GetTopModel());
+		meshes[(int)GeoType::SpriteAni]->Render(forwardSP);
+	PopModel();
+
+	glBlendFunc(GL_ONE, GL_ZERO);
 }
 
 void Scene::DefaultRender(const uint& screenTexRefID, const uint& blurTexRefID){

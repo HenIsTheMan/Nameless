@@ -11,6 +11,7 @@ public:
 	void GeoRenderPass();
 	void LightingRenderPass(const uint& posTexRefID, const uint& coloursTexRefID, const uint& normalsTexRefID, const uint& specTexRefID, const uint& reflectionTexRefID);
 	void BlurRender(const uint& brightTexRefID, const bool& horizontal);
+	void ForwardRender();
 	void DefaultRender(const uint& screenTexRefID, const uint& blurTexRefID);
 private:
 	Cam cam;
@@ -34,6 +35,7 @@ private:
 	Model skydome;
 
 	ShaderProg blurSP;
+	ShaderProg forwardSP;
 	ShaderProg geoPassSP;
 	ShaderProg lightingPassSP;
 	ShaderProg normalsSP;

@@ -163,6 +163,11 @@ void App::Render(){
 		horizontal = !horizontal;
 	}
 
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, FBORefIDs[(int)FBO::GeoPass]);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, FBORefIDs[(int)FBO::LightingPass]);
+	glBlitFramebuffer(0, 0, 2048, 2048, 0, 0, 2048, 2048, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+	scene.ForwardRender();
+
 	glViewport(0, 0, winWidth, winHeight);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClearColor(1.f, 0.82f, 0.86f, 1.f);
