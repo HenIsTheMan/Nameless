@@ -110,17 +110,6 @@ Scene::~Scene(){
 }
 
 bool Scene::Init(){
-	for(int i = 0; i < 5000; ++i){
-		PushModel({
-			Translate(glm::vec3(PseudorandMinMax(-200.f, 200.f), PseudorandMinMax(-200.f, 200.f), -5.f)),
-		});
-			params.push_back({
-				GetTopModel(),
-				glm::vec4(PseudorandMinMax(0.f, 1.f), PseudorandMinMax(0.f, 1.f), PseudorandMinMax(0.f, 1.f), 1.f),
-				0,
-			});
-		PopModel();
-	};
 	for(int i = 0; i < 99999; ++i){
 		PushModel({
 			Translate(glm::vec3(PseudorandMinMax(-2000.f, 2000.f), PseudorandMinMax(-2000.f, 2000.f), -5.f)),

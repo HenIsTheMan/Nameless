@@ -20,11 +20,11 @@ public:
 		Bump,
 		Amt
 	};
-	struct BatchRenderParams final{
-		glm::mat4 model;
-		glm::vec4 colour;
-		int diffuseTexIndex;
-	};
+	//struct BatchRenderParams final{
+	//	glm::mat4 model;
+	//	glm::vec4 colour;
+	//	int diffuseTexIndex;
+	//};
 
 	Mesh();
 	Mesh(const MeshType& type, const int& primitive, const std::initializer_list<std::tuple<str, TexType, uint>>& iL);
@@ -39,7 +39,7 @@ public:
 	void AddModelMat(const glm::mat4& modelMat);
 	void AddTexMap(const std::tuple<str, TexType, uint>& texMap);
 	void RemoveTexMap(str const& texPath);
-	void BatchRender(const std::vector<BatchRenderParams>& params);
+	//void BatchRender(const std::vector<BatchRenderParams>& params); //Old and not working??
 	void InstancedRender(ShaderProg& SP, const bool& autoConfig = true);
 	virtual void Render(ShaderProg& SP, const bool& autoConfig = true);
 	void SetModel(const glm::mat4& model);
@@ -51,6 +51,8 @@ protected:
 	std::vector<std::tuple<str, TexType, uint>> texMaps;
 	std::vector<glm::mat4> modelMats;
 
+	//std::vector<BatchRenderParams> paramsVec;
+	//int geoMaxAmt;
 	uint batchVAO;
 	uint batchVBO;
 	uint batchEBO;

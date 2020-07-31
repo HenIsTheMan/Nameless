@@ -46,7 +46,7 @@ private:
 
 	glm::mat4 view;
 	glm::mat4 projection;
-	std::vector<Mesh::BatchRenderParams> params;
+	//std::vector<Mesh::BatchRenderParams> params;
 
 	float elapsedTime;
 	float polyModeBT;
