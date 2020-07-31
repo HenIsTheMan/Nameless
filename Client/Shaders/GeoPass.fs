@@ -16,8 +16,6 @@ in myInterface{
 ///Can be set by client
 uniform bool useCustomDiffuseTexIndex;
 uniform bool useCustomColour;
-uniform bool useCustomAlpha;
-uniform float customAlpha;
 uniform int customDiffuseTexIndex;
 uniform vec4 customColour;
 
@@ -26,7 +24,7 @@ uniform bool useSpecMap;
 uniform bool useEmissionMap;
 uniform bool useReflectionMap;
 
-uniform sampler2D diffuseMaps[28];
+uniform sampler2D diffuseMaps[29];
 uniform sampler2D specMap;
 uniform sampler2D emissionMap;
 uniform sampler2D reflectionMap;
@@ -34,19 +32,16 @@ uniform sampler2D reflectionMap;
 void main(){
     pos = fsIn.pos;
 
-	if(useDiffuseMap){
-		colour = texture(diffuseMaps[useCustomDiffuseTexIndex ? customDiffuseTexIndex : fsIn.diffuseTexIndex], fsIn.texCoords);
-		if(useCustomAlpha){
-			colour.a = customAlpha;
-		}
-		if(useEmissionMap){
-			colour.rgb += texture(emissionMap, fsIn.texCoords).rgb;
-		}
-	} else{ //Blend??
-		colour = useCustomColour ? customColour : fsIn.colour;
+	if(!useCustomColour && !useDiffuseMap){
+		colour = fsIn.colour;
+	} else{
+		colour = (useCustomColour ? customColour : vec4(1.f)) * (useDiffuseMap ? texture(diffuseMaps[useCustomDiffuseTexIndex ? customDiffuseTexIndex : fsIn.diffuseTexIndex], fsIn.texCoords) : vec4(1.f));
+	}
+	if(useEmissionMap){
+		colour.rgb += texture(emissionMap, fsIn.texCoords).rgb;
 	}
 
 	normal = fsIn.normal;
-	spec = useSpecMap ? texture(specMap, fsIn.texCoords).rgb : vec3(0.f); //Full spec??
-	reflection = useReflectionMap ? texture(reflectionMap, fsIn.texCoords).rgb : vec3(0.f); //Full reflection??
+	spec = useSpecMap ? texture(specMap, fsIn.texCoords).rgb : vec3(0.f); //Use full white tex for full spec
+	reflection = useReflectionMap ? texture(reflectionMap, fsIn.texCoords).rgb : vec3(0.f); //Use full white tex for full reflection
 }

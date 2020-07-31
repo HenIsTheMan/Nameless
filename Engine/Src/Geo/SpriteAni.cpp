@@ -100,15 +100,13 @@ void SpriteAni::Create(){
 		}
 	}
 
-	const size_t size = temp.size();
+	const size_t& size = temp.size();
 	for(size_t i = 0; i < size; ++i){
 		vertices->push_back({
 			temp[i].first,
 			glm::vec4(.7f, .4f, .1f, 1.f),
 			temp[i].second,
 			glm::vec3(0.f, 0.f, 1.f),
-			glm::vec3(0.f), //??
-			0,
 		});
 	}
 }

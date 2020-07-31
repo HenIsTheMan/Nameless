@@ -5,10 +5,6 @@
 layout (location = 0) out vec4 fragColour;
 layout (location = 1) out vec4 brightFragColour;
 
-struct Mtl{ //need??
-    float shininess; //Impacts the scattering of light and hence radius of the spec highlight
-};
-
 struct PtLight{ //Positional light source
     vec3 ambient;
     vec3 diffuse;
@@ -42,7 +38,7 @@ in vec2 TexCoords;
 #define maxAmtS 10
 const float gamma = 2.2f;
 
-uniform Mtl mtl;
+uniform float shininess;
 uniform vec3 globalAmbient;
 uniform int pAmt;
 uniform int dAmt;
@@ -77,7 +73,7 @@ vec3 CalcDiffuse(vec3 lightDir, vec3 lightDiffuse){
 vec3 CalcSpec(vec3 lightDir, vec3 lightSpec){
     vec3 viewDir = normalize(WorldSpacePos - camPos);
     vec3 halfwayDir = -normalize(lightDir + viewDir);
-    float sImpact = pow(max(dot(Normal, halfwayDir), 0.f), mtl.shininess);
+    float sImpact = pow(max(dot(Normal, halfwayDir), 0.f), shininess);
     return sImpact * lightSpec * Spec;
 }
 
@@ -99,25 +95,6 @@ vec3 CalcSpotlight(Spotlight light){
     float epsilon = light.cosInnerCutoff - light.cosOuterCutoff;
     float lightIntensity = clamp((cosTheta - light.cosOuterCutoff) / epsilon, 0.f, 1.f);
     return CalcAmbient(light.ambient) + lightIntensity * (CalcDiffuse(lightDir, light.diffuse) + CalcSpec(lightDir, light.spec));
-}
-
-struct Fog{
-    vec3 colour;
-    float start; //For linear fog
-    float end; //For linear fog
-    float density; //For exponential fog
-    int type;
-};
-uniform Fog fog;
-
-float CalcFogFactor(Fog fog, float fogDist){
-    float fogInverseFactor = 0.f;
-    switch(fog.type){
-        case 0: fogInverseFactor = (fog.end - fogDist) / (fog.end - fog.start); break; //Linear
-        case 1: fogInverseFactor = exp(-fog.density * fogDist); break; //Exponential
-        case 2: fogInverseFactor = exp(-pow(fog.density * fogDist, 2.f)); //Exponential Squared
-    }
-    return 1.f - clamp(fogInverseFactor, 0.f, 1.f);
 }
 
 void main(){
@@ -146,8 +123,7 @@ void main(){
             vec3 refractedRay = refract(incidentRay, Normal, ratio);
             fragColour.rgb += texture(cubemapSampler, reflectedRay).rgb * Reflection;
         }
-
         float brightness = dot(fragColour.rgb, vec3(.2126f, .7152f, .0722f)); //Transform fragColour to grayscale with dot product
-        brightFragColour = vec4(fragColour.rgb * vec3(float(brightness > 2.f)), 1.f); //2.f is brightness threshold (outside LDR with HDR rendering so more control over what is considered bright)
+        brightFragColour = vec4(fragColour.rgb * vec3(float(brightness > 3.f)), 1.f); //3.f is brightness threshold (outside LDR with HDR rendering so more control over what is considered bright)
     }
 }

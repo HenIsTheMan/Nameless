@@ -127,8 +127,8 @@ void Mesh::BatchRender(const std::vector<BatchRenderParams>& paramsVec){ //Old a
 			break;
 	}
 
-	const size_t paramsVecSize = paramsVec.size();
-	const size_t verticesSize = vertices->size();
+	const size_t& paramsVecSize = paramsVec.size();
+	const size_t& verticesSize = vertices->size();
 	std::vector<Vertex> allVertices(paramsVecSize * verticesSize);
 	for(size_t i = 0; i < paramsVecSize; ++i){
 		for(size_t j = 0; j < verticesSize; ++j){
@@ -168,8 +168,8 @@ void Mesh::BatchRender(const std::vector<BatchRenderParams>& paramsVec){ //Old a
 		glGenBuffers(1, &batchEBO); //Element index buffer
 	}
 	if(batchEBO){
-		const size_t paramsVecSize = paramsVec.size();
-		const size_t indicesSize = indices->size();
+		const size_t& paramsVecSize = paramsVec.size();
+		const size_t& indicesSize = indices->size();
 		std::vector<uint> allIndices(paramsVecSize * indicesSize);
 		for(size_t i = 0; i < paramsVecSize; ++i){
 			for(size_t j = 0; j < indicesSize; ++j){
@@ -426,7 +426,7 @@ void Mesh::AddTexMap(const std::tuple<str, TexType, uint>& texMap){
 }
 
 void Mesh::RemoveTexMap(str const& texPath){
-	const size_t size = texMaps.size();
+	const size_t& size = texMaps.size();
 	for(size_t i = 0; i < size; ++i){
 		if(std::get<str>(texMaps[i]) == texPath){
 			glDeleteTextures(1, &std::get<uint>(texMaps[i]));

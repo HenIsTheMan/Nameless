@@ -79,9 +79,9 @@ Scene::Scene():
 }
 
 Scene::~Scene(){
-	const size_t pSize = ptLights.size();
-	const size_t dSize = directionalLights.size();
-	const size_t sSize = spotlights.size();
+	const size_t& pSize = ptLights.size();
+	const size_t& dSize = directionalLights.size();
+	const size_t& sSize = spotlights.size();
 	for(size_t i = 0; i < pSize; ++i){
 		delete ptLights[i];
 		ptLights[i] = nullptr;
@@ -195,15 +195,11 @@ void Scene::Update(){
 
 void Scene::GeoRenderPass(){
 	geoPassSP.Use();
-	//geoPassSP.Set3fv("fog.colour", glm::vec3(.7f));
-	//geoPassSP.Set1f("fog.start", 100.f);
-	//geoPassSP.Set1f("fog.end", 800.f);
-	//geoPassSP.Set1f("fog.density", .01f);
-	//geoPassSP.Set1i("fog.type", 2);
+	geoPassSP.SetMat4fv("PV", &(projection * glm::mat4(glm::mat3(view)))[0][0]);
 
+	///Sky
 	glDepthFunc(GL_LEQUAL); //Modify comparison operators used for depth test such that frags with depth <= 1.f are shown
 	geoPassSP.Set1i("sky", 1);
-	geoPassSP.SetMat4fv("PV", &(projection * glm::mat4(glm::mat3(view)))[0][0]);
 	PushModel({
 		Translate(glm::vec3(0.f, -1.f, 0.f)),
 	});
@@ -279,7 +275,7 @@ void Scene::LightingRenderPass(const uint& posTexRefID, const uint& coloursTexRe
 	const int& pAmt = (int)ptLights.size();
 	const int& dAmt = (int)directionalLights.size();
 	const int& sAmt = (int)spotlights.size();
-	lightingPassSP.Set1f("mtl.shininess", 32.f); //More light scattering if lower
+	lightingPassSP.Set1f("shininess", 32.f); //More light scattering if lower //??
 	lightingPassSP.Set3fv("globalAmbient", Light::globalAmbient);
 
 	lightingPassSP.Set3fv("camPos", cam.GetPos());
@@ -374,7 +370,7 @@ glm::mat4 Scene::GetTopModel() const{
 
 void Scene::PushModel(const std::vector<glm::mat4>& vec) const{
 	modelStack.push(modelStack.empty() ? glm::mat4(1.f) : modelStack.top());
-	const size_t size = vec.size();
+	const size_t& size = vec.size();
 	for(size_t i = 0; i < size; ++i){
 		modelStack.top() *= vec[i];
 	}

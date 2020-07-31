@@ -183,7 +183,7 @@ void Model::InstancedRender(ShaderProg& SP, const int& primitive){
     if(!meshes.size()){
         LoadModel();
     }
-    const size_t size = meshes.size();
+    const size_t& size = meshes.size();
     for(size_t i = 0; i < size; ++i){
         meshes[i].primitive = primitive;
         meshes[i].model = modelForAll;
@@ -199,7 +199,7 @@ void Model::Render(ShaderProg& SP, const int& primitive){
     if(!meshes.size()){
         LoadModel();
     }
-    const size_t size = meshes.size();
+    const size_t& size = meshes.size();
     for(size_t i = 0; i < size; ++i){
         meshes[i].primitive = primitive;
         meshes[i].model = modelForAll;

@@ -3,7 +3,7 @@ layout (location = 0) in vec3 pos;
 layout (location = 1) in vec4 colour;
 layout (location = 2) in vec2 texCoords;
 layout (location = 3) in vec3 normal;
-layout (location = 4) in vec3 tangent; //Calc in CPU??
+layout (location = 4) in vec3 tangent;
 layout (location = 5) in int diffuseTexIndex;
 layout (location = 6) in mat4 modelMat;
 
