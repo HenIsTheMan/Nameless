@@ -301,11 +301,11 @@ void Mesh::InstancedRender(ShaderProg& SP, const bool& autoConfig){
 				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 				glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices->size() * sizeof(uint), &(*indices)[0], GL_STATIC_DRAW);
 			}
-		glBindVertexArray(0);
+	} else{
+		glBindVertexArray(VAO);
 	}
 
-	glBindVertexArray(VAO);
-		indices ? glDrawElementsInstanced(primitive, (int)indices->size(), GL_UNSIGNED_INT, nullptr, (int)modelMats.size()) : glDrawArraysInstanced(primitive, 0, (int)vertices->size(), (int)modelMats.size());
+	indices ? glDrawElementsInstanced(primitive, (int)indices->size(), GL_UNSIGNED_INT, nullptr, (int)modelMats.size()) : glDrawArraysInstanced(primitive, 0, (int)vertices->size(), (int)modelMats.size());
 	glBindVertexArray(0);
 	if(autoConfig){
 		SP.ResetTexUnits();
@@ -406,11 +406,11 @@ void Mesh::Render(ShaderProg& SP, const bool& autoConfig){
 				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 				glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices->size() * sizeof(uint), &(*indices)[0], GL_STATIC_DRAW);
 			}
-		glBindVertexArray(0);
+	} else{
+		glBindVertexArray(VAO);
 	}
-	
-	glBindVertexArray(VAO);
-		indices ? glDrawElements(primitive, (int)indices->size(), GL_UNSIGNED_INT, nullptr) : glDrawArrays(primitive, 0, (int)vertices->size());
+
+	indices ? glDrawElements(primitive, (int)indices->size(), GL_UNSIGNED_INT, nullptr) : glDrawArrays(primitive, 0, (int)vertices->size());
 	glBindVertexArray(0);
 	if(autoConfig){
 		SP.ResetTexUnits();

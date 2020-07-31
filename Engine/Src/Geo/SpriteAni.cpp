@@ -139,9 +139,6 @@ void SpriteAni::Update(){
 }
 
 void SpriteAni::Render(ShaderProg& SP, const bool& autoConfig){
-	if(!vertices){
-		Create();
-	}
 	if(primitive < 0){
 		return (void)puts("Invalid primitive!\n");
 	}
@@ -196,11 +193,7 @@ void SpriteAni::Render(ShaderProg& SP, const bool& autoConfig){
 	}
 
 	if(!VAO){
-		switch(type){
-			case MeshType::Quad:
-				CreateQuad();
-				break;
-		}
+		Create();
 		glGenVertexArrays(1, &VAO);
 		glGenBuffers(1, &VBO);
 
@@ -226,11 +219,11 @@ void SpriteAni::Render(ShaderProg& SP, const bool& autoConfig){
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices->size() * sizeof(uint), &(*indices)[0], GL_STATIC_DRAW);
 		}
-		glBindVertexArray(0);
+	} else{
+		glBindVertexArray(VAO);
 	}
-
-	glBindVertexArray(VAO);
-		glDrawElements(primitive, 6, GL_UNSIGNED_INT, (const void*)(long long(this->currFrame) * 6 * sizeof(GLuint))); //more??
+	
+	glDrawElements(primitive, 6, GL_UNSIGNED_INT, (const void*)(long long(this->currFrame) * 6 * sizeof(GLuint))); //more??
 	glBindVertexArray(0);
 	if(autoConfig){
 		SP.ResetTexUnits();
