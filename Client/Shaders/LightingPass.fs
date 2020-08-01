@@ -36,7 +36,6 @@ in vec2 TexCoords;
 #define maxAmtP 10
 #define maxAmtD 10
 #define maxAmtS 10
-const float gamma = 2.2f;
 
 uniform float shininess;
 uniform vec3 globalAmbient;
@@ -67,7 +66,7 @@ vec3 CalcAmbient(vec3 lightAmbient){
 
 vec3 CalcDiffuse(vec3 lightDir, vec3 lightDiffuse){
     float dImpact = max(dot(Normal, -lightDir), 0.f); //Diffuse impact of light on curr frag
-    return dImpact * lightDiffuse * pow(Colour.rgb, vec3(gamma)); //Diffuse component (> 0.f && <= 1.f when angle between... (>= 0.f && < 90.f) || (> 270.f && <= 360.f)) of frag
+    return dImpact * lightDiffuse * Colour.rgb; //Diffuse component (> 0.f && <= 1.f when angle between... (>= 0.f && < 90.f) || (> 270.f && <= 360.f)) of frag
 }
 
 vec3 CalcSpec(vec3 lightDir, vec3 lightSpec){
