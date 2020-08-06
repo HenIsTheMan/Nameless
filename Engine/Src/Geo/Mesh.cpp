@@ -720,7 +720,7 @@ void Mesh::CreateSphere(){
 			const float phi = -90.f + stack * stackAngle;
 			for(unsigned slice = 0; slice < sliceAmt + 1; ++slice){
 				const float theta = slice * sliceAngle;
-				const glm::vec3 pos(cos(glm::radians(phi)) * cos(glm::radians(theta)), sin(glm::radians(phi)), cos(glm::radians(phi)) * sin(glm::radians(theta)));
+				const glm::vec3 pos(cosf(glm::radians(phi)) * cosf(glm::radians(theta)), sinf(glm::radians(phi)), cosf(glm::radians(phi)) * sinf(glm::radians(theta)));
 				vertices->push_back({
 					pos,
 					glm::vec4(.7f, .4f, .1f, 1.f),
@@ -754,7 +754,7 @@ void Mesh::CreateCylinder(){
 		for(unsigned slice = 0; slice < sliceAmt + 1; ++slice){
 			const float theta = slice * sliceAngle;
 
-			v.pos = glm::vec3(cos(glm::radians(theta)), 1.f, sin(glm::radians(theta)));
+			v.pos = glm::vec3(cosf(glm::radians(theta)), 1.f, sinf(glm::radians(theta)));
 			v.texCoords = glm::vec2((v.pos.x + 1.f) / 2.f, (v.pos.z + 1.f) / 2.f);
 			vertices->emplace_back(v);
 
@@ -765,12 +765,12 @@ void Mesh::CreateCylinder(){
 		for(unsigned slice = 0; slice < sliceAmt + 1; ++slice){
 			const float theta = slice * sliceAngle;
 
-			v.pos = glm::vec3(cos(glm::radians(theta)), 1.f, sin(glm::radians(theta)));
+			v.pos = glm::vec3(cosf(glm::radians(theta)), 1.f, sinf(glm::radians(theta)));
 			v.texCoords = glm::vec2(float(slice) / float(sliceAmt), 1.f);
 			v.normal = glm::normalize(glm::vec3(v.pos.x, 0.f, v.pos.z));
 			vertices->emplace_back(v);
 
-			v.pos = glm::vec3(cos(glm::radians(theta)), -1.f, sin(glm::radians(theta)));
+			v.pos = glm::vec3(cosf(glm::radians(theta)), -1.f, sinf(glm::radians(theta)));
 			v.texCoords = glm::vec2(float(slice) / float(sliceAmt), 0.f);
 			v.normal = glm::normalize(glm::vec3(v.pos.x, 0.f, v.pos.z));
 			vertices->emplace_back(v);
@@ -786,7 +786,7 @@ void Mesh::CreateCylinder(){
 		for(unsigned slice = 0; slice < sliceAmt + 1; ++slice){
 			const float theta = slice * sliceAngle;
 
-			v.pos = glm::vec3(cos(glm::radians(theta)), -1.f, sin(glm::radians(theta)));
+			v.pos = glm::vec3(cosf(glm::radians(theta)), -1.f, sinf(glm::radians(theta)));
 			v.texCoords = glm::vec2((v.pos.x + 1.f) / 2.f, (v.pos.z + 1.f) / 2.f);
 			vertices->emplace_back(v);
 

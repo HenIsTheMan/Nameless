@@ -42,7 +42,7 @@ struct DirectionalLight final: Light{
 };
 
 struct Spotlight final: Light{
-    Spotlight(): Spotlight(glm::vec3(0.f), glm::vec3(0.f), glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(17.5f))){}
+    Spotlight(): Spotlight(glm::vec3(0.f), glm::vec3(0.f), cosf(glm::radians(12.5f)), cosf(glm::radians(17.5f))){}
     Spotlight(const glm::vec3& pos, const glm::vec3& dir, const float& cosInnerCutoff, const float& cosOuterCutoff):
         pos(pos),
         dir(dir),
