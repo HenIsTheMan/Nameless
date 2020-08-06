@@ -46,6 +46,9 @@ Scene::Scene():
 	normalsSP{"Shaders/Normals.vs", "Shaders/Normals.fs", "Shaders/Normals.gs"}, //??
 	screenSP{"Shaders/Quad.vs", "Shaders/Screen.fs"},
 	textSP{"Shaders/Text.vs", "Shaders/Text.fs"},
+	ptLights({}),
+	directionalLights({}),
+	spotlights({}),
 	view(glm::mat4(1.f)),
 	projection(glm::mat4(1.f)),
 	elapsedTime(0.f),
