@@ -123,6 +123,11 @@ bool App::InitOptions() const{
 }
 
 void App::Update(){
+	if(glfwWindowShouldClose(App::win)){
+		endLoop = true;
+		return;
+	}
+
 	float currFrameTime = (float)glfwGetTime();
 	dt = currFrameTime - lastFrameTime;
 	lastFrameTime = currFrameTime;

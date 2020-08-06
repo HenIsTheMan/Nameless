@@ -20,7 +20,7 @@ int main(const int&, const char* const* const&){
 		return -1;
 	}
 	std::thread worker(&MainProcess);
-	for(;;){
+	while(!endLoop){
 		if(Key(VK_ESCAPE)){
 			endLoop = true;
 			break;

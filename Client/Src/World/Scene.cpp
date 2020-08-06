@@ -22,6 +22,7 @@ Scene::Scene():
 		new Mesh(Mesh::MeshType::Cube, GL_TRIANGLES, {
 		}),
 		new Mesh(Mesh::MeshType::Sphere, GL_TRIANGLE_STRIP, {
+			{"Imgs/BoxAlbedo.png", Mesh::TexType::Diffuse, 0},
 		}),
 		new Mesh(Mesh::MeshType::Cylinder, GL_TRIANGLE_STRIP, {
 			{"Imgs/BoxAlbedo.png", Mesh::TexType::Diffuse, 0},
@@ -65,11 +66,11 @@ Scene::Scene():
 	}
 	//soundEngine->play2D("Audio/Music/YellowCafe.mp3", true);
 
-	music = soundEngine->play3D("Audio/Music/YellowCafe.mp3", vec3df(0.f, 0.f, 0.f), true, false, true, ESM_AUTO_DETECT, true);
+	music = soundEngine->play3D("Audio/Music/YellowCafe.mp3", vec3df(0.f, 0.f, 0.f), true, true, true, ESM_AUTO_DETECT, true);
 	if(music){
 		//music->setPosition(vec3df(0.f, 0.f, 0.f));
 		music->setMinDistance(5.f);
-		music->setVolume(0);
+		music->setVolume(3);
 
 		soundFX = music->getSoundEffectControl();
 		if(!soundFX){
@@ -416,6 +417,10 @@ void Scene::DefaultRender(const uint& screenTexRefID, const uint& blurTexRefID){
 	});
 	glBlendFunc(GL_ONE, GL_ZERO);
 	glDepthFunc(GL_LESS);
+
+	if(music){
+		music->setIsPaused(false);
+	}
 }
 
 glm::mat4 Scene::Translate(const glm::vec3& translate){
@@ -443,5 +448,7 @@ void Scene::PushModel(const std::vector<glm::mat4>& vec) const{
 }
 
 void Scene::PopModel() const{
-	modelStack.pop();
+	if(!modelStack.empty()){
+		modelStack.pop();
+	}
 }

@@ -724,9 +724,9 @@ void Mesh::CreateSphere(){
 				vertices->push_back({
 					pos,
 					glm::vec4(.7f, .4f, .1f, 1.f),
-					glm::vec2(0.f),
+					glm::vec2((float)stack / float(stackAmt), (float)slice / float(sliceAmt)),
 					glm::normalize(pos),
-					});
+				});
 
 				indices->emplace_back(stack * (sliceAmt + 1) + slice);
 				indices->emplace_back((stack + 1) * (sliceAmt + 1) + slice);
