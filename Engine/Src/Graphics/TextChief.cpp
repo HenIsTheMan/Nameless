@@ -76,7 +76,6 @@ void TextChief::RenderText(ShaderProg& SP, const TextAttribs& attribs){
 
     SP.Use();
     SP.Set4fv("textColour", attribs.colour);
-    SP.UseTex(attribs.texRefID, "textTex");
     SP.SetMat4fv("projection", &glm::ortho(0.0f, (float)winWidth, 0.0f, (float)winHeight)[0][0]);
 
     glBindVertexArray(VAO);
@@ -98,18 +97,17 @@ void TextChief::RenderText(ShaderProg& SP, const TextAttribs& attribs){
             { xpos + w, ypos + h,   1.0f, 0.0f }           
         };
 
+        SP.UseTex(attribs.texRefID, "textTex"); //1 for each char??
         SP.UseTex(ch.texRefID, "texSampler");
 
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
+        SP.ResetTexUnits();
         const_cast<float&>(attribs.x) += (ch.advance >> 6) * attribs.scaleFactor; // now advance cursors for next glyph (note that advance is number of 1/64 pixels) // bitshift by 6 to get value in pixels (2^6 = 64)
     }
-
-    SP.ResetTexUnits();
     glBindTexture(GL_TEXTURE_2D, 0);
     glBindVertexArray(0);
 }

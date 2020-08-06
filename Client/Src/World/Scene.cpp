@@ -20,6 +20,7 @@ Scene::Scene():
 			{"Imgs/BoxEmission.png", Mesh::TexType::Emission, 0},
 		}),
 		new Mesh(Mesh::MeshType::Cube, GL_TRIANGLES, {
+			{"Imgs/BoxAlbedo.png", Mesh::TexType::Diffuse, 0},
 		}),
 		new Mesh(Mesh::MeshType::Sphere, GL_TRIANGLE_STRIP, {
 			{"Imgs/BoxAlbedo.png", Mesh::TexType::Diffuse, 0},
@@ -65,7 +66,7 @@ Scene::Scene():
 	if(music){
 		//music->setPosition(vec3df(0.f, 0.f, 0.f));
 		music->setMinDistance(5.f);
-		music->setVolume(3);
+		music->setVolume(0);
 
 		soundFX = music->getSoundEffectControl();
 		if(!soundFX){
@@ -369,16 +370,19 @@ void Scene::ForwardRender(){
 			Translate(glm::vec3(3.f, 0.f, 0.f)),
 		});
 			forwardSP.Set1i("useCustomColour", 1);
-			forwardSP.Set4fv("customColour", glm::vec4(glm::vec3(.5f), .3f));
+			forwardSP.Set4fv("customColour", glm::vec4(glm::vec3(.5f), .7f));
+			forwardSP.Set1i("useCustomDiffuseTexIndex", 1);
+			forwardSP.Set1i("customDiffuseTexIndex", -1);
 			meshes[(int)GeoType::Cube]->SetModel(GetTopModel());
 			meshes[(int)GeoType::Cube]->Render(forwardSP);
+			forwardSP.Set1i("useCustomDiffuseTexIndex", 0);
 			forwardSP.Set1i("useCustomColour", 0);
 		PopModel();
 		PushModel({
 			Translate(glm::vec3(6.f, 0.f, 0.f)),
 		});
 			forwardSP.Set1i("useCustomColour", 1);
-			forwardSP.Set4fv("customColour", glm::vec4(glm::vec3(.5f), .3f));
+			forwardSP.Set4fv("customColour", glm::vec4(glm::vec3(.5f), .5f));
 			meshes[(int)GeoType::Quad]->SetModel(GetTopModel());
 			meshes[(int)GeoType::Quad]->Render(forwardSP);
 			forwardSP.Set1i("useCustomColour", 0);
@@ -412,7 +416,7 @@ void Scene::DefaultRender(const uint& screenTexRefID, const uint& blurTexRefID){
 	glDepthFunc(GL_LEQUAL);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	textChief.RenderText(textSP, {
-		"Cool",
+		"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
 		25.f,
 		25.f,
 		1.f,

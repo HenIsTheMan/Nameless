@@ -114,7 +114,9 @@ void main(){
 	if(!useCustomColour && !useDiffuseMap){
 		Colour = fsIn.colour;
 	} else{
-		Colour = (useCustomColour ? customColour : vec4(1.f)) * (useDiffuseMap ? texture(diffuseMaps[useCustomDiffuseTexIndex ? customDiffuseTexIndex : fsIn.diffuseTexIndex], fsIn.texCoords) : vec4(1.f));
+		Colour = (useCustomColour ? customColour : vec4(1.f)) * (useDiffuseMap &&
+            (useCustomDiffuseTexIndex ? customDiffuseTexIndex : fsIn.diffuseTexIndex) >= 0 ?
+            texture(diffuseMaps[useCustomDiffuseTexIndex ? customDiffuseTexIndex : fsIn.diffuseTexIndex], fsIn.texCoords) : vec4(1.f));
 	}
 	if(useEmissionMap){
 		Colour.rgb += texture(emissionMap, fsIn.texCoords).rgb;
