@@ -53,11 +53,6 @@ Scene::Scene():
 	view(glm::mat4(1.f)),
 	projection(glm::mat4(1.f)),
 	elapsedTime(0.f),
-	polyModeBT(0.f),
-	distortionBT(0.f),
-	echoBT(0.f),
-	wavesReverbBT(0.f),
-	resetSoundFXBT(0.f),
 	modelStack()
 {
 	soundEngine = createIrrKlangDevice(ESOD_AUTO_DETECT, ESEO_MULTI_THREADED | ESEO_LOAD_PLUGINS | ESEO_USE_3D_BUFFERS | ESEO_PRINT_DEBUG_INFO_TO_DEBUGGER);
@@ -156,9 +151,13 @@ void Scene::Update(){
 	soundEngine->setListenerPosition(vec3df(camPos.x, camPos.y, camPos.z), vec3df(camFront.x, camFront.y, camFront.z));
 	static_cast<Spotlight*>(spotlights[0])->pos = camPos;
 	static_cast<Spotlight*>(spotlights[0])->dir = camFront;
-	//static_cast<Spotlight*>(spotlights[0])->diffuse = glm::vec3(50.f); //Blocky light if too high??
-	//static_cast<Spotlight*>(spotlights[0])->spec = glm::vec3(0.f, 1.f, 1.f); //Coloured specular highlight
 	static_cast<SpriteAni*>(meshes[(int)GeoType::SpriteAni])->Update();
+
+	static float polyModeBT = 0.f;
+	static float distortionBT = 0.f;
+	static float echoBT = 0.f;
+	static float wavesReverbBT = 0.f;
+	static float resetSoundFXBT = 0.f;
 
 	GLint polyMode;
 	glGetIntegerv(GL_POLYGON_MODE, &polyMode);
@@ -245,18 +244,21 @@ void Scene::LightingRenderPass(const uint& posTexRefID, const uint& coloursTexRe
 	const int& pAmt = (int)ptLights.size();
 	const int& dAmt = (int)directionalLights.size();
 	const int& sAmt = (int)spotlights.size();
+
 	lightingPassSP.Set1f("shininess", 32.f); //More light scattering if lower //??
 	lightingPassSP.Set3fv("globalAmbient", Light::globalAmbient);
-
 	lightingPassSP.Set3fv("camPos", cam.GetPos());
+	lightingPassSP.Set1i("pAmt", pAmt);
+	lightingPassSP.Set1i("dAmt", dAmt);
+	lightingPassSP.Set1i("sAmt", sAmt);
 	lightingPassSP.UseTex(posTexRefID, "posTex");
 	lightingPassSP.UseTex(coloursTexRefID, "coloursTex");
 	lightingPassSP.UseTex(normalsTexRefID, "normalsTex");
 	lightingPassSP.UseTex(specTexRefID, "specTex");
 	lightingPassSP.UseTex(reflectionTexRefID, "reflectionTex");
 
-	for(int i = 0; i < pAmt; ++i){
-		lightingPassSP.Set1i("pAmt", pAmt);
+	int i;
+	for(i = 0; i < pAmt; ++i){
 		const PtLight* const& ptLight = static_cast<PtLight*>(ptLights[i]);
 		lightingPassSP.Set3fv(("ptLights[" + std::to_string(i) + "].ambient").c_str(), ptLight->ambient);
 		lightingPassSP.Set3fv(("ptLights[" + std::to_string(i) + "].diffuse").c_str(), ptLight->diffuse);
@@ -266,16 +268,14 @@ void Scene::LightingRenderPass(const uint& posTexRefID, const uint& coloursTexRe
 		lightingPassSP.Set1f(("ptLights[" + std::to_string(i) + "].linear").c_str(), ptLight->linear);
 		lightingPassSP.Set1f(("ptLights[" + std::to_string(i) + "].quadratic").c_str(), ptLight->quadratic);
 	}
-	for(int i = 0; i < dAmt; ++i){
-		lightingPassSP.Set1i("dAmt", dAmt);
+	for(i = 0; i < dAmt; ++i){
 		const DirectionalLight* const& directionalLight = static_cast<DirectionalLight*>(ptLights[i]);
 		lightingPassSP.Set3fv(("directionalLights[" + std::to_string(i) + "].ambient").c_str(), directionalLight->ambient);
 		lightingPassSP.Set3fv(("directionalLights[" + std::to_string(i) + "].diffuse").c_str(), directionalLight->diffuse);
 		lightingPassSP.Set3fv(("directionalLights[" + std::to_string(i) + "].spec").c_str(), directionalLight->spec);
 		lightingPassSP.Set3fv(("directionalLights[" + std::to_string(i) + "].dir").c_str(), directionalLight->dir);
 	}
-	for(int i = 0; i < sAmt; ++i){
-		lightingPassSP.Set1i("sAmt", sAmt);
+	for(i = 0; i < sAmt; ++i){
 		const Spotlight* const& spotlight = static_cast<Spotlight*>(spotlights[i]);
 		lightingPassSP.Set3fv(("spotlights[" + std::to_string(i) + "].ambient").c_str(), spotlight->ambient);
 		lightingPassSP.Set3fv(("spotlights[" + std::to_string(i) + "].diffuse").c_str(), spotlight->diffuse);
@@ -302,16 +302,19 @@ void Scene::BlurRender(const uint& brightTexRefID, const bool& horizontal){
 
 void Scene::ForwardRender(){
 	forwardSP.Use();
+	const int& pAmt = 0;
+	const int& dAmt = 0;
+	const int& sAmt = 0;
 
-	const int& pAmt = (int)ptLights.size();
-	const int& dAmt = (int)directionalLights.size();
-	const int& sAmt = (int)spotlights.size();
 	forwardSP.Set1f("shininess", 32.f); //More light scattering if lower //??
 	forwardSP.Set3fv("globalAmbient", Light::globalAmbient);
 	forwardSP.Set3fv("camPos", cam.GetPos());
+	forwardSP.Set1i("pAmt", pAmt);
+	forwardSP.Set1i("dAmt", dAmt);
+	forwardSP.Set1i("sAmt", sAmt);
 
-	for(int i = 0; i < pAmt; ++i){
-		forwardSP.Set1i("pAmt", pAmt);
+	int i;
+	for(i = 0; i < pAmt; ++i){
 		const PtLight* const& ptLight = static_cast<PtLight*>(ptLights[i]);
 		forwardSP.Set3fv(("ptLights[" + std::to_string(i) + "].ambient").c_str(), ptLight->ambient);
 		forwardSP.Set3fv(("ptLights[" + std::to_string(i) + "].diffuse").c_str(), ptLight->diffuse);
@@ -321,16 +324,14 @@ void Scene::ForwardRender(){
 		forwardSP.Set1f(("ptLights[" + std::to_string(i) + "].linear").c_str(), ptLight->linear);
 		forwardSP.Set1f(("ptLights[" + std::to_string(i) + "].quadratic").c_str(), ptLight->quadratic);
 	}
-	for(int i = 0; i < dAmt; ++i){
-		forwardSP.Set1i("dAmt", dAmt);
+	for(i = 0; i < dAmt; ++i){
 		const DirectionalLight* const& directionalLight = static_cast<DirectionalLight*>(ptLights[i]);
 		forwardSP.Set3fv(("directionalLights[" + std::to_string(i) + "].ambient").c_str(), directionalLight->ambient);
 		forwardSP.Set3fv(("directionalLights[" + std::to_string(i) + "].diffuse").c_str(), directionalLight->diffuse);
 		forwardSP.Set3fv(("directionalLights[" + std::to_string(i) + "].spec").c_str(), directionalLight->spec);
 		forwardSP.Set3fv(("directionalLights[" + std::to_string(i) + "].dir").c_str(), directionalLight->dir);
 	}
-	for(int i = 0; i < sAmt; ++i){
-		forwardSP.Set1i("sAmt", sAmt);
+	for(i = 0; i < sAmt; ++i){
 		const Spotlight* const& spotlight = static_cast<Spotlight*>(spotlights[i]);
 		forwardSP.Set3fv(("spotlights[" + std::to_string(i) + "].ambient").c_str(), spotlight->ambient);
 		forwardSP.Set3fv(("spotlights[" + std::to_string(i) + "].diffuse").c_str(), spotlight->diffuse);
@@ -389,8 +390,11 @@ void Scene::ForwardRender(){
 		Translate(glm::vec3(0.f, 50.f, 0.f)),
 		Scale(glm::vec3(20.f, 40.f, 20.f)),
 	});
+		forwardSP.Set1i("useCustomColour", 1);
+		forwardSP.Set4fv("customColour", glm::vec4(glm::vec3(10.f), 1.f));
 		meshes[(int)GeoType::SpriteAni]->SetModel(GetTopModel());
 		meshes[(int)GeoType::SpriteAni]->Render(forwardSP);
+		forwardSP.Set1i("useCustomColour", 0);
 	PopModel();
 
 	glBlendFunc(GL_ONE, GL_ZERO);

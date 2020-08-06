@@ -33,9 +33,9 @@ struct Spotlight{ //Positional light that shoots light rays in 1 dir, objs withi
 };
 
 in vec2 TexCoords;
-#define maxAmtP 10
+#define maxAmtP 100
 #define maxAmtD 10
-#define maxAmtS 10
+#define maxAmtS 100
 
 uniform float shininess;
 uniform vec3 globalAmbient;
