@@ -547,6 +547,20 @@ void Mesh::AddTexMap(const std::tuple<str, TexType, uint>& texMap){
 	texMaps.emplace_back(texMap);
 }
 
+void Mesh::ClearModelMats(){
+	modelMats.clear();
+}
+
+void Mesh::ClearTexMaps(){
+	texMaps.clear();
+}
+
+void Mesh::RemoveModelMat(const size_t& index){
+	if(!modelMats.empty()){
+		modelMats.erase(modelMats.begin() + index);
+	}
+}
+
 void Mesh::RemoveTexMap(str const& texPath){
 	const size_t& size = texMaps.size();
 	for(size_t i = 0; i < size; ++i){

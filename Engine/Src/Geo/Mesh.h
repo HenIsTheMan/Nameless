@@ -38,6 +38,9 @@ public:
 
 	void AddModelMat(const glm::mat4& modelMat);
 	void AddTexMap(const std::tuple<str, TexType, uint>& texMap);
+	void ClearModelMats();
+	void ClearTexMaps();
+	void RemoveModelMat(const size_t& index);
 	void RemoveTexMap(str const& texPath);
 	//void BatchRender(const std::vector<BatchRenderParams>& params); //Old and not working??
 	void InstancedRender(ShaderProg& SP, const bool& autoConfig = true);
