@@ -38,8 +38,11 @@ public:
 private:
 	App();
 	bool InitOptions() const;
+	bool fullscreen;
+	float elapsedTime;
 	float lastFrameTime;
 	Scene scene;
+	static const GLFWvidmode* mode;
 	static GLFWwindow* win;
 
 	uint FBORefIDs[(int)FBO::Amt];

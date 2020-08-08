@@ -9,6 +9,10 @@ extern float lastX;
 extern float lastY;
 extern float SENS;
 extern float angularFOV;
+extern int optimalWinXPos;
+extern int optimalWinYPos;
+extern int optimalWinWidth;
+extern int optimalWinHeight;
 extern int winWidth;
 extern int winHeight;
 
@@ -28,17 +32,19 @@ bool InitAPI(GLFWwindow*& win){
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); //For Mac OS X
     #endif
 
-    const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+    const GLFWvidmode* const& mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
     SetWindowPos(GetConsoleWindow(), 0,
         int((GetSystemMetrics(SM_CXFULLSCREEN) - float(mode->width - GetSystemMetrics(SM_CXFULLSCREEN)) / 2.f) * 5.f / 6.f),
         0,
         int((GetSystemMetrics(SM_CXFULLSCREEN) - float(mode->width - GetSystemMetrics(SM_CXFULLSCREEN)) / 2.f) / 6.f),
         GetSystemMetrics(SM_CYFULLSCREEN),
         0);
-    winWidth = int((GetSystemMetrics(SM_CXFULLSCREEN) - float(mode->width - GetSystemMetrics(SM_CXFULLSCREEN)) / 2.f) * 5.f / 6.f);
-    winHeight = GetSystemMetrics(SM_CYFULLSCREEN) - int(float(mode->height - GetSystemMetrics(SM_CYFULLSCREEN)) / 2.f);
+    optimalWinWidth = winWidth = int((GetSystemMetrics(SM_CXFULLSCREEN) - float(mode->width - GetSystemMetrics(SM_CXFULLSCREEN)) / 2.f) * 5.f / 6.f);
+    optimalWinHeight = winHeight = GetSystemMetrics(SM_CYFULLSCREEN) - int(float(mode->height - GetSystemMetrics(SM_CYFULLSCREEN)) / 2.f);
     win = glfwCreateWindow(winWidth, winHeight, "Nameless Engine", nullptr, nullptr);
-    glfwSetWindowPos(win, int(float(mode->width - GetSystemMetrics(SM_CXFULLSCREEN)) / 2.f), int(float(mode->height - GetSystemMetrics(SM_CYFULLSCREEN)) / 2.f));
+    optimalWinXPos = int(float(mode->width - GetSystemMetrics(SM_CXFULLSCREEN)) / 2.f);
+    optimalWinYPos = int(float(mode->height - GetSystemMetrics(SM_CYFULLSCREEN)) / 2.f);
+    glfwSetWindowPos(win, optimalWinXPos, optimalWinYPos);
 
     if(win == 0){ //Get a handle to the created window obj
         (void)puts("Failed to create GLFW win\n");

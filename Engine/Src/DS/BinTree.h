@@ -79,7 +79,7 @@ public:
             root = new BinTreeNode<T>(data);
         } else{
             BinTreeNode<T>* temp = root;
-            while(true){
+            for(;;){
                 if(data < temp->data){
                     if(temp->left){
                         temp = temp->left;

@@ -4,12 +4,19 @@
 
 extern float dt;
 extern bool endLoop;
+extern int optimalWinXPos;
+extern int optimalWinYPos;
+extern int optimalWinWidth;
+extern int optimalWinHeight;
 extern int winWidth;
 extern int winHeight;
 
+const GLFWvidmode* App::mode = nullptr;
 GLFWwindow* App::win = nullptr;
 
 App::App():
+	fullscreen(false),
+	elapsedTime(0.f),
 	lastFrameTime(0.f),
 	scene(),
 	FBORefIDs(),
@@ -31,6 +38,8 @@ App::~App(){
 }
 
 bool App::Init(){
+	mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+
 	glGenFramebuffers(sizeof(FBORefIDs) / sizeof(FBORefIDs[0]), FBORefIDs);
 	glGenTextures(sizeof(texRefIDs) / sizeof(texRefIDs[0]), texRefIDs);
 	glGenRenderbuffers(sizeof(RBORefIDs) / sizeof(RBORefIDs[0]), RBORefIDs);
@@ -131,6 +140,19 @@ void App::Update(){
 	float currFrameTime = (float)glfwGetTime();
 	dt = currFrameTime - lastFrameTime;
 	lastFrameTime = currFrameTime;
+
+	elapsedTime += dt;
+	static float toggleFullscreenBT = 0.f;
+	if(Key(VK_F1) && toggleFullscreenBT <= elapsedTime){
+		if(fullscreen){
+			glfwSetWindowMonitor(win, 0, optimalWinXPos, optimalWinYPos, optimalWinWidth, optimalWinHeight, GLFW_DONT_CARE);
+			fullscreen = false;
+		} else{
+			glfwSetWindowMonitor(win, glfwGetPrimaryMonitor(), 0, 0, mode->width, mode->height, GLFW_DONT_CARE);
+			fullscreen = true;
+		}
+		toggleFullscreenBT = elapsedTime + .5f;
+	}
 
 	scene.Update();
 }
