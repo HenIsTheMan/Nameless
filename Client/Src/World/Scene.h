@@ -20,8 +20,8 @@ private:
 	ISoundEffectControl* soundFX;
 	TextChief textChief;
 
-	enum struct GeoType{
-		Quad,
+	enum struct MeshType{
+		Quad = 0,
 		Cube,
 		Sphere,
 		Cylinder,
@@ -29,10 +29,14 @@ private:
 		Terrain,
 		Amt
 	};
-	Mesh* meshes[(int)GeoType::Amt];
+	Mesh* meshes[(int)MeshType::Amt];
 
-	Model model;
-	Model skydome;
+	enum struct ModelType{
+		Skydome = 0,
+		Suit,
+		Amt
+	};
+	Model* models[(int)ModelType::Amt];
 
 	ShaderProg blurSP;
 	ShaderProg forwardSP;

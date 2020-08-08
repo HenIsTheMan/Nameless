@@ -31,16 +31,18 @@ Scene::Scene():
 		new SpriteAni(4, 8),
 		new Terrain("Imgs/hMap.raw", 8.f, 8.f),
 	},
-	model("ObjsAndMtls/nanosuit.obj", {
-		aiTextureType_DIFFUSE,
-		aiTextureType_SPECULAR,
-		aiTextureType_EMISSIVE,
-		aiTextureType_AMBIENT,
-		//aiTextureType_HEIGHT,
-	}),
-	skydome("ObjsAndMtls/Skydome.obj", {
-		aiTextureType_DIFFUSE,
-	}),
+	models{
+		new Model("ObjsAndMtls/Skydome.obj", {
+			aiTextureType_DIFFUSE,
+		}),
+		new Model("ObjsAndMtls/nanosuit.obj", {
+			aiTextureType_DIFFUSE,
+			aiTextureType_SPECULAR,
+			aiTextureType_EMISSIVE,
+			aiTextureType_AMBIENT,
+			//aiTextureType_HEIGHT,
+		}),
+	},
 	blurSP{"Shaders/Quad.vs", "Shaders/Blur.fs"},
 	forwardSP{"Shaders/Forward.vs", "Shaders/Forward.fs"},
 	geoPassSP{"Shaders/GeoPass.vs", "Shaders/GeoPass.fs"},
@@ -96,10 +98,16 @@ Scene::~Scene(){
 		spotlights[i] = nullptr;
 	}
 	
-	for(int i = 0; i < (int)GeoType::Amt; ++i){
+	for(int i = 0; i < (int)MeshType::Amt; ++i){
 		if(meshes[i]){
 			delete meshes[i];
 			meshes[i] = nullptr;
+		}
+	}
+	for(int i = 0; i < (int)ModelType::Amt; ++i){
+		if(models[i]){
+			delete models[i];
+			models[i] = nullptr;
 		}
 	}
 	if(music){
@@ -116,7 +124,7 @@ bool Scene::Init(){
 			Translate(glm::vec3(PseudorandMinMax(-2000.f, 2000.f), PseudorandMinMax(-2000.f, 2000.f), -5.f)),
 			Rotate(glm::vec4(0.f, 1.f, 0.f, -45.f)),
 		});
-			meshes[(int)GeoType::Quad]->AddModelMat(GetTopModel());
+			meshes[(int)MeshType::Quad]->AddModelMat(GetTopModel());
 		PopModel();
 	}
 	for(int i = 0; i < 999; ++i){
@@ -124,15 +132,15 @@ bool Scene::Init(){
 			Translate(glm::vec3(PseudorandMinMax(-100.f, 100.f), PseudorandMinMax(-100.f, 100.f), -5.f)),
 			Rotate(glm::vec4(0.f, 1.f, 0.f, -45.f)),
 		});
-			model.AddModelMatForAll(GetTopModel());
+			models[(int)ModelType::Suit]->AddModelMatForAll(GetTopModel());
 		PopModel();
 	}
 
-	meshes[(int)GeoType::SpriteAni]->AddTexMap({"Imgs/Fire.png", Mesh::TexType::Diffuse, 0});
-	static_cast<SpriteAni*>(meshes[(int)GeoType::SpriteAni])->AddAni("FireSpriteAni", 0, 32);
-	static_cast<SpriteAni*>(meshes[(int)GeoType::SpriteAni])->Play("FireSpriteAni", -1, .5f);
+	meshes[(int)MeshType::SpriteAni]->AddTexMap({"Imgs/Fire.png", Mesh::TexType::Diffuse, 0});
+	static_cast<SpriteAni*>(meshes[(int)MeshType::SpriteAni])->AddAni("FireSpriteAni", 0, 32);
+	static_cast<SpriteAni*>(meshes[(int)MeshType::SpriteAni])->Play("FireSpriteAni", -1, .5f);
 
-	meshes[(int)GeoType::Terrain]->AddTexMap({"Imgs/GrassGround.jpg", Mesh::TexType::Diffuse, 0});
+	meshes[(int)MeshType::Terrain]->AddTexMap({"Imgs/GrassGround.jpg", Mesh::TexType::Diffuse, 0});
 
 	return true;
 }
@@ -152,7 +160,7 @@ void Scene::Update(){
 	soundEngine->setListenerPosition(vec3df(camPos.x, camPos.y, camPos.z), vec3df(camFront.x, camFront.y, camFront.z));
 	static_cast<Spotlight*>(spotlights[0])->pos = camPos;
 	static_cast<Spotlight*>(spotlights[0])->dir = camFront;
-	static_cast<SpriteAni*>(meshes[(int)GeoType::SpriteAni])->Update();
+	static_cast<SpriteAni*>(meshes[(int)MeshType::SpriteAni])->Update();
 
 	static float polyModeBT = 0.f;
 	static float distortionBT = 0.f;
@@ -197,15 +205,15 @@ void Scene::GeoRenderPass(){
 	PushModel({
 		Translate(glm::vec3(0.f, -1.f, 0.f)),
 	});
-		skydome.SetModelForAll(GetTopModel());
-		skydome.Render(geoPassSP);
+		models[(int)ModelType::Skydome]->SetModelForAll(GetTopModel());
+		models[(int)ModelType::Skydome]->Render(geoPassSP);
 	PopModel();
 	PushModel({
 		Translate(glm::vec3(0.f, 1.f, 0.f)),
 		Rotate(glm::vec4(0.f, 0.f, 1.f, 180.f)),
 	});
-		skydome.SetModelForAll(GetTopModel());
-		skydome.Render(geoPassSP);
+		models[(int)ModelType::Skydome]->SetModelForAll(GetTopModel());
+		models[(int)ModelType::Skydome]->Render(geoPassSP);
 	PopModel();
 	geoPassSP.Set1i("sky", 0);
 	glDepthFunc(GL_LESS);
@@ -217,8 +225,8 @@ void Scene::GeoRenderPass(){
 		Rotate(glm::vec4(0.f, 1.f, 0.f, 45.f)),
 		Scale(glm::vec3(500.f, 100.f, 500.f)),
 	});
-		meshes[(int)GeoType::Terrain]->SetModel(GetTopModel());
-		meshes[(int)GeoType::Terrain]->Render(geoPassSP);
+		meshes[(int)MeshType::Terrain]->SetModel(GetTopModel());
+		meshes[(int)MeshType::Terrain]->Render(geoPassSP);
 	PopModel();
 
 	///Nanosuits
@@ -227,16 +235,16 @@ void Scene::GeoRenderPass(){
 		Rotate(glm::vec4(0.f, 1.f, 0.f, 0.f)),
 		Scale(glm::vec3(5.f)),
 	});
-		model.SetModelForAll(GetTopModel());
-		model.Render(geoPassSP);
+		models[(int)ModelType::Suit]->SetModelForAll(GetTopModel());
+		models[(int)ModelType::Suit]->Render(geoPassSP);
 	PopModel();
 	PushModel({
 		Translate(glm::vec3(0.f, 100.f, 0.f)),
 		Rotate(glm::vec4(0.f, 1.f, 0.f, 0.f)),
 		Scale(glm::vec3(.5f)),
 	});
-		model.SetModelForAll(GetTopModel());
-		model.InstancedRender(geoPassSP);
+		models[(int)ModelType::Suit]->SetModelForAll(GetTopModel());
+		models[(int)ModelType::Suit]->InstancedRender(geoPassSP);
 	PopModel();
 }
 
@@ -287,8 +295,8 @@ void Scene::LightingRenderPass(const uint& posTexRefID, const uint& coloursTexRe
 		lightingPassSP.Set1f(("spotlights[" + std::to_string(i) + "].cosOuterCutoff").c_str(), spotlight->cosOuterCutoff);
 	}
 
-	meshes[(int)GeoType::Quad]->SetModel(GetTopModel());
-	meshes[(int)GeoType::Quad]->Render(lightingPassSP, false);
+	meshes[(int)MeshType::Quad]->SetModel(GetTopModel());
+	meshes[(int)MeshType::Quad]->Render(lightingPassSP, false);
 	lightingPassSP.ResetTexUnits();
 }
 
@@ -296,8 +304,8 @@ void Scene::BlurRender(const uint& brightTexRefID, const bool& horizontal){
 	blurSP.Use();
 	blurSP.Set1i("horizontal", horizontal);
 	blurSP.UseTex(brightTexRefID, "texSampler");
-	meshes[(int)GeoType::Quad]->SetModel(GetTopModel());
-	meshes[(int)GeoType::Quad]->Render(blurSP, false);
+	meshes[(int)MeshType::Quad]->SetModel(GetTopModel());
+	meshes[(int)MeshType::Quad]->Render(blurSP, false);
 	blurSP.ResetTexUnits();
 }
 
@@ -354,16 +362,16 @@ void Scene::ForwardRender(){
 	});
 		forwardSP.Set1i("useCustomColour", 1);
 		forwardSP.Set4fv("customColour", glm::vec4(0.f, 1.f, 0.f, .7f));
-		meshes[(int)GeoType::Cylinder]->SetModel(GetTopModel());
-		meshes[(int)GeoType::Cylinder]->Render(forwardSP);
+		meshes[(int)MeshType::Cylinder]->SetModel(GetTopModel());
+		meshes[(int)MeshType::Cylinder]->Render(forwardSP);
 		forwardSP.Set1i("useCustomColour", 0);
 		PushModel({
 			Translate(glm::vec3(-3.f, 0.f, 0.f)),
 		});
 			forwardSP.Set1i("useCustomColour", 1);
 			forwardSP.Set4fv("customColour", glm::vec4(glm::vec3(7.f), .3f));
-			meshes[(int)GeoType::Sphere]->SetModel(GetTopModel());
-			meshes[(int)GeoType::Sphere]->Render(forwardSP);
+			meshes[(int)MeshType::Sphere]->SetModel(GetTopModel());
+			meshes[(int)MeshType::Sphere]->Render(forwardSP);
 			forwardSP.Set1i("useCustomColour", 0);
 		PopModel();
 		PushModel({
@@ -373,8 +381,8 @@ void Scene::ForwardRender(){
 			forwardSP.Set4fv("customColour", glm::vec4(glm::vec3(.5f), .7f));
 			forwardSP.Set1i("useCustomDiffuseTexIndex", 1);
 			forwardSP.Set1i("customDiffuseTexIndex", -1);
-			meshes[(int)GeoType::Cube]->SetModel(GetTopModel());
-			meshes[(int)GeoType::Cube]->Render(forwardSP);
+			meshes[(int)MeshType::Cube]->SetModel(GetTopModel());
+			meshes[(int)MeshType::Cube]->Render(forwardSP);
 			forwardSP.Set1i("useCustomDiffuseTexIndex", 0);
 			forwardSP.Set1i("useCustomColour", 0);
 		PopModel();
@@ -383,8 +391,8 @@ void Scene::ForwardRender(){
 		});
 			forwardSP.Set1i("useCustomColour", 1);
 			forwardSP.Set4fv("customColour", glm::vec4(glm::vec3(.5f), .5f));
-			meshes[(int)GeoType::Quad]->SetModel(GetTopModel());
-			meshes[(int)GeoType::Quad]->Render(forwardSP);
+			meshes[(int)MeshType::Quad]->SetModel(GetTopModel());
+			meshes[(int)MeshType::Quad]->Render(forwardSP);
 			forwardSP.Set1i("useCustomColour", 0);
 		PopModel();
 	PopModel();
@@ -396,8 +404,8 @@ void Scene::ForwardRender(){
 	});
 		forwardSP.Set1i("useCustomColour", 1);
 		forwardSP.Set4fv("customColour", glm::vec4(glm::vec3(10.f), 1.f));
-		meshes[(int)GeoType::SpriteAni]->SetModel(GetTopModel());
-		meshes[(int)GeoType::SpriteAni]->Render(forwardSP);
+		meshes[(int)MeshType::SpriteAni]->SetModel(GetTopModel());
+		meshes[(int)MeshType::SpriteAni]->Render(forwardSP);
 		forwardSP.Set1i("useCustomColour", 0);
 	PopModel();
 
@@ -409,8 +417,8 @@ void Scene::DefaultRender(const uint& screenTexRefID, const uint& blurTexRefID){
 	screenSP.Set1f("exposure", 1.2f);
 	screenSP.UseTex(screenTexRefID, "screenTexSampler");
 	screenSP.UseTex(blurTexRefID, "blurTexSampler");
-	meshes[(int)GeoType::Quad]->SetModel(GetTopModel());
-	meshes[(int)GeoType::Quad]->Render(screenSP, false);
+	meshes[(int)MeshType::Quad]->SetModel(GetTopModel());
+	meshes[(int)MeshType::Quad]->Render(screenSP, false);
 	screenSP.ResetTexUnits();
 
 	glDepthFunc(GL_LEQUAL);
