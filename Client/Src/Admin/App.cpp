@@ -190,16 +190,19 @@ void App::Render(){
 		horizontal = !horizontal;
 	}
 
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, FBORefIDs[(int)FBO::GeoPass]);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, FBORefIDs[(int)FBO::LightingPass]);
-	glBlitFramebuffer(0, 0, 2048, 2048, 0, 0, 2048, 2048, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
-	scene.ForwardRender();
-
 	glViewport(0, 0, winWidth, winHeight);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClearColor(1.f, 0.82f, 0.86f, 1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	scene.DefaultRender(texRefIDs[(int)Tex::Lit], texRefIDs[int(Tex::PingPong0) + int(!horizontal)]);
+
+	glViewport(0, 0, 2048, 2048);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, FBORefIDs[(int)FBO::GeoPass]);
+	glViewport(0, 0, winWidth, winHeight);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	glBlitFramebuffer(0, 0, 2048, 2048, 0, 0, winWidth, winHeight, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	scene.ForwardRender();
 }
 
 void App::PostRender() const{

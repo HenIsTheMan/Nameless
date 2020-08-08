@@ -403,13 +403,27 @@ void Scene::ForwardRender(){
 		Scale(glm::vec3(20.f, 40.f, 20.f)),
 	});
 		forwardSP.Set1i("useCustomColour", 1);
-		forwardSP.Set4fv("customColour", glm::vec4(glm::vec3(10.f), 1.f));
+		forwardSP.Set4fv("customColour", glm::vec4(glm::vec3(5.f), 1.f));
 		meshes[(int)MeshType::SpriteAni]->SetModel(GetTopModel());
 		meshes[(int)MeshType::SpriteAni]->Render(forwardSP);
 		forwardSP.Set1i("useCustomColour", 0);
 	PopModel();
 
+	///Text
+	textChief.RenderText(textSP, {
+		"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+		25.f,
+		25.f,
+		1.f,
+		glm::vec4(1.f),
+		0
+	});
+
 	glBlendFunc(GL_ONE, GL_ZERO);
+
+	if(music){
+		music->setIsPaused(false);
+	}
 }
 
 void Scene::DefaultRender(const uint& screenTexRefID, const uint& blurTexRefID){
@@ -420,23 +434,6 @@ void Scene::DefaultRender(const uint& screenTexRefID, const uint& blurTexRefID){
 	meshes[(int)MeshType::Quad]->SetModel(GetTopModel());
 	meshes[(int)MeshType::Quad]->Render(screenSP, false);
 	screenSP.ResetTexUnits();
-
-	glDepthFunc(GL_LEQUAL);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	textChief.RenderText(textSP, {
-		"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-		25.f,
-		25.f,
-		1.f,
-		glm::vec4(1.f),
-		0
-	});
-	glBlendFunc(GL_ONE, GL_ZERO);
-	glDepthFunc(GL_LESS);
-
-	if(music){
-		music->setIsPaused(false);
-	}
 }
 
 glm::mat4 Scene::Translate(const glm::vec3& translate){
