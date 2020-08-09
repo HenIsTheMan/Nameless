@@ -115,6 +115,7 @@ void SetUpTex(const SetUpTexsParams& params, uint& texRefID){
     glTexParameteri(params.texTarget, GL_TEXTURE_MIN_FILTER, params.texFilterMin); //Nearest neighbour/Point filtering/interpolation when textures are scaled downwards
     glTexParameteri(params.texTarget, GL_TEXTURE_MAG_FILTER, params.texFilterMag); //Linear filtering/interpolation for upscaled textures
     glBindTexture(params.texTarget, currTexRefID); //Bind previously bound tex
+    stbi_set_flip_vertically_on_load(false);
 }
 
 static void FramebufferSizeCallback(GLFWwindow*, int width, int height){ //Resize callback

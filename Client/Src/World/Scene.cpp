@@ -58,27 +58,6 @@ Scene::Scene():
 	elapsedTime(0.f),
 	modelStack()
 {
-	soundEngine = createIrrKlangDevice(ESOD_AUTO_DETECT, ESEO_MULTI_THREADED | ESEO_LOAD_PLUGINS | ESEO_USE_3D_BUFFERS | ESEO_PRINT_DEBUG_INFO_TO_DEBUGGER);
-	if(!soundEngine){
-		(void)puts("Failed to init soundEngine!\n");
-	}
-	//soundEngine->play2D("Audio/Music/YellowCafe.mp3", true);
-
-	music = soundEngine->play3D("Audio/Music/YellowCafe.mp3", vec3df(0.f, 0.f, 0.f), true, true, true, ESM_AUTO_DETECT, true);
-	if(music){
-		//music->setPosition(vec3df(0.f, 0.f, 0.f));
-		music->setMinDistance(5.f);
-		music->setVolume(0);
-
-		soundFX = music->getSoundEffectControl();
-		if(!soundFX){
-			(void)puts("No soundFX support!\n");
-		}
-	} else{
-		(void)puts("Failed to init music!\n");
-	}
-
-	spotlights.emplace_back(CreateLight(LightType::Spot));
 }
 
 Scene::~Scene(){
@@ -119,6 +98,26 @@ Scene::~Scene(){
 }
 
 bool Scene::Init(){
+	soundEngine = createIrrKlangDevice(ESOD_AUTO_DETECT, ESEO_MULTI_THREADED | ESEO_LOAD_PLUGINS | ESEO_USE_3D_BUFFERS | ESEO_PRINT_DEBUG_INFO_TO_DEBUGGER);
+	if(!soundEngine){
+		(void)puts("Failed to init soundEngine!\n");
+	}
+	//soundEngine->play2D("Audio/Music/YellowCafe.mp3", true);
+
+	music = soundEngine->play3D("Audio/Music/YellowCafe.mp3", vec3df(0.f, 0.f, 0.f), true, true, true, ESM_AUTO_DETECT, true);
+	if(music){
+		//music->setPosition(vec3df(0.f, 0.f, 0.f));
+		music->setMinDistance(5.f);
+		music->setVolume(0);
+
+		soundFX = music->getSoundEffectControl();
+		if(!soundFX){
+			(void)puts("No soundFX support!\n");
+		}
+	} else{
+		(void)puts("Failed to init music!\n");
+	}
+
 	for(int i = 0; i < 99999; ++i){
 		PushModel({
 			Translate(glm::vec3(PseudorandMinMax(-2000.f, 2000.f), PseudorandMinMax(-2000.f, 2000.f), -5.f)),
@@ -141,6 +140,8 @@ bool Scene::Init(){
 	static_cast<SpriteAni*>(meshes[(int)MeshType::SpriteAni])->Play("FireSpriteAni", -1, .5f);
 
 	meshes[(int)MeshType::Terrain]->AddTexMap({"Imgs/GrassGround.jpg", Mesh::TexType::Diffuse, 0});
+
+	spotlights.emplace_back(CreateLight(LightType::Spot));
 
 	return true;
 }
@@ -309,6 +310,16 @@ void Scene::BlurRender(const uint& brightTexRefID, const bool& horizontal){
 	blurSP.ResetTexUnits();
 }
 
+void Scene::DefaultRender(const uint& screenTexRefID, const uint& blurTexRefID){
+	screenSP.Use();
+	screenSP.Set1f("exposure", 1.2f);
+	screenSP.UseTex(screenTexRefID, "screenTexSampler");
+	screenSP.UseTex(blurTexRefID, "blurTexSampler");
+	meshes[(int)MeshType::Quad]->SetModel(GetTopModel());
+	meshes[(int)MeshType::Quad]->Render(screenSP, false);
+	screenSP.ResetTexUnits();
+}
+
 void Scene::ForwardRender(){
 	forwardSP.Use();
 	const int& pAmt = 0;
@@ -424,16 +435,6 @@ void Scene::ForwardRender(){
 	if(music){
 		music->setIsPaused(false);
 	}
-}
-
-void Scene::DefaultRender(const uint& screenTexRefID, const uint& blurTexRefID){
-	screenSP.Use();
-	screenSP.Set1f("exposure", 1.2f);
-	screenSP.UseTex(screenTexRefID, "screenTexSampler");
-	screenSP.UseTex(blurTexRefID, "blurTexSampler");
-	meshes[(int)MeshType::Quad]->SetModel(GetTopModel());
-	meshes[(int)MeshType::Quad]->Render(screenSP, false);
-	screenSP.ResetTexUnits();
 }
 
 glm::mat4 Scene::Translate(const glm::vec3& translate){

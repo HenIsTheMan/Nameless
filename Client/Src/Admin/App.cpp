@@ -43,7 +43,6 @@ bool App::Init(){
 	glGenFramebuffers(sizeof(FBORefIDs) / sizeof(FBORefIDs[0]), FBORefIDs);
 	glGenTextures(sizeof(texRefIDs) / sizeof(texRefIDs[0]), texRefIDs);
 	glGenRenderbuffers(sizeof(RBORefIDs) / sizeof(RBORefIDs[0]), RBORefIDs);
-	stbi_set_flip_vertically_on_load(true);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)FBO::GeoPass]);
 		for(Tex i = Tex::Pos; i <= Tex::Reflection; ++i){
