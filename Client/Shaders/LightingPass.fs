@@ -115,7 +115,7 @@ void main(){
             fragColour.rgb += CalcSpotlight(spotlights[i]);
         }
 
-        if(Reflection != 0.f){
+        if(Reflection != vec3(0.f)){
             const float ratio = 1.f / 1.52f; //n of air / n of glass (ratio between refractive indices of both materials)
             vec3 incidentRay = normalize(WorldSpacePos - camPos);
             vec3 reflectedRay = reflect(incidentRay, Normal);
