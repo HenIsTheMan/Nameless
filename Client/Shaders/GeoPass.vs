@@ -22,13 +22,14 @@ uniform bool useBumpMap;
 uniform sampler2D bumpMap;
 
 uniform bool instancing;
+uniform bool noNormals;
 uniform bool sky;
 
 void main(){
 	vsOut.pos = vec3((instancing ? model * modelMat : model) * vec4(pos, 1.f));
 	vsOut.colour = colour;
 	vsOut.texCoords = texCoords;
-	vsOut.normal = normalize(mat3(transpose(inverse(instancing ? model * modelMat : model))) * (useBumpMap ? texture(bumpMap, texCoords).rgb : normal));
+	vsOut.normal = noNormals ? vec3(0.f) : normalize(mat3(transpose(inverse(instancing ? model * modelMat : model))) * (useBumpMap ? texture(bumpMap, texCoords).rgb : normal));
 	vsOut.diffuseTexIndex = diffuseTexIndex;
 	gl_Position = PV * vec4(vsOut.pos, 1.f);
 

@@ -420,11 +420,13 @@ void Scene::ForwardRender(){
 		Translate(glm::vec3(0.f, 50.f, 0.f)),
 		Scale(glm::vec3(20.f, 40.f, 20.f)),
 	});
+		forwardSP.Set1i("noNormals", 1);
 		forwardSP.Set1i("useCustomColour", 1);
-		forwardSP.Set4fv("customColour", glm::vec4(glm::vec3(5.f), 1.f));
+		forwardSP.Set4fv("customColour", glm::vec4(glm::vec3(1.f), 1.f));
 		meshes[(int)MeshType::SpriteAni]->SetModel(GetTopModel());
 		meshes[(int)MeshType::SpriteAni]->Render(forwardSP);
 		forwardSP.Set1i("useCustomColour", 0);
+		forwardSP.Set1i("noNormals", 0);
 	PopModel();
 
 	///Text
