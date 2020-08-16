@@ -20,6 +20,10 @@ bool Key(const char& key){
     return GetAsyncKeyState(int(key)) & 0x8000;
 }
 
+bool Key(const int& key){
+    return GetAsyncKeyState(key) & 0x8000;
+}
+
 bool InitAPI(GLFWwindow*& win){
     glfwInit();
     //glfwWindowHint(GLFW_SAMPLES, 4); //4 subsamples in a general pattern per set of screen coords of a pixel to determine pixel coverage //Better pixel coverage precision but more performance reduction with more sample pts as they cause size of... buffers to rise by...

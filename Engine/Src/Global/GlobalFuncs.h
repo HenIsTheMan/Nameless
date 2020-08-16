@@ -2,6 +2,7 @@
 #include "GlobalStructs.h"
 
 bool Key(const char& key);
+bool Key(const int& key);
 bool InitAPI(GLFWwindow*& win);
 bool InitConsole();
 
