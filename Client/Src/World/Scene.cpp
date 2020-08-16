@@ -262,7 +262,7 @@ void Scene::LightingRenderPass(const uint& posTexRefID, const uint& coloursTexRe
 	const int& dAmt = (int)directionalLights.size();
 	const int& sAmt = (int)spotlights.size();
 
-	lightingPassSP.Set1f("shininess", 32.f); //More light scattering if lower //??
+	lightingPassSP.Set1f("shininess", 32.f); //More light scattering if lower
 	lightingPassSP.Set3fv("globalAmbient", Light::globalAmbient);
 	lightingPassSP.Set3fv("camPos", cam.GetPos());
 	lightingPassSP.Set1i("pAmt", pAmt);
@@ -286,7 +286,7 @@ void Scene::LightingRenderPass(const uint& posTexRefID, const uint& coloursTexRe
 		lightingPassSP.Set1f(("ptLights[" + std::to_string(i) + "].quadratic").c_str(), ptLight->quadratic);
 	}
 	for(i = 0; i < dAmt; ++i){
-		const DirectionalLight* const& directionalLight = static_cast<DirectionalLight*>(ptLights[i]);
+		const DirectionalLight* const& directionalLight = static_cast<DirectionalLight*>(directionalLights[i]);
 		lightingPassSP.Set3fv(("directionalLights[" + std::to_string(i) + "].ambient").c_str(), directionalLight->ambient);
 		lightingPassSP.Set3fv(("directionalLights[" + std::to_string(i) + "].diffuse").c_str(), directionalLight->diffuse);
 		lightingPassSP.Set3fv(("directionalLights[" + std::to_string(i) + "].spec").c_str(), directionalLight->spec);
@@ -333,7 +333,7 @@ void Scene::ForwardRender(){
 	const int& dAmt = 0;
 	const int& sAmt = 0;
 
-	forwardSP.Set1f("shininess", 32.f); //More light scattering if lower //??
+	forwardSP.Set1f("shininess", 32.f); //More light scattering if lower
 	forwardSP.Set3fv("globalAmbient", Light::globalAmbient);
 	forwardSP.Set3fv("camPos", cam.GetPos());
 	forwardSP.Set1i("pAmt", pAmt);
@@ -352,7 +352,7 @@ void Scene::ForwardRender(){
 		forwardSP.Set1f(("ptLights[" + std::to_string(i) + "].quadratic").c_str(), ptLight->quadratic);
 	}
 	for(i = 0; i < dAmt; ++i){
-		const DirectionalLight* const& directionalLight = static_cast<DirectionalLight*>(ptLights[i]);
+		const DirectionalLight* const& directionalLight = static_cast<DirectionalLight*>(directionalLights[i]);
 		forwardSP.Set3fv(("directionalLights[" + std::to_string(i) + "].ambient").c_str(), directionalLight->ambient);
 		forwardSP.Set3fv(("directionalLights[" + std::to_string(i) + "].diffuse").c_str(), directionalLight->diffuse);
 		forwardSP.Set3fv(("directionalLights[" + std::to_string(i) + "].spec").c_str(), directionalLight->spec);
