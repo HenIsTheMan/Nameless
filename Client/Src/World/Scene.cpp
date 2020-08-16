@@ -254,6 +254,24 @@ void Scene::GeoRenderPass(){
 		models[(int)ModelType::Suit]->SetModelForAll(GetTopModel());
 		models[(int)ModelType::Suit]->InstancedRender(geoPassSP);
 	PopModel();
+
+	///Quad
+	PushModel({
+		Translate(glm::vec3(0.f, 100.f, 0.f)),
+		Scale(glm::vec3(10.f)),
+	});
+		PushModel({
+			Translate(glm::vec3(6.f, 0.f, 0.f)),
+		});
+			geoPassSP.Set1i("noNormals", 1);
+			geoPassSP.Set1i("useCustomColour", 1);
+			geoPassSP.Set4fv("customColour", glm::vec4(glm::vec3(5.f), 1.f));
+			meshes[(int)MeshType::Quad]->SetModel(GetTopModel());
+			meshes[(int)MeshType::Quad]->Render(geoPassSP);
+			geoPassSP.Set1i("useCustomColour", 0);
+			geoPassSP.Set1i("noNormals", 0);
+		PopModel();
+	PopModel();
 }
 
 void Scene::LightingRenderPass(const uint& posTexRefID, const uint& coloursTexRefID, const uint& normalsTexRefID, const uint& specTexRefID, const uint& reflectionTexRefID){
@@ -375,11 +393,10 @@ void Scene::ForwardRender(){
 	///Shapes
 	PushModel({
 		Translate(glm::vec3(0.f, 100.f, 0.f)),
-		Rotate(glm::vec4(0.f, 1.f, 0.f, 0.f)),
 		Scale(glm::vec3(10.f)),
 	});
 		forwardSP.Set1i("useCustomColour", 1);
-		forwardSP.Set4fv("customColour", glm::vec4(glm::vec3(1.f), .7f));
+		forwardSP.Set4fv("customColour", glm::vec4(glm::rgbColor(glm::vec3(1.f, PseudorandMinMax(0.f, 255.f), 1.f)) * .5f, .5f));
 		meshes[(int)MeshType::Cylinder]->SetModel(GetTopModel());
 		meshes[(int)MeshType::Cylinder]->Render(forwardSP);
 		forwardSP.Set1i("useCustomColour", 0);
@@ -402,15 +419,6 @@ void Scene::ForwardRender(){
 			meshes[(int)MeshType::Cube]->SetModel(GetTopModel());
 			meshes[(int)MeshType::Cube]->Render(forwardSP);
 			forwardSP.Set1i("useCustomDiffuseTexIndex", 0);
-			forwardSP.Set1i("useCustomColour", 0);
-		PopModel();
-		PushModel({
-			Translate(glm::vec3(6.f, 0.f, 0.f)),
-		});
-			forwardSP.Set1i("useCustomColour", 1);
-			forwardSP.Set4fv("customColour", glm::vec4(glm::rgbColor(glm::vec3(1.f, PseudorandMinMax(0.f, 255.f), 1.f)) * .5f, .5f));
-			meshes[(int)MeshType::Quad]->SetModel(GetTopModel());
-			meshes[(int)MeshType::Quad]->Render(forwardSP);
 			forwardSP.Set1i("useCustomColour", 0);
 		PopModel();
 	PopModel();

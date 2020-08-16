@@ -35,10 +35,9 @@ void main(){
 	if(!useCustomColour && !useDiffuseMap){
 		colour = fsIn.colour;
 	} else{
-		colour = (useCustomColour ? customColour : vec4(1.f)) * (useDiffuseMap ? texture(diffuseMaps[useCustomDiffuseTexIndex ? customDiffuseTexIndex : fsIn.diffuseTexIndex], fsIn.texCoords) : vec4(1.f));
-	}
-	if(useEmissionMap){
-		colour.rgb += texture(emissionMap, fsIn.texCoords).rgb;
+		colour = (useCustomColour ? customColour : vec4(1.f))
+		* ((useDiffuseMap ? texture(diffuseMaps[useCustomDiffuseTexIndex ? customDiffuseTexIndex : fsIn.diffuseTexIndex], fsIn.texCoords) : vec4(1.f))
+		+ (useEmissionMap ? texture(emissionMap, fsIn.texCoords) : vec4(0.f)));
 	}
 
 	normal = fsIn.normal;

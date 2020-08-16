@@ -70,8 +70,7 @@ void Cam::Update(const int& up, const int& down, const int& left, const int& rig
 		change = normalize(change);
 	}
 	pos += camSpd * change;
-	//pos.y = std::max(-100.f + 100.f * Mesh::ReadHeightMap(Mesh::heightMap, pos.x / 500.f, pos.z / 500.f) + 1.f, pos.y);
-	target += camSpd * change;
+	target = pos + camFront;
 
 	glm::mat4 yawPitch = glm::rotate(glm::rotate(glm::mat4(1.f), glm::radians(yaw), {0.f, 1.f, 0.f}), glm::radians(pitch), CalcRight());
 	target = pos + glm::vec3(yawPitch * glm::vec4(camFront, 0.f));

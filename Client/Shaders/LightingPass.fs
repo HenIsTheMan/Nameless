@@ -99,10 +99,8 @@ vec3 CalcSpotlight(Spotlight light){
 void main(){
     if(Normal == vec3(0.f)){
         fragColour = Colour;
-        brightFragColour = vec4(0.f);
     } else if(pAmt == 0 && dAmt == 0 && sAmt == 0){
         fragColour = vec4(CalcAmbient(globalAmbient), Colour.a);
-        brightFragColour = vec4(0.f);
     } else{
         fragColour = vec4(vec3(0.f), Colour.a);
         for(int i = 0; i < pAmt; ++i){
@@ -122,7 +120,8 @@ void main(){
             vec3 refractedRay = refract(incidentRay, Normal, ratio);
             fragColour.rgb += texture(cubemapSampler, reflectedRay).rgb * Reflection;
         }
-        float brightness = dot(fragColour.rgb, vec3(.2126f, .7152f, .0722f)); //Transform fragColour to grayscale with dot product
-        brightFragColour = vec4(fragColour.rgb * vec3(float(brightness > 3.f)), 1.f); //3.f is brightness threshold (outside LDR with HDR rendering so more control over what is considered bright)
     }
+
+    float brightness = dot(fragColour.rgb, vec3(1.f)); //Transform fragColour to grayscale with dot product
+    brightFragColour = vec4(fragColour.rgb * vec3(float(brightness > 3.f)), 1.f); //3.f is brightness threshold (outside LDR with HDR rendering so more control over what is considered bright)
 }
