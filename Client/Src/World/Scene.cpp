@@ -65,16 +65,22 @@ Scene::~Scene(){
 	const size_t& dSize = directionalLights.size();
 	const size_t& sSize = spotlights.size();
 	for(size_t i = 0; i < pSize; ++i){
-		delete ptLights[i];
-		ptLights[i] = nullptr;
+		if(ptLights[i]){
+			delete ptLights[i];
+			ptLights[i] = nullptr;
+		}
 	}
 	for(size_t i = 0; i < dSize; ++i){
-		delete directionalLights[i];
-		directionalLights[i] = nullptr;
+		if(directionalLights[i]){
+			delete directionalLights[i];
+			directionalLights[i] = nullptr;
+		}
 	}
 	for(size_t i = 0; i < sSize; ++i){
-		delete spotlights[i];
-		spotlights[i] = nullptr;
+		if(spotlights[i]){
+			delete spotlights[i];
+			spotlights[i] = nullptr;
+		}
 	}
 	
 	for(int i = 0; i < (int)MeshType::Amt; ++i){
