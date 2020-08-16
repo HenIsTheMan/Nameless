@@ -55,6 +55,7 @@ private:
 	//std::vector<Mesh::BatchRenderParams> params;
 
 	float elapsedTime;
+	int polyMode;
 	mutable std::stack<glm::mat4> modelStack;
 	glm::mat4 Translate(const glm::vec3& translate);
 	glm::mat4 Rotate(const glm::vec4& rotate);

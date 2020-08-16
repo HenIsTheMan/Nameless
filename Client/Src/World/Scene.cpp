@@ -56,6 +56,7 @@ Scene::Scene():
 	view(glm::mat4(1.f)),
 	projection(glm::mat4(1.f)),
 	elapsedTime(0.f),
+	polyMode(0),
 	modelStack()
 {
 }
@@ -104,6 +105,8 @@ Scene::~Scene(){
 }
 
 bool Scene::Init(){
+	glGetIntegerv(GL_POLYGON_MODE, &polyMode);
+
 	soundEngine = createIrrKlangDevice(ESOD_AUTO_DETECT, ESEO_MULTI_THREADED | ESEO_LOAD_PLUGINS | ESEO_USE_3D_BUFFERS | ESEO_PRINT_DEBUG_INFO_TO_DEBUGGER);
 	if(!soundEngine){
 		(void)puts("Failed to init soundEngine!\n");
@@ -112,7 +115,6 @@ bool Scene::Init(){
 
 	music = soundEngine->play3D("Audio/Music/YellowCafe.mp3", vec3df(0.f, 0.f, 0.f), true, true, true, ESM_AUTO_DETECT, true);
 	if(music){
-		//music->setPosition(vec3df(0.f, 0.f, 0.f));
 		music->setMinDistance(5.f);
 		music->setVolume(0);
 
@@ -175,27 +177,26 @@ void Scene::Update(){
 	static float wavesReverbBT = 0.f;
 	static float resetSoundFXBT = 0.f;
 
-	GLint polyMode;
-	glGetIntegerv(GL_POLYGON_MODE, &polyMode);
-	if(Key(KEY_2) && polyModeBT <= elapsedTime){
-		glPolygonMode(GL_FRONT_AND_BACK, polyMode + (polyMode == GL_FILL ? -2 : 1));
+	if(Key(GLFW_KEY_2) && polyModeBT <= elapsedTime){
+		polyMode += polyMode == GL_FILL ? -2 : 1;
+		glPolygonMode(GL_FRONT_AND_BACK, polyMode);
 		polyModeBT = elapsedTime + .5f;
 	}
 
 	if(soundFX){
-		if(Key(KEY_I) && distortionBT <= elapsedTime){
+		if(Key(GLFW_KEY_I) && distortionBT <= elapsedTime){
 			soundFX->isDistortionSoundEffectEnabled() ? soundFX->disableDistortionSoundEffect() : (void)soundFX->enableDistortionSoundEffect();
 			distortionBT = elapsedTime + .5f;
 		}
-		if(Key(KEY_O) && echoBT <= elapsedTime){
+		if(Key(GLFW_KEY_O) && echoBT <= elapsedTime){
 			soundFX->isEchoSoundEffectEnabled() ? soundFX->disableEchoSoundEffect() : (void)soundFX->enableEchoSoundEffect();
 			echoBT = elapsedTime + .5f;
 		}
-		if(Key(KEY_P) && wavesReverbBT <= elapsedTime){
+		if(Key(GLFW_KEY_P) && wavesReverbBT <= elapsedTime){
 			soundFX->isWavesReverbSoundEffectEnabled() ? soundFX->disableWavesReverbSoundEffect() : (void)soundFX->enableWavesReverbSoundEffect();
 			wavesReverbBT = elapsedTime + .5f;
 		}
-		if(Key(KEY_L) && resetSoundFXBT <= elapsedTime){
+		if(Key(GLFW_KEY_L) && resetSoundFXBT <= elapsedTime){
 			soundFX->disableAllEffects();
 			resetSoundFXBT = elapsedTime + .5f;
 		}
@@ -378,7 +379,7 @@ void Scene::ForwardRender(){
 		Scale(glm::vec3(10.f)),
 	});
 		forwardSP.Set1i("useCustomColour", 1);
-		forwardSP.Set4fv("customColour", glm::vec4(0.f, 1.f, 0.f, .7f));
+		forwardSP.Set4fv("customColour", glm::vec4(glm::vec3(1.f), .7f));
 		meshes[(int)MeshType::Cylinder]->SetModel(GetTopModel());
 		meshes[(int)MeshType::Cylinder]->Render(forwardSP);
 		forwardSP.Set1i("useCustomColour", 0);
@@ -386,7 +387,7 @@ void Scene::ForwardRender(){
 			Translate(glm::vec3(-3.f, 0.f, 0.f)),
 		});
 			forwardSP.Set1i("useCustomColour", 1);
-			forwardSP.Set4fv("customColour", glm::vec4(glm::vec3(7.f), .3f));
+			forwardSP.Set4fv("customColour", glm::vec4(glm::rgbColor(glm::vec3(1.f, 1.f, PseudorandMinMax(0.f, 255.f))) * 7.f, .3f));
 			meshes[(int)MeshType::Sphere]->SetModel(GetTopModel());
 			meshes[(int)MeshType::Sphere]->Render(forwardSP);
 			forwardSP.Set1i("useCustomColour", 0);
@@ -395,7 +396,7 @@ void Scene::ForwardRender(){
 			Translate(glm::vec3(3.f, 0.f, 0.f)),
 		});
 			forwardSP.Set1i("useCustomColour", 1);
-			forwardSP.Set4fv("customColour", glm::vec4(glm::vec3(.5f), .7f));
+			forwardSP.Set4fv("customColour", glm::vec4(glm::rgbColor(glm::vec3(PseudorandMinMax(0.f, 255.f), 1.f, 1.f)) * .5f, .7f));
 			forwardSP.Set1i("useCustomDiffuseTexIndex", 1);
 			forwardSP.Set1i("customDiffuseTexIndex", -1);
 			meshes[(int)MeshType::Cube]->SetModel(GetTopModel());
@@ -407,7 +408,7 @@ void Scene::ForwardRender(){
 			Translate(glm::vec3(6.f, 0.f, 0.f)),
 		});
 			forwardSP.Set1i("useCustomColour", 1);
-			forwardSP.Set4fv("customColour", glm::vec4(glm::vec3(.5f), .5f));
+			forwardSP.Set4fv("customColour", glm::vec4(glm::rgbColor(glm::vec3(1.f, PseudorandMinMax(0.f, 255.f), 1.f)) * .5f, .5f));
 			meshes[(int)MeshType::Quad]->SetModel(GetTopModel());
 			meshes[(int)MeshType::Quad]->Render(forwardSP);
 			forwardSP.Set1i("useCustomColour", 0);
@@ -428,7 +429,7 @@ void Scene::ForwardRender(){
 
 	///Text
 	textChief.RenderText(textSP, {
-		"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+		std::to_string(1.f / dt),
 		25.f,
 		25.f,
 		1.f,
