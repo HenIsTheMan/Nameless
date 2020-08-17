@@ -738,7 +738,7 @@ void Mesh::CreateSphere(){
 				vertices->push_back({
 					pos,
 					glm::vec4(.7f, .4f, .1f, 1.f),
-					glm::vec2((float)stack / float(stackAmt), (float)slice / float(sliceAmt)),
+					glm::vec2((float)slice / float(sliceAmt), (float)stack / float(stackAmt)),
 					glm::normalize(pos),
 				});
 

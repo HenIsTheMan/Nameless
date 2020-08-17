@@ -23,7 +23,7 @@ Scene::Scene():
 			{"Imgs/BoxAlbedo.png", Mesh::TexType::Diffuse, 0},
 		}),
 		new Mesh(Mesh::MeshType::Sphere, GL_TRIANGLE_STRIP, {
-			{"Imgs/BoxAlbedo.png", Mesh::TexType::Diffuse, 0},
+			{"Imgs/Skydome.hdr", Mesh::TexType::Diffuse, 0},
 		}),
 		new Mesh(Mesh::MeshType::Cylinder, GL_TRIANGLE_STRIP, {
 			{"Imgs/BoxAlbedo.png", Mesh::TexType::Diffuse, 0},
@@ -209,21 +209,16 @@ void Scene::GeoRenderPass(){
 
 	///Sky
 	glDepthFunc(GL_LEQUAL); //Modify comparison operators used for depth test such that frags with depth <= 1.f are shown
+	glCullFace(GL_FRONT);
 	geoPassSP.Set1i("sky", 1);
 	PushModel({
-		Translate(glm::vec3(0.f, -1.f, 0.f)),
+		Rotate(glm::vec4(0.f, 1.f, 0.f, glfwGetTime())),
 	});
-		models[(int)ModelType::Skydome]->SetModelForAll(GetTopModel());
-		models[(int)ModelType::Skydome]->Render(geoPassSP);
-	PopModel();
-	PushModel({
-		Translate(glm::vec3(0.f, 1.f, 0.f)),
-		Rotate(glm::vec4(0.f, 0.f, 1.f, 180.f)),
-	});
-		models[(int)ModelType::Skydome]->SetModelForAll(GetTopModel());
-		models[(int)ModelType::Skydome]->Render(geoPassSP);
+		meshes[(int)MeshType::Sphere]->SetModel(GetTopModel());
+		meshes[(int)MeshType::Sphere]->Render(geoPassSP);
 	PopModel();
 	geoPassSP.Set1i("sky", 0);
+	glCullFace(GL_BACK);
 	glDepthFunc(GL_LESS);
 
 	geoPassSP.SetMat4fv("PV", &(projection * view)[0][0]);
@@ -449,7 +444,7 @@ void Scene::ForwardRender(){
 
 	glBlendFunc(GL_ONE, GL_ZERO);
 
-	if(music){
+	if(music && music->getIsPaused()){
 		music->setIsPaused(false);
 	}
 }
