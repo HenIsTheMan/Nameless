@@ -167,8 +167,15 @@ void Scene::Update(){
 	const glm::vec3& camPos = cam.GetPos();
 	const glm::vec3& camFront = cam.CalcFront();
 	soundEngine->setListenerPosition(vec3df(camPos.x, camPos.y, camPos.z), vec3df(camFront.x, camFront.y, camFront.z));
+
+	spotlights[0]->ambient = glm::vec3(.05f);
+	spotlights[0]->diffuse = glm::vec3(.8f);
+	spotlights[0]->spec = glm::vec3(1.f);
 	static_cast<Spotlight*>(spotlights[0])->pos = camPos;
 	static_cast<Spotlight*>(spotlights[0])->dir = camFront;
+	static_cast<Spotlight*>(spotlights[0])->cosInnerCutoff = cosf(glm::radians(12.5f));
+	static_cast<Spotlight*>(spotlights[0])->cosOuterCutoff = cosf(glm::radians(17.5f));
+
 	static_cast<SpriteAni*>(meshes[(int)MeshType::SpriteAni])->Update();
 
 	static float polyModeBT = 0.f;
