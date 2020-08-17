@@ -88,13 +88,13 @@ void TextChief::RenderText(ShaderProg& SP, const TextAttribs& attribs){
         float h = ch.size.y * attribs.scaleFactor;
 
         float vertices[6][4] = {
-            { xpos,     ypos + h,   0.0f, 0.0f },            
-            { xpos,     ypos,       0.0f, 1.0f },
-            { xpos + w, ypos,       1.0f, 1.0f },
+            {xpos,     ypos + h,   0.f, 0.f},            
+            {xpos,     ypos,       0.f, 1.f},
+            {xpos + w, ypos,       1.f, 1.f},
 
-            { xpos,     ypos + h,   0.0f, 0.0f },
-            { xpos + w, ypos,       1.0f, 1.0f },
-            { xpos + w, ypos + h,   1.0f, 0.0f }           
+            {xpos,     ypos + h,   0.f, 0.f},
+            {xpos + w, ypos,       1.f, 1.f},
+            {xpos + w, ypos + h,   1.f, 0.f}           
         };
 
         SP.UseTex(attribs.texRefID, "textTex"); //1 for each char??

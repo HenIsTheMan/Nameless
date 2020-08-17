@@ -18,7 +18,7 @@ Terrain::Terrain(cstr const& fPath, const float& tileH, const float& tileV): Mes
 }
 
 float Terrain::GetHeightAtPt(const float& x, const float& z) const{
-	if(!data.size() || x <= -.5f || x >= .5f || z <= -.5f || z >= .5f){ //??
+	if(!data.size() || x <= -.5f || x >= .5f || z <= -.5f || z >= .5f){
 		return 0.f;
 	}
 	const long long terrainSize = (long long)sqrt((double)data.size());

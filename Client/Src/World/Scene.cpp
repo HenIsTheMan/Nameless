@@ -454,13 +454,20 @@ void Scene::ForwardRender(){
 		forwardSP.Set1i("noNormals", 0);
 	PopModel();
 
-	///Text
 	textChief.RenderText(textSP, {
-		std::to_string(1.f / dt),
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890",
+		25.f,
+		75.f,
+		1.f,
+		glm::vec4(1.f),
+		0
+	});
+	textChief.RenderText(textSP, {
+		"FPS: " + std::to_string(1.f / dt),
 		25.f,
 		25.f,
 		1.f,
-		glm::vec4(1.f),
+		glm::vec4(1.f, 1.f, 0.f, 1.f),
 		0
 	});
 
