@@ -257,7 +257,7 @@ void Scene::GeoRenderPass(){
 		models[(int)ModelType::Suit]->InstancedRender(geoPassSP);
 	PopModel();
 
-	///Quad
+	///Shapes
 	PushModel({
 		Translate(glm::vec3(0.f, 100.f, 0.f)),
 		Scale(glm::vec3(10.f)),
@@ -272,6 +272,18 @@ void Scene::GeoRenderPass(){
 			meshes[(int)MeshType::Quad]->Render(geoPassSP);
 			geoPassSP.Set1i("useCustomColour", 0);
 			geoPassSP.Set1i("noNormals", 0);
+			PushModel({
+				Translate(glm::vec3(0.f, 0.f, 5.f)),
+			});
+				meshes[(int)MeshType::Sphere]->SetModel(GetTopModel());
+				meshes[(int)MeshType::Sphere]->Render(geoPassSP);
+			PopModel();
+			PushModel({
+				Translate(glm::vec3(0.f, 0.f, -5.f)),
+			});
+				meshes[(int)MeshType::Cylinder]->SetModel(GetTopModel());
+				meshes[(int)MeshType::Cylinder]->Render(geoPassSP);
+			PopModel();
 		PopModel();
 	PopModel();
 }

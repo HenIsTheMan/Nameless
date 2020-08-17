@@ -739,7 +739,7 @@ void Mesh::CreateSphere(){
 					pos,
 					glm::vec4(.7f, .4f, .1f, 1.f),
 					glm::vec2((float)slice / float(sliceAmt), (float)stack / float(stackAmt)),
-					glm::normalize(pos),
+					pos != glm::vec3(0.f) ? glm::normalize(pos) : pos,
 				});
 
 				indices->emplace_back(stack * (sliceAmt + 1) + slice);
@@ -778,15 +778,15 @@ void Mesh::CreateCylinder(){
 
 		for(unsigned slice = 0; slice < sliceAmt + 1; ++slice){
 			const float theta = slice * sliceAngle;
+			const glm::vec3 normal = glm::vec3(v.pos.x, 0.f, v.pos.z);
+			v.normal = normal != glm::vec3(0.f) ? glm::normalize(normal) : normal;
 
 			v.pos = glm::vec3(cosf(glm::radians(theta)), 1.f, sinf(glm::radians(theta)));
 			v.texCoords = glm::vec2(float(slice) / float(sliceAmt), 1.f);
-			v.normal = glm::normalize(glm::vec3(v.pos.x, 0.f, v.pos.z));
 			vertices->emplace_back(v);
 
 			v.pos = glm::vec3(cosf(glm::radians(theta)), -1.f, sinf(glm::radians(theta)));
 			v.texCoords = glm::vec2(float(slice) / float(sliceAmt), 0.f);
-			v.normal = glm::normalize(glm::vec3(v.pos.x, 0.f, v.pos.z));
 			vertices->emplace_back(v);
 
 			indices->emplace_back(slice * 2 + sliceAmt + 2);

@@ -31,15 +31,18 @@ Cam::Cam(const glm::vec3& pos, const glm::vec3& target, const glm::vec3& up, con
 }
 
 glm::vec3 Cam::CalcFront(const bool& normalised) const{
-	return normalised ? glm::normalize(target - pos) : target - pos;
+	const glm::vec3 camFront = target - pos;
+	return normalised && camFront != glm::vec3(0.f) ? glm::normalize(camFront) : camFront;
 }
 
 glm::vec3 Cam::CalcRight() const{
-	return glm::normalize(glm::cross(CalcFront(), up));
+	const glm::vec3 camRight = glm::cross(CalcFront(), up);
+	return camRight != glm::vec3(0.f) ? glm::normalize(camRight) : camRight;
 }
 
 glm::vec3 Cam::CalcUp() const{
-	return glm::normalize(glm::cross(CalcRight(), CalcFront()));
+	const glm::vec3 camUp = glm::cross(CalcRight(), CalcFront());
+	return camUp != glm::vec3(0.f) ? glm::normalize(camUp) : camUp;
 }
 
 glm::mat4 Cam::LookAt() const{
@@ -61,11 +64,12 @@ void Cam::Update(const int& up, const int& down, const int& left, const int& rig
 	float frontBack = float(Key(front) - Key(back));
 
 	const glm::vec3&& camFront = CalcFront();
-	const glm::vec3&& xzCamFront = glm::vec3(camFront.x, 0.f, camFront.z);
-	glm::vec3&& frontBackDir = glm::normalize(glm::dot(camFront, glm::normalize(xzCamFront)) * glm::normalize(xzCamFront));
-	frontBackDir.y = 1.f;
+	glm::vec3&& xzCamFront = glm::vec3(camFront.x, 0.f, camFront.z);
+	if(xzCamFront != glm::vec3(0.f)){
+		xzCamFront = glm::normalize(xzCamFront);
+	}
 
-	glm::vec3&& change = glm::vec3(frontBack, upDown, frontBack) * frontBackDir + leftRight * -CalcRight() + leftRightMB * camFront;
+	glm::vec3&& change = frontBack * xzCamFront + glm::vec3(0.f, upDown, 0.f) + leftRight * -CalcRight() + leftRightMB * camFront;
 	if(change != glm::vec3(0.f)){
 		change = normalize(change);
 	}
