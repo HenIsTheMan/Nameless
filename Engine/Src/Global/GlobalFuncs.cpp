@@ -3,7 +3,8 @@
 #include "../Vendor/stb_image.h"
 
 extern bool firstCall;
-extern float leftRightMB;
+extern bool leftMB;
+extern bool rightMB;
 extern float pitch;
 extern float yaw;
 extern float lastX;
@@ -140,7 +141,8 @@ static void CursorPosCallback(GLFWwindow*, double xPos, double yPos){
 }
 
 static void MouseButtonCallback(GLFWwindow* win, int button, int action, int mods){ //For mouse buttons
-    leftRightMB = float(glfwGetMouseButton(win, GLFW_MOUSE_BUTTON_LEFT) - glfwGetMouseButton(win, GLFW_MOUSE_BUTTON_RIGHT));
+    leftMB = glfwGetMouseButton(win, GLFW_MOUSE_BUTTON_LEFT);
+    rightMB = glfwGetMouseButton(win, GLFW_MOUSE_BUTTON_RIGHT);
 }
 
 static void ScrollCallback(GLFWwindow*, double xOffset, double yOffset){
