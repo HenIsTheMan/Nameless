@@ -400,8 +400,11 @@ void Scene::ForwardRender(){
 		});
 			forwardSP.Set1i("useCustomColour", 1);
 			forwardSP.Set4fv("customColour", glm::vec4(glm::rgbColor(glm::vec3(1.f, 1.f, PseudorandMinMax(0.f, 255.f))) * 7.f, .3f));
+			forwardSP.Set1i("useCustomDiffuseTexIndex", 1);
+			forwardSP.Set1i("customDiffuseTexIndex", -1);
 			meshes[(int)MeshType::Sphere]->SetModel(GetTopModel());
 			meshes[(int)MeshType::Sphere]->Render(forwardSP);
+			forwardSP.Set1i("useCustomDiffuseTexIndex", 0);
 			forwardSP.Set1i("useCustomColour", 0);
 		PopModel();
 		PushModel({
