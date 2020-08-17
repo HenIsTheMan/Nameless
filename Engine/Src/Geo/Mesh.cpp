@@ -331,9 +331,12 @@ void Mesh::InstancedRender(ShaderProg& SP, const bool& autoConfig){
 					std::get<str>(texMap),
 					type != MeshType::Amt,
 					GL_TEXTURE_2D,
-					GL_CLAMP_TO_EDGE, //??
-					GL_NEAREST, //??
+					GL_REPEAT,
+					GL_LINEAR_MIPMAP_LINEAR,
 					GL_LINEAR,
+					//GL_CLAMP_TO_EDGE,
+					//GL_NEAREST,
+					//GL_LINEAR,
 				}, std::get<uint>(texMap));
 			}
 
@@ -457,9 +460,12 @@ void Mesh::Render(ShaderProg& SP, const bool& autoConfig){
 					std::get<str>(texMap),
 					type != MeshType::Amt,
 					GL_TEXTURE_2D,
-					GL_CLAMP_TO_EDGE, //??
-					GL_NEAREST, //??
+					GL_REPEAT,
+					GL_LINEAR_MIPMAP_LINEAR,
 					GL_LINEAR,
+					//GL_CLAMP_TO_EDGE,
+					//GL_NEAREST,
+					//GL_LINEAR,
 				}, std::get<uint>(texMap));
 			}
 
