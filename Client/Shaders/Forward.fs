@@ -69,7 +69,7 @@ uniform sampler2D emissionMap;
 uniform sampler2D reflectionMap;
 
 vec3 WorldSpacePos = fsIn.pos;
-vec4 Colour;
+vec4 Colour = fsIn.colour;
 vec3 Normal = fsIn.normal;
 vec3 Spec = useSpecMap ? texture(specMap, fsIn.texCoords).rgb : vec3(0.f); //Use full white tex for full spec
 vec3 Reflection = useReflectionMap ? texture(reflectionMap, fsIn.texCoords).rgb : vec3(0.f); //Use full white tex for full reflection
