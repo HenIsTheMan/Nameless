@@ -69,7 +69,7 @@ void Cam::Update(const int& up, const int& down, const int& left, const int& rig
 		xzCamFront = glm::normalize(xzCamFront);
 	}
 
-	glm::vec3&& change = frontBack * xzCamFront + glm::vec3(0.f, upDown, 0.f) + leftRight * -CalcRight() + float(leftMB - rightMB) * camFront;
+	glm::vec3&& change = frontBack * xzCamFront + glm::vec3(0.f, upDown, 0.f) + leftRight * -CalcRight() + float(LMB - RMB) * camFront;
 	if(change != glm::vec3(0.f)){
 		change = normalize(change);
 	}

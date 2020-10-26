@@ -114,67 +114,12 @@ void Model::AddModelMatForAll(const glm::mat4& modelMat){
     modelMatsForAll.emplace_back(modelMat);
 }
 
-//void Model::BatchRender(const int& primitive){ //Old and not working??
-//    if(primitive < 0){
-//        return (void)puts("Invalid primitive!\n");
-//    }
-//    if(!meshes.size()){
-//        LoadModel();
-//    }
-//
-//    if(!VAO){
-//        glGenVertexArrays(1, &VAO);
-//    }
-//    glBindVertexArray(VAO);
-//    if(!VBO){
-//        for(const Mesh& mesh: meshes){
-//            for(size_t i = 0; i < mesh.vertices->size(); ++i){
-//                (*(mesh.vertices))[i].pos = glm::vec3(mesh.model * glm::vec4((*(mesh.vertices))[i].pos, 1.f));
-//                allVertices.emplace_back((*(mesh.vertices))[i]);
-//            }
-//        }
-//        glGenBuffers(1, &VBO);
-//        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-//        glBufferData(GL_ARRAY_BUFFER, allVertices.size() * sizeof(Vertex), &allVertices[0], GL_STATIC_DRAW);
-//
-//        glEnableVertexAttribArray(0);
-//        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, pos));
-//        glEnableVertexAttribArray(1);
-//        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, colour));
-//        glEnableVertexAttribArray(2);
-//        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, texCoords));
-//        glEnableVertexAttribArray(3);
-//        glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, normal));
-//        glEnableVertexAttribArray(4);
-//        glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, tangent));
-//        glEnableVertexAttribArray(5);
-//        glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, diffuseTexIndex));
-//    } else{
-//        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-//    }
-//
-//    if(storeIndices){
-//        size_t verticesAmt = 0;
-//        for(size_t i = 0; i < meshes.size(); ++i){
-//            for(size_t j = 0; j < meshes[i].indices->size(); ++j){
-//                allIndices.emplace_back((*meshes[i].indices)[j] + uint(verticesAmt));
-//            }
-//            verticesAmt += meshes[i].vertices->size();
-//        }
-//        if(allIndices.size()){
-//            glGenBuffers(1, &EBO);
-//        }
-//        storeIndices = false;
-//    }
-//    if(EBO){
-//        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-//        glBufferData(GL_ELEMENT_ARRAY_BUFFER, allIndices.size() * sizeof(uint), &allIndices[0], GL_STATIC_DRAW); //Alloc/Reserve a piece of GPU mem and add data into it
-//        glDrawElements(primitive, (int)allIndices.size(), GL_UNSIGNED_INT, 0); //Draw/Render call/command
-//    } else{
-//        glDrawArrays(primitive, 0, (int)allVertices.size()); //...
-//    }
-//    glBindVertexArray(0);
-//}
+void Model::ClearModelMatsForAll(){
+    const size_t& size = meshes.size();
+    for(size_t i = 0; i < size; ++i){
+        meshes[i].ClearModelMats();
+    }
+}
 
 void Model::InstancedRender(ShaderProg& SP, const int& primitive){
     if(primitive < 0){

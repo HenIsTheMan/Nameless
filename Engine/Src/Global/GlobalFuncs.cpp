@@ -3,8 +3,8 @@
 #include "../Vendor/stb_image.h"
 
 extern bool firstCall;
-extern bool leftMB;
-extern bool rightMB;
+extern bool LMB;
+extern bool RMB;
 extern float pitch;
 extern float yaw;
 extern float lastX;
@@ -35,7 +35,7 @@ bool InitAPI(GLFWwindow*& win){
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     #ifdef __APPLE__
-        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); //For Mac OS X
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); //For Mac OS X
     #endif
 
     const GLFWvidmode* const& mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
@@ -141,8 +141,8 @@ static void CursorPosCallback(GLFWwindow*, double xPos, double yPos){
 }
 
 static void MouseButtonCallback(GLFWwindow* win, int button, int action, int mods){ //For mouse buttons
-    leftMB = glfwGetMouseButton(win, GLFW_MOUSE_BUTTON_LEFT);
-    rightMB = glfwGetMouseButton(win, GLFW_MOUSE_BUTTON_RIGHT);
+    LMB = glfwGetMouseButton(win, GLFW_MOUSE_BUTTON_LEFT);
+    RMB = glfwGetMouseButton(win, GLFW_MOUSE_BUTTON_RIGHT);
 }
 
 static void ScrollCallback(GLFWwindow*, double xOffset, double yOffset){

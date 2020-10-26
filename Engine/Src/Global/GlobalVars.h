@@ -2,8 +2,8 @@
 
 bool endLoop = false;
 bool firstCall = 1;
-bool leftMB = false;
-bool rightMB = false;
+bool LMB = false;
+bool RMB = false;
 float dt = 0.f;
 float pitch = 0.f;
 float yaw = 0.f;
