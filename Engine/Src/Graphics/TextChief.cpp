@@ -97,8 +97,8 @@ void TextChief::RenderText(ShaderProg& SP, const TextAttribs& attribs){
             {xpos + w, ypos + h,   1.f, 0.f}           
         };
 
-        SP.UseTex(attribs.texRefID, "textTex"); //1 for each char??
-        SP.UseTex(ch.texRefID, "texSampler");
+        SP.UseTex("textTex", attribs.texRefID); //1 for each char??
+        SP.UseTex("texSampler", ch.texRefID);
 
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); 

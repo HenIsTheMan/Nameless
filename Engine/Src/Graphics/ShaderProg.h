@@ -7,7 +7,7 @@ public:
 	ShaderProg(cstr const& vsPath, cstr const& fsPath, cstr const& gsPath = "");
 	~ShaderProg();
 	void Use();
-	void UseTex(const uint& texRefID, const cstr& samplerName, const int& texTarget = GL_TEXTURE_2D);
+	void UseTex(const cstr& samplerName, const uint& texRefID, const int& texTarget = GL_TEXTURE_2D);
 	void ResetTexUnits() const;
 
 	///Utility funcs

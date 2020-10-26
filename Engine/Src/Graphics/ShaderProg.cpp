@@ -104,7 +104,7 @@ void ShaderProg::Use(){
 	}
 }
 
-void ShaderProg::UseTex(const uint& texRefID, const cstr& samplerName, const int& texTarget){
+void ShaderProg::UseTex(const cstr& samplerName, const uint& texRefID, const int& texTarget){
 	const int size = (int)texTargets.size();
 	if(size == 32){
 		return (void)puts("Exceeded 32 texs in draw call!\n");

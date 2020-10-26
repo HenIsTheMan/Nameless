@@ -299,11 +299,11 @@ void Scene::LightingRenderPass(const uint& posTexRefID, const uint& coloursTexRe
 	lightingPassSP.Set1i("pAmt", pAmt);
 	lightingPassSP.Set1i("dAmt", dAmt);
 	lightingPassSP.Set1i("sAmt", sAmt);
-	lightingPassSP.UseTex(posTexRefID, "posTex");
-	lightingPassSP.UseTex(coloursTexRefID, "coloursTex");
-	lightingPassSP.UseTex(normalsTexRefID, "normalsTex");
-	lightingPassSP.UseTex(specTexRefID, "specTex");
-	lightingPassSP.UseTex(reflectionTexRefID, "reflectionTex");
+	lightingPassSP.UseTex("posTex", posTexRefID);
+	lightingPassSP.UseTex("coloursTex", coloursTexRefID);
+	lightingPassSP.UseTex("normalsTex", normalsTexRefID);
+	lightingPassSP.UseTex("specTex", specTexRefID);
+	lightingPassSP.UseTex("reflectionTex", reflectionTexRefID);
 
 	int i;
 	for(i = 0; i < pAmt; ++i){
@@ -342,7 +342,7 @@ void Scene::LightingRenderPass(const uint& posTexRefID, const uint& coloursTexRe
 void Scene::BlurRender(const uint& brightTexRefID, const bool& horizontal){
 	blurSP.Use();
 	blurSP.Set1i("horizontal", horizontal);
-	blurSP.UseTex(brightTexRefID, "texSampler");
+	blurSP.UseTex("texSampler", brightTexRefID);
 	meshes[(int)MeshType::Quad]->SetModel(GetTopModel());
 	meshes[(int)MeshType::Quad]->Render(blurSP, false);
 	blurSP.ResetTexUnits();
@@ -351,8 +351,8 @@ void Scene::BlurRender(const uint& brightTexRefID, const bool& horizontal){
 void Scene::DefaultRender(const uint& screenTexRefID, const uint& blurTexRefID){
 	screenSP.Use();
 	screenSP.Set1f("exposure", 1.2f);
-	screenSP.UseTex(screenTexRefID, "screenTexSampler");
-	screenSP.UseTex(blurTexRefID, "blurTexSampler");
+	screenSP.UseTex("screenTexSampler", screenTexRefID);
+	screenSP.UseTex("blurTexSampler", blurTexRefID);
 	meshes[(int)MeshType::Quad]->SetModel(GetTopModel());
 	meshes[(int)MeshType::Quad]->Render(screenSP, false);
 	screenSP.ResetTexUnits();

@@ -2,16 +2,16 @@
 
 Terrain::Terrain(): Mesh(),
 	terrainPath(""),
-	tileH(0.f),
-	tileV(0.f),
+	hTile(0.f),
+	vTile(0.f),
 	data({})
 {
 }
 
-Terrain::Terrain(cstr const& fPath, const float& tileH, const float& tileV): Mesh(),
+Terrain::Terrain(cstr const& fPath, const float& hTile, const float& vTile): Mesh(),
 	terrainPath(fPath),
-	tileH(tileH),
-	tileV(tileV),
+	hTile(hTile),
+	vTile(vTile),
 	data({})
 {
 	Load();
@@ -106,7 +106,7 @@ void Terrain::Create(){
 			vertices->push_back({
 				pos[z][x],
 				glm::vec4(.7f, .4f, .1f, 1.f),
-				glm::vec2(float(x) / float(terrainSize) * tileH, 1.f - float(z) / float(terrainSize) * tileV),
+				glm::vec2(float(x) / float(terrainSize) * hTile, 1.f - float(z) / float(terrainSize) * vTile),
 				normals[z][x],
 				glm::vec3(0.f), //??
 				0,

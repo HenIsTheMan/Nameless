@@ -170,23 +170,23 @@ void SpriteAni::Render(ShaderProg& SP, const bool& autoConfig){
 			switch(std::get<TexType>(texMap)){
 				case TexType::Diffuse:
 					SP.Set1i("useDiffuseMap", 1);
-					SP.UseTex(std::get<uint>(texMap), ("diffuseMaps[" + std::to_string(diffuseCount++) + ']').c_str());
+					SP.UseTex(("diffuseMaps[" + std::to_string(diffuseCount++) + ']').c_str(), std::get<uint>(texMap));
 					break;
 				case TexType::Spec:
 					SP.Set1i("useSpecMap", 1);
-					SP.UseTex(std::get<uint>(texMap), "specMap");
+					SP.UseTex("specMap", std::get<uint>(texMap));
 					break;
 				case TexType::Emission:
 					SP.Set1i("useEmissionMap", 1);
-					SP.UseTex(std::get<uint>(texMap), "emissionMap");
+					SP.UseTex("emissionMap", std::get<uint>(texMap));
 					break;
 				case TexType::Reflection:
 					SP.Set1i("useReflectionMap", 1);
-					SP.UseTex(std::get<uint>(texMap), "reflectionMap");
+					SP.UseTex("reflectionMap", std::get<uint>(texMap));
 					break;
 				case TexType::Bump:
 					SP.Set1i("useBumpMap", 1);
-					SP.UseTex(std::get<uint>(texMap), "bumpMap");
+					SP.UseTex("bumpMap", std::get<uint>(texMap));
 					break;
 			}
 		}
