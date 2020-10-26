@@ -5,14 +5,14 @@
 extern bool endLoop;
 
 void MainProcess(){
-	App* app = App::GetObjPtr(); //Singleton<App>* test = Singleton<App>::GetObjPtr()??
+	App* app = new App();
 	while(!endLoop){
 		app->Update();
 		app->PreRender();
 		app->Render();
 		app->PostRender();
 	}
-	app->Destroy();
+	delete app;
 }
 
 int main(const int&, const char* const* const&){

@@ -1,13 +1,11 @@
 #pragma once
 #include "../World/Scene.h"
 
-class App final: public Singleton<App>{
+class App final{
 	explicit App(const App&) = delete;
 	explicit App(App&&) noexcept = delete;
 	App& operator=(const App&) = delete;
 	App& operator=(App&&) noexcept = delete;
-
-	friend Singleton<App>;
 public:
 	enum struct FBO{
 		GeoPass = 0,
@@ -29,6 +27,7 @@ public:
 		Amt
 	};
 
+	App();
 	~App();
 	bool Init();
 	void Update();
@@ -36,7 +35,6 @@ public:
 	void Render();
 	void PostRender() const;
 private:
-	App();
 	bool InitOptions() const;
 	bool fullscreen;
 	float elapsedTime;

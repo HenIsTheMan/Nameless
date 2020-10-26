@@ -4,23 +4,11 @@
     <ClInclude Include="Src\Vendor\stb_image.h">
       <Filter>Src\Vendor</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Algs\Printing.h">
-      <Filter>Src\Algs</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\Algs\Sorting.h">
-      <Filter>Src\Algs</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\Algs\Swapping.h">
-      <Filter>Src\Algs</Filter>
-    </ClInclude>
     <ClInclude Include="Src\Core.h">
       <Filter>Src</Filter>
     </ClInclude>
     <ClInclude Include="Src\Engine.h">
       <Filter>Src</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\SDPs\Singleton.h">
-      <Filter>Src\SDPs</Filter>
     </ClInclude>
     <ClInclude Include="Src\Geo\Mesh.h">
       <Filter>Src\Geo</Filter>
@@ -40,14 +28,8 @@
     <ClInclude Include="Src\Global\GlobalVars.h">
       <Filter>Src\Global</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Algs\Pseudorand.h">
-      <Filter>Src\Algs</Filter>
-    </ClInclude>
     <ClInclude Include="Src\Geo\Model.h">
       <Filter>Src\Geo</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\DS\BinTree.h">
-      <Filter>Src\DS</Filter>
     </ClInclude>
     <ClInclude Include="Src\Geo\Terrain.h">
       <Filter>Src\Geo</Filter>

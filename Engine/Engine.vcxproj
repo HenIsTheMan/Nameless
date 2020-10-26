@@ -171,11 +171,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Src\Algs\Printing.h" />
-    <ClInclude Include="Src\Algs\Pseudorand.h" />
-    <ClInclude Include="Src\Algs\Sorting.h" />
-    <ClInclude Include="Src\Algs\Swapping.h" />
-    <ClInclude Include="Src\DS\BinTree.h" />
     <ClInclude Include="Src\Geo\Model.h" />
     <ClInclude Include="Src\Geo\SpriteAni.h" />
     <ClInclude Include="Src\Geo\Terrain.h" />
@@ -189,7 +184,6 @@
     <ClInclude Include="Src\Graphics\Light.h" />
     <ClInclude Include="Src\Graphics\ShaderProg.h" />
     <ClInclude Include="Src\Graphics\TextChief.h" />
-    <ClInclude Include="Src\SDPs\Singleton.h" />
     <ClInclude Include="Src\Vendor\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
