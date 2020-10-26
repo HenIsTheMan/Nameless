@@ -46,7 +46,7 @@ uniform PtLight ptLights[maxAmtP];
 uniform DirectionalLight directionalLights[maxAmtD];
 uniform Spotlight spotlights[maxAmtS];
 
-uniform vec3 camPos;
+uniform vec3 camWorldSpacePos;
 uniform sampler2D posTex;
 uniform sampler2D coloursTex;
 uniform sampler2D normalsTex;
@@ -70,7 +70,7 @@ vec3 CalcDiffuse(vec3 lightDir, vec3 lightDiffuse){
 }
 
 vec3 CalcSpec(vec3 lightDir, vec3 lightSpec){
-    vec3 viewDir = normalize(WorldSpacePos - camPos);
+    vec3 viewDir = normalize(WorldSpacePos - camWorldSpacePos);
     vec3 halfwayDir = -normalize(lightDir + viewDir);
     float sImpact = pow(max(dot(Normal, halfwayDir), 0.f), shininess);
     return sImpact * lightSpec * Spec;
@@ -115,7 +115,7 @@ void main(){
 
         if(Reflection != vec3(0.f)){
             const float ratio = 1.f / 1.52f; //n of air / n of glass (ratio between refractive indices of both materials)
-            vec3 incidentRay = normalize(WorldSpacePos - camPos);
+            vec3 incidentRay = normalize(WorldSpacePos - camWorldSpacePos);
             vec3 reflectedRay = reflect(incidentRay, Normal);
             vec3 refractedRay = refract(incidentRay, Normal, ratio);
             fragColour.rgb += texture(cubemapSampler, reflectedRay).rgb * Reflection;

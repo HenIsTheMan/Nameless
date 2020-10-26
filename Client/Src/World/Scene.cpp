@@ -164,14 +164,14 @@ void Scene::Update(){
 	view = cam.LookAt();
 	projection = glm::perspective(glm::radians(angularFOV), cam.GetAspectRatio(), .1f, 9999.f);
 
-	const glm::vec3& camPos = cam.GetPos();
+	const glm::vec3& camWorldSpacePos = cam.GetPos();
 	const glm::vec3& camFront = cam.CalcFront();
-	soundEngine->setListenerPosition(vec3df(camPos.x, camPos.y, camPos.z), vec3df(camFront.x, camFront.y, camFront.z));
+	soundEngine->setListenerPosition(vec3df(camWorldSpacePos.x, camWorldSpacePos.y, camWorldSpacePos.z), vec3df(camFront.x, camFront.y, camFront.z));
 
 	spotlights[0]->ambient = glm::vec3(.05f);
 	spotlights[0]->diffuse = glm::vec3(.8f);
 	spotlights[0]->spec = glm::vec3(1.f);
-	static_cast<Spotlight*>(spotlights[0])->pos = camPos;
+	static_cast<Spotlight*>(spotlights[0])->pos = camWorldSpacePos;
 	static_cast<Spotlight*>(spotlights[0])->dir = camFront;
 	static_cast<Spotlight*>(spotlights[0])->cosInnerCutoff = cosf(glm::radians(12.5f));
 	static_cast<Spotlight*>(spotlights[0])->cosOuterCutoff = cosf(glm::radians(17.5f));
@@ -295,7 +295,7 @@ void Scene::LightingRenderPass(const uint& posTexRefID, const uint& coloursTexRe
 
 	lightingPassSP.Set1f("shininess", 32.f); //More light scattering if lower
 	lightingPassSP.Set3fv("globalAmbient", Light::globalAmbient);
-	lightingPassSP.Set3fv("camPos", cam.GetPos());
+	lightingPassSP.Set3fv("camWorldSpacePos", cam.GetPos());
 	lightingPassSP.Set1i("pAmt", pAmt);
 	lightingPassSP.Set1i("dAmt", dAmt);
 	lightingPassSP.Set1i("sAmt", sAmt);
@@ -366,7 +366,7 @@ void Scene::ForwardRender(){
 
 	forwardSP.Set1f("shininess", 32.f); //More light scattering if lower
 	forwardSP.Set3fv("globalAmbient", Light::globalAmbient);
-	forwardSP.Set3fv("camPos", cam.GetPos());
+	forwardSP.Set3fv("camWorldSpacePos", cam.GetPos());
 	forwardSP.Set1i("pAmt", pAmt);
 	forwardSP.Set1i("dAmt", dAmt);
 	forwardSP.Set1i("sAmt", sAmt);
