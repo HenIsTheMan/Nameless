@@ -145,9 +145,8 @@ void Mesh::InstancedRender(ShaderProg& SP, const bool& autoConfig){
 
 	SP.Use();
 	SP.SetMat4fv("model", &(model)[0][0]);
+	SP.Set1i("instancing", 1);
 	if(autoConfig){
-		SP.Set1i("instancing", 1);
-
 		SP.Set1i("useDiffuseMap", 0);
 		SP.Set1i("useSpecMap", 0);
 		SP.Set1i("useEmissionMap", 0);
@@ -415,21 +414,6 @@ void Mesh::RemoveTexMap(str const& texPath){
 void Mesh::SetModel(const glm::mat4& model){
 	this->model = model;
 }
-
-//void Mesh::SetType(const MeshType& type){
-//	if(vertices){
-//		delete vertices;
-//		vertices = nullptr;
-//	}
-//	if(VAO){
-//		//...
-//	}
-//	this->type = type;
-//}
-//
-//void Mesh::SetPrimitive(const int& primitive){
-//	this->primitive = primitive;
-//}
 
 void Mesh::CreateQuad(){
 	if(!vertices){
