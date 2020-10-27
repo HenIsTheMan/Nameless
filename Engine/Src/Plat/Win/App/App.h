@@ -46,9 +46,3 @@ private:
 	uint texRefIDs[(int)Tex::Amt];
 	uint RBORefIDs[1];
 };
-
-template <class T>
-inline T& operator++(T& myEnum){
-	myEnum = T((int)myEnum + 1);
-	return myEnum;
-}
