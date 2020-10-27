@@ -415,6 +415,12 @@ void Mesh::SetModel(const glm::mat4& model){
 	this->model = model;
 }
 
+void Mesh::SetModelMat(const glm::mat4& modelMat, const ptrdiff_t& index){
+	if(index < modelMats.size()){
+		modelMats[index] = modelMat;
+	}
+}
+
 void Mesh::CreateQuad(){
 	if(!vertices){
 		const glm::vec3 pos[4]{glm::vec3(-1.f, 1.f, 0.f), glm::vec3(-1.f, -1.f, 0.f), glm::vec3(1.f, -1.f, 0.f), glm::vec3(1.f, 1.f, 0.f)};

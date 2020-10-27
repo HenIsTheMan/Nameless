@@ -35,10 +35,15 @@ public:
 
 	void AddModelMat(const glm::mat4& modelMat);
 	void AddTexMap(const std::tuple<str, TexType, uint>& texMap);
+
 	void ClearModelMats();
 	void ClearTexMaps();
+
 	void RemoveModelMat(const size_t& index);
 	void RemoveTexMap(str const& texPath);
+
+	void SetModelMat(const glm::mat4& modelMat, const ptrdiff_t& index);
+
 	void InstancedRender(ShaderProg& SP, const bool& autoConfig = true);
 	virtual void Render(ShaderProg& SP, const bool& autoConfig = true);
 	void SetModel(const glm::mat4& model);

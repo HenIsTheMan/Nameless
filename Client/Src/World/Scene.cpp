@@ -193,6 +193,15 @@ void Scene::Update(){
 		polyModeBT = elapsedTime + .5f;
 	}
 
+	for(int i = 0; i < 99999; ++i){
+		PushModel({
+			Translate(glm::vec3(PseudorandMinMax(-2000.f, 2000.f), PseudorandMinMax(-2000.f, 2000.f), -5.f)),
+			Rotate(glm::vec4(0.f, 1.f, 0.f, -45.f)),
+		});
+			meshes[(int)MeshType::Quad]->SetModelMat(GetTopModel(), i);
+		PopModel();
+	}
+
 	if(soundFX){
 		if(Key(GLFW_KEY_I) && distortionBT <= elapsedTime){
 			soundFX->isDistortionSoundEffectEnabled() ? soundFX->disableDistortionSoundEffect() : (void)soundFX->enableDistortionSoundEffect();
