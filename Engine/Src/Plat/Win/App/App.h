@@ -1,11 +1,10 @@
 #pragma once
-#include "../World/Scene.h"
+
+#include "../../../Core.h"
+#include "../../../Global/GlobalFuncs.h"
+#include "Scene/Scene.h"
 
 class App final{
-	explicit App(const App&) = delete;
-	explicit App(App&&) noexcept = delete;
-	App& operator=(const App&) = delete;
-	App& operator=(App&&) noexcept = delete;
 public:
 	enum struct FBO{
 		GeoPass = 0,

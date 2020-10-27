@@ -1,6 +1,10 @@
 #pragma once
-#include <Engine.h>
-#include "Cam.h"
+
+#include "../Cam.h"
+#include "../../../../Geo/Mesh.h"
+#include "../../../../Graphics/Light.h"
+#include "../../../../Graphics/ShaderProg.h"
+#include "../../../../Graphics/TextChief.h"
 
 class Scene final{
 public:
