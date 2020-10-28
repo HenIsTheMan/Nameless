@@ -1,4 +1,4 @@
-#include "Scene.h"
+#include "MyScene.h"
 
 #include "../../../../Vendor/stb_image.h"
 #include "../../../../Geo/Model.h"
@@ -13,7 +13,7 @@ extern int winHeight;
 
 glm::vec3 Light::globalAmbient = glm::vec3(.2f);
 
-Scene::Scene():
+MyScene::MyScene():
 	cam(glm::vec3(0.f, 0.f, 5.f), glm::vec3(0.f), glm::vec3(0.f, 1.f, 0.f), 0.f, 150.f),
 	soundEngine(nullptr),
 	music(nullptr),
@@ -66,7 +66,7 @@ Scene::Scene():
 {
 }
 
-Scene::~Scene(){
+MyScene::~MyScene(){
 	const size_t& pSize = ptLights.size();
 	const size_t& dSize = directionalLights.size();
 	const size_t& sSize = spotlights.size();
@@ -109,7 +109,7 @@ Scene::~Scene(){
 	}
 }
 
-bool Scene::Init(){
+bool MyScene::Init(){
 	glGetIntegerv(GL_POLYGON_MODE, &polyMode);
 
 	soundEngine = createIrrKlangDevice(ESOD_AUTO_DETECT, ESEO_MULTI_THREADED | ESEO_LOAD_PLUGINS | ESEO_USE_3D_BUFFERS | ESEO_PRINT_DEBUG_INFO_TO_DEBUGGER);
@@ -162,7 +162,7 @@ bool Scene::Init(){
 	return true;
 }
 
-void Scene::Update(){
+void MyScene::Update(){
 	elapsedTime += dt;
 	if(winHeight){ //Avoid division by 0 when win is minimised
 		cam.SetDefaultAspectRatio(float(winWidth) / float(winHeight));
@@ -227,7 +227,7 @@ void Scene::Update(){
 	}
 }
 
-void Scene::GeoRenderPass(){
+void MyScene::GeoRenderPass(){
 	geoPassSP.Use();
 	geoPassSP.SetMat4fv("PV", &(projection * glm::mat4(glm::mat3(view)))[0][0]);
 
@@ -304,7 +304,7 @@ void Scene::GeoRenderPass(){
 	PopModel();
 }
 
-void Scene::LightingRenderPass(const uint& posTexRefID, const uint& coloursTexRefID, const uint& normalsTexRefID, const uint& specTexRefID, const uint& reflectionTexRefID){
+void MyScene::LightingRenderPass(const uint& posTexRefID, const uint& coloursTexRefID, const uint& normalsTexRefID, const uint& specTexRefID, const uint& reflectionTexRefID){
 	lightingPassSP.Use();
 	const int& pAmt = (int)ptLights.size();
 	const int& dAmt = (int)directionalLights.size();
@@ -356,7 +356,7 @@ void Scene::LightingRenderPass(const uint& posTexRefID, const uint& coloursTexRe
 	lightingPassSP.ResetTexUnits();
 }
 
-void Scene::BlurRender(const uint& brightTexRefID, const bool& horizontal){
+void MyScene::BlurRender(const uint& brightTexRefID, const bool& horizontal){
 	blurSP.Use();
 	blurSP.Set1i("horizontal", horizontal);
 	blurSP.UseTex("texSampler", brightTexRefID);
@@ -365,7 +365,7 @@ void Scene::BlurRender(const uint& brightTexRefID, const bool& horizontal){
 	blurSP.ResetTexUnits();
 }
 
-void Scene::DefaultRender(const uint& screenTexRefID, const uint& blurTexRefID){
+void MyScene::DefaultRender(const uint& screenTexRefID, const uint& blurTexRefID){
 	screenSP.Use();
 	screenSP.Set1f("exposure", 1.2f);
 	screenSP.UseTex("screenTexSampler", screenTexRefID);
@@ -375,7 +375,7 @@ void Scene::DefaultRender(const uint& screenTexRefID, const uint& blurTexRefID){
 	screenSP.ResetTexUnits();
 }
 
-void Scene::ForwardRender(){
+void MyScene::ForwardRender(){
 	forwardSP.Use();
 	const int& pAmt = 0;
 	const int& dAmt = 0;
@@ -514,23 +514,23 @@ void Scene::ForwardRender(){
 	}
 }
 
-glm::mat4 Scene::Translate(const glm::vec3& translate){
+glm::mat4 MyScene::Translate(const glm::vec3& translate){
 	return glm::translate(glm::mat4(1.f), translate);
 }
 
-glm::mat4 Scene::Rotate(const glm::vec4& rotate){
+glm::mat4 MyScene::Rotate(const glm::vec4& rotate){
 	return glm::rotate(glm::mat4(1.f), glm::radians(rotate.w), glm::vec3(rotate));
 }
 
-glm::mat4 Scene::Scale(const glm::vec3& scale){
+glm::mat4 MyScene::Scale(const glm::vec3& scale){
 	return glm::scale(glm::mat4(1.f), scale);
 }
 
-glm::mat4 Scene::GetTopModel() const{
+glm::mat4 MyScene::GetTopModel() const{
 	return modelStack.empty() ? glm::mat4(1.f) : modelStack.top();
 }
 
-void Scene::PushModel(const std::vector<glm::mat4>& vec) const{
+void MyScene::PushModel(const std::vector<glm::mat4>& vec) const{
 	modelStack.push(modelStack.empty() ? glm::mat4(1.f) : modelStack.top());
 	const size_t& size = vec.size();
 	for(size_t i = 0; i < size; ++i){
@@ -538,7 +538,7 @@ void Scene::PushModel(const std::vector<glm::mat4>& vec) const{
 	}
 }
 
-void Scene::PopModel() const{
+void MyScene::PopModel() const{
 	if(!modelStack.empty()){
 		modelStack.pop();
 	}

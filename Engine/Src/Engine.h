@@ -15,4 +15,4 @@
 
 #include "Plat/Win/App/App.h"
 #include "Plat/Win/App/Cam.h"
-#include "Plat/Win/App/Scene/Scene.h"
+#include "Plat/Win/App/Scene/MyScene.h"

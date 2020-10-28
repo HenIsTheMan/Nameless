@@ -2,7 +2,7 @@
 
 #include "../../../Core.h"
 #include "../../../Global/GlobalFuncs.h"
-#include "Scene/Scene.h"
+#include "Scene/MyScene.h"
 
 class App final{
 public:
@@ -39,7 +39,7 @@ private:
 	float elapsedTime;
 	float lastFrameTime;
 
-	Scene scene;
+	MyScene scene;
 	static const GLFWvidmode* mode;
 	static GLFWwindow* win;
 
