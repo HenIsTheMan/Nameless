@@ -1,7 +1,7 @@
 #include "Cam.h"
 
-#include "../../../Global/GlobalFuncs.h"
-#include "../../../Global/GlobalVars.h"
+#include "../../../../../Global/GlobalFuncs.h"
+#include "../../../../../Global/GlobalVars.h"
 
 Cam::Cam():
 	aspectRatio(0.f),

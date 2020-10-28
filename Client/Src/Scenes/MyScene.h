@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../Cam.h"
-#include "../../../../Geo/Mesh.h"
-#include "../../../../Graphics/Light.h"
-#include "../../../../Graphics/ShaderProg.h"
-#include "../../../../Graphics/TextChief.h"
+#include "Plat/Win/App/Scene/Cam/Cam.h"
+#include "Geo/Model.h"
+#include "Graphics/Light.h"
+#include "Graphics/ShaderProg.h"
+#include "Graphics/TextChief.h"
 
 class MyScene final{
 public:

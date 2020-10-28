@@ -1,3 +1,5 @@
+#include "Scene.h"
+
 Scene::Scene():
 	im_Init(nullptr),
 	im_FixedUpdate(nullptr),

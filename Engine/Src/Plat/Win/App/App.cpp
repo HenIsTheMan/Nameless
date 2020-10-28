@@ -25,7 +25,7 @@ App::App():
 		(void)puts("Failed to init API\n");
 		endLoop = true;
 	}
-	(void)Init();
+	Init();
 }
 
 App::~App(){
@@ -35,7 +35,7 @@ App::~App(){
 	glfwTerminate(); //Clean/Del all GLFW's resources that were allocated
 }
 
-bool App::Init(){
+void App::Init(){
 	mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
 	glGenFramebuffers(sizeof(FBORefIDs) / sizeof(FBORefIDs[0]), FBORefIDs);
@@ -61,8 +61,7 @@ bool App::Init(){
 
 		if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE){
 			(void)printf(STR(FBO::GeoPass));
-			(void)puts(" is incomplete!\n");
-			return false;
+			return (void)puts(" is incomplete!\n");
 		}
 	glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)FBO::LightingPass]);
 		for(Tex i = Tex::Lit; i <= Tex::Bright; ++i){
@@ -80,8 +79,7 @@ bool App::Init(){
 
 		if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE){
 			(void)printf(STR(FBO::LightingPass));
-			(void)puts(" is incomplete!\n");
-			return false;
+			return (void)puts(" is incomplete!\n");
 		}
 	for(FBO i = FBO::PingPong0; i <= FBO::PingPong1; ++i){
 		glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)i]);
@@ -99,11 +97,10 @@ bool App::Init(){
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	(void)InitOptions();
-	(void)scene.Init();
 	glPointSize(10.f);
 	glLineWidth(5.f);
 
-	return true;
+	//scene->Init();
 }
 
 void App::Update(){
@@ -129,58 +126,63 @@ void App::Update(){
 		toggleFullscreenBT = elapsedTime + .5f;
 	}
 
-	scene.Update();
+	//scene->Update(dt);
+	//scene->LateUpdate(dt);
 }
 
 void App::PreRender() const{
+	//scene->PreRender();
+
 	//glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE); //Frags update stencil buffer with their ref value when... //++params and options??
 	//glBlendFuncSeparate(GL_ONE, GL_ZERO, GL_DST_ALPHA, GL_DST_ALPHA);
 	//glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_SUBTRACT);
 }
 
 void App::Render(){
-	glViewport(0, 0, 2048, 2048);
+	//glViewport(0, 0, 2048, 2048);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)FBO::GeoPass]);
-	for(uint i = 0; i < 5; ++i){
-		glDrawBuffer(GL_COLOR_ATTACHMENT0 + i);
-		i == 1 ? glClearColor(.5f, 0.32f, 0.86f, 1.f) : glClearColor(0.f, 0.f, 0.f, 1.f); //State-setting func
-		glClear(GL_COLOR_BUFFER_BIT);
-	}
-	uint arr1[5]{GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4};
-	glDrawBuffers(sizeof(arr1) / sizeof(arr1[0]), arr1);
-	glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); //State-using func
-	scene.GeoRenderPass();
+	//glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)FBO::GeoPass]);
+	//for(uint i = 0; i < 5; ++i){
+	//	glDrawBuffer(GL_COLOR_ATTACHMENT0 + i);
+	//	i == 1 ? glClearColor(.5f, 0.32f, 0.86f, 1.f) : glClearColor(0.f, 0.f, 0.f, 1.f); //State-setting func
+	//	glClear(GL_COLOR_BUFFER_BIT);
+	//}
+	//uint arr1[5]{GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4};
+	//glDrawBuffers(sizeof(arr1) / sizeof(arr1[0]), arr1);
+	//glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); //State-using func
+	//scene.GeoRenderPass();
 
-	glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)FBO::LightingPass]);
-	uint arr2[2]{GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
-	glDrawBuffers(sizeof(arr2) / sizeof(arr2[0]), arr2);
-	scene.LightingRenderPass(texRefIDs[(int)Tex::Pos], texRefIDs[(int)Tex::Colours], texRefIDs[(int)Tex::Normals], texRefIDs[(int)Tex::Spec], texRefIDs[(int)Tex::Reflection]);
+	//glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)FBO::LightingPass]);
+	//uint arr2[2]{GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+	//glDrawBuffers(sizeof(arr2) / sizeof(arr2[0]), arr2);
+	//scene.LightingRenderPass(texRefIDs[(int)Tex::Pos], texRefIDs[(int)Tex::Colours], texRefIDs[(int)Tex::Normals], texRefIDs[(int)Tex::Spec], texRefIDs[(int)Tex::Reflection]);
 
-	bool horizontal = true;
-	const short amt = 12;
-	for(short i = 0; i < amt; ++i){ //Blur... amt / 2 times horizontally and amt / 2 times vertically
-		glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[int(FBO::PingPong0) + int(horizontal)]);
-		scene.BlurRender(!i ? texRefIDs[(int)Tex::Bright] : texRefIDs[int(Tex::PingPong0) + int(horizontal)], horizontal);
-		horizontal = !horizontal;
-	}
+	//bool horizontal = true;
+	//const short amt = 12;
+	//for(short i = 0; i < amt; ++i){ //Blur... amt / 2 times horizontally and amt / 2 times vertically
+	//	glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[int(FBO::PingPong0) + int(horizontal)]);
+	//	scene.BlurRender(!i ? texRefIDs[(int)Tex::Bright] : texRefIDs[int(Tex::PingPong0) + int(horizontal)], horizontal);
+	//	horizontal = !horizontal;
+	//}
 
-	glViewport(0, 0, winWidth, winHeight);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glClearColor(1.f, 0.82f, 0.86f, 1.f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	scene.DefaultRender(texRefIDs[(int)Tex::Lit], texRefIDs[int(Tex::PingPong0) + int(!horizontal)]);
+	//glViewport(0, 0, winWidth, winHeight);
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//glClearColor(1.f, 0.82f, 0.86f, 1.f);
+	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//scene.DefaultRender(texRefIDs[(int)Tex::Lit], texRefIDs[int(Tex::PingPong0) + int(!horizontal)]);
 
-	glViewport(0, 0, 2048, 2048);
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, FBORefIDs[(int)FBO::GeoPass]);
-	glViewport(0, 0, winWidth, winHeight);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	glBlitFramebuffer(0, 0, 2048, 2048, 0, 0, winWidth, winHeight, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	scene.ForwardRender();
+	//glViewport(0, 0, 2048, 2048);
+	//glBindFramebuffer(GL_READ_FRAMEBUFFER, FBORefIDs[(int)FBO::GeoPass]);
+	//glViewport(0, 0, winWidth, winHeight);
+	//glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	//glBlitFramebuffer(0, 0, 2048, 2048, 0, 0, winWidth, winHeight, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//scene.ForwardRender();
 }
 
 void App::PostRender() const{
+	//scene->PostRender();
+
 	glfwSwapBuffers(win); //Swap the large 2D colour buffer containing colour values for each pixel in GLFW's window
 	glfwPollEvents(); //Check for triggered events and call corresponding functions registered via callback methods
 }

@@ -1,6 +1,9 @@
 #pragma once
 
+//class App;
+
 class Scene final{
+	//friend App;
 public:
 	Scene();
 	~Scene() = default;
@@ -17,7 +20,7 @@ public:
 	void SetPreRender(void (*preRender)());
 	void SetRender(void (*render)());
 	void SetPostRender(void (*postRender)());
-private:
+//private:
 	void (*im_Init)();
 	void (*im_FixedUpdate)(float dt);
 	void (*im_Update)(float dt);
@@ -34,5 +37,3 @@ private:
 	void Render();
 	void PostRender();
 };
-
-#include "Scene.inl"

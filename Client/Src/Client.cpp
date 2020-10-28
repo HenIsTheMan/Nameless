@@ -1,5 +1,4 @@
-#include <Core.h>
-#include <Engine.h>
+#include "Plat/Win/App/App.h"
 
 extern bool endLoop;
 

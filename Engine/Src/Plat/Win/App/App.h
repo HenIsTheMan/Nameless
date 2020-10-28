@@ -2,19 +2,19 @@
 
 #include "../../../Core.h"
 #include "../../../Global/GlobalFuncs.h"
-#include "Scene/MyScene.h"
+#include "Scene/Scene.h"
 
 class App final{
 public:
 	enum struct FBO{
-		GeoPass = 0,
+		GeoPass,
 		LightingPass,
 		PingPong0,
 		PingPong1,
 		Amt
 	};
 	enum struct Tex{
-		Pos = 0,
+		Pos,
 		Colours,
 		Normals,
 		Spec,
@@ -28,7 +28,7 @@ public:
 
 	App();
 	~App();
-	bool Init();
+	void Init();
 	void Update();
 	void PreRender() const;
 	void Render();
@@ -39,7 +39,7 @@ private:
 	float elapsedTime;
 	float lastFrameTime;
 
-	MyScene scene;
+	Scene* scene;
 	static const GLFWvidmode* mode;
 	static GLFWwindow* win;
 

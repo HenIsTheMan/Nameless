@@ -1,10 +1,10 @@
 #include "MyScene.h"
 
-#include "../../../../Vendor/stb_image.h"
-#include "../../../../Geo/Model.h"
-#include "../../../../Geo/SpriteAni.h"
-#include "../../../../Geo/Terrain.h"
-#include "../../../../Math/Pseudorand.h"
+#include "Vendor/stb_image.h"
+#include "Geo/Model.h"
+#include "Geo/SpriteAni.h"
+#include "Geo/Terrain.h"
+#include "Math/Pseudorand.h"
 
 extern float angularFOV;
 extern float dt;
