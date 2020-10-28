@@ -78,6 +78,22 @@ void TextChief::RenderText(ShaderProg& SP, const TextAttribs& attribs){
     SP.Set4fv("textColour", attribs.colour);
     SP.SetMat4fv("projection", &glm::ortho(0.0f, (float)winWidth, 0.0f, (float)winHeight)[0][0]);
 
+    ptrdiff_t strLen = (ptrdiff_t)attribs.text.length();
+    float halfTotalWidth = 0.0f;
+    float halfTotalHeight = 0.0f;
+    if(attribs.alignment == TextAlignment::Center){
+        for(ptrdiff_t i = 0; i < strLen; ++i){
+            CharMetrics ch = allChars[attribs.text.at(i)];
+            halfTotalWidth += (ch.advance >> 6) * attribs.scaleFactor;
+        }
+        halfTotalWidth -= allChars[attribs.text.at(0)].bearing.x * attribs.scaleFactor;
+        halfTotalWidth -= ((allChars[attribs.text.at(strLen - 1)].advance >> 6)
+            - allChars[attribs.text.at(strLen - 1)].bearing.x
+            - allChars[attribs.text.at(strLen - 1)].size.x)
+            * attribs.scaleFactor;
+        halfTotalWidth /= 2.0f;
+    }
+
     glBindVertexArray(VAO);
     for(std::string::const_iterator c = attribs.text.begin(); c != attribs.text.end(); ++c){
         CharMetrics ch = allChars[*c];
@@ -87,14 +103,15 @@ void TextChief::RenderText(ShaderProg& SP, const TextAttribs& attribs){
         float w = ch.size.x * attribs.scaleFactor;
         float h = ch.size.y * attribs.scaleFactor;
 
+        ///Origin of each char is top left
         float vertices[6][4] = {
-            {xpos,     ypos + h,   0.f, 0.f},            
-            {xpos,     ypos,       0.f, 1.f},
-            {xpos + w, ypos,       1.f, 1.f},
+            {xpos - halfTotalWidth, ypos + h + halfTotalHeight, 0.0f, 0.0f},            
+            {xpos - halfTotalWidth, ypos + halfTotalHeight, 0.0f, 1.0f},
+            {xpos + w - halfTotalWidth, ypos + halfTotalHeight, 1.0f, 1.0f},
 
-            {xpos,     ypos + h,   0.f, 0.f},
-            {xpos + w, ypos,       1.f, 1.f},
-            {xpos + w, ypos + h,   1.f, 0.f}           
+            {xpos - halfTotalWidth, ypos + h + halfTotalHeight, 0.0f, 0.0f},
+            {xpos + w - halfTotalWidth, ypos + halfTotalHeight, 1.0f, 1.0f},
+            {xpos + w - halfTotalWidth, ypos + h + halfTotalHeight, 1.0f, 0.0f}           
         };
 
         SP.UseTex("textTex", attribs.texRefID); //1 for each char??

@@ -471,20 +471,40 @@ void Scene::ForwardRender(){
 	PopModel();
 
 	textChief.RenderText(textSP, {
-		"ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890",
-		25.f,
+		"55",
+		0.0f,
+		225.f,
+		1.f,
+		glm::vec4(1.f),
+		0,
+		TextChief::TextAlignment::Center
+	});
+	textChief.RenderText(textSP, {
+		"5555",
+		0.0f,
+		150.f,
+		1.f,
+		glm::vec4(1.f),
+		0,
+		TextChief::TextAlignment::Center
+	});
+	textChief.RenderText(textSP, {
+		"555555",
+		0.0f,
 		75.f,
 		1.f,
 		glm::vec4(1.f),
-		0
+		0,
+		TextChief::TextAlignment::Center
 	});
 	textChief.RenderText(textSP, {
 		"FPS: " + std::to_string(1.f / dt),
-		25.f,
-		25.f,
+		0.0f,
+		0.0f,
 		1.f,
 		glm::vec4(1.f, 1.f, 0.f, 1.f),
-		0
+		0,
+		TextChief::TextAlignment::Center
 	});
 
 	glBlendFunc(GL_ONE, GL_ZERO);

@@ -34,10 +34,11 @@ public:
 	void Render();
 	void PostRender() const;
 private:
-	bool InitOptions() const;
 	bool fullscreen;
+
 	float elapsedTime;
 	float lastFrameTime;
+
 	Scene scene;
 	static const GLFWvidmode* mode;
 	static GLFWwindow* win;
@@ -45,4 +46,6 @@ private:
 	uint FBORefIDs[(int)FBO::Amt];
 	uint texRefIDs[(int)Tex::Amt];
 	uint RBORefIDs[1];
+
+	bool InitOptions() const;
 };
