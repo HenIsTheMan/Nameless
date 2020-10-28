@@ -471,26 +471,26 @@ void Scene::ForwardRender(){
 	PopModel();
 
 	textChief.RenderText(textSP, {
-		"55",
-		0.0f,
+		"AA",
+		(float)winWidth,
 		225.f,
 		1.f,
 		glm::vec4(1.f),
 		0,
-		TextChief::TextAlignment::Center
+		TextChief::TextAlignment::Right
 	});
 	textChief.RenderText(textSP, {
-		"5555",
+		"AAAA",
 		0.0f,
 		150.f,
 		1.f,
 		glm::vec4(1.f),
 		0,
-		TextChief::TextAlignment::Center
+		TextChief::TextAlignment::Left
 	});
 	textChief.RenderText(textSP, {
-		"555555",
-		0.0f,
+		"AAAAAA",
+		(float)winWidth / 2.f,
 		75.f,
 		1.f,
 		glm::vec4(1.f),
@@ -499,7 +499,7 @@ void Scene::ForwardRender(){
 	});
 	textChief.RenderText(textSP, {
 		"FPS: " + std::to_string(1.f / dt),
-		0.0f,
+		(float)winWidth / 2.f,
 		0.0f,
 		1.f,
 		glm::vec4(1.f, 1.f, 0.f, 1.f),

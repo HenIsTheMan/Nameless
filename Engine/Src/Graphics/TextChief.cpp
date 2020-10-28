@@ -81,17 +81,14 @@ void TextChief::RenderText(ShaderProg& SP, const TextAttribs& attribs){
     ptrdiff_t strLen = (ptrdiff_t)attribs.text.length();
     float halfTotalWidth = 0.0f;
     float halfTotalHeight = 0.0f;
-    if(attribs.alignment == TextAlignment::Center){
+    if(attribs.alignment != TextAlignment::Left){
         for(ptrdiff_t i = 0; i < strLen; ++i){
             CharMetrics ch = allChars[attribs.text.at(i)];
             halfTotalWidth += (ch.advance >> 6) * attribs.scaleFactor;
         }
-        halfTotalWidth -= allChars[attribs.text.at(0)].bearing.x * attribs.scaleFactor;
-        halfTotalWidth -= ((allChars[attribs.text.at(strLen - 1)].advance >> 6)
-            - allChars[attribs.text.at(strLen - 1)].bearing.x
-            - allChars[attribs.text.at(strLen - 1)].size.x)
-            * attribs.scaleFactor;
-        halfTotalWidth /= 2.0f;
+        if(attribs.alignment == TextAlignment::Center){
+            halfTotalWidth /= 2.0f;
+        }
     }
 
     glBindVertexArray(VAO);
