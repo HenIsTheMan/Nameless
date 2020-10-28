@@ -416,7 +416,7 @@ void Mesh::SetModel(const glm::mat4& model){
 }
 
 void Mesh::SetModelMat(const glm::mat4& modelMat, const ptrdiff_t& index){
-	if(index < modelMats.size()){
+	if(index < (ptrdiff_t)modelMats.size()){
 		modelMats[index] = modelMat;
 	}
 }

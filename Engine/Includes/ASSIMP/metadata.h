@@ -48,6 +48,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef AI_METADATA_H_INC
 #define AI_METADATA_H_INC
 
+
+#pragma warning(push)
+#pragma warning(disable: 26812)
+
+
 #if defined(_MSC_VER) && (_MSC_VER <= 1500)
 #  include "Compiler/pstdint.h"
 #else

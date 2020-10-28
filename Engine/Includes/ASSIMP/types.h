@@ -74,6 +74,8 @@ typedef uint32_t ai_uint32 ;
 #include <new>      // for std::nothrow_t
 #include <string>   // for aiString::Set(const std::string&)
 
+#pragma warning(push)
+#pragma warning(disable: 26451)
 
 namespace Assimp    {
     //! @cond never
