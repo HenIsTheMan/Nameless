@@ -1,6 +1,8 @@
 #include "Scene.h"
 
 Scene::Scene():
+	im_InCtor(nullptr),
+	im_InDtor(nullptr),
 	im_Init(nullptr),
 	im_FixedUpdate(nullptr),
 	im_Update(nullptr),
@@ -9,6 +11,14 @@ Scene::Scene():
 	im_Render(nullptr),
 	im_PostRender(nullptr)
 {
+}
+
+void Scene::SetInCtor(void (*inCtor)()){
+	im_InCtor = inCtor;
+}
+
+void Scene::SetInDtor(void (*inDtor)()){
+	im_InDtor = inDtor;
 }
 
 void Scene::SetInit(void (*init)()){
@@ -39,43 +49,55 @@ void Scene::SetPostRender(void (*postRender)()){
 	im_PostRender = postRender;
 }
 
-void Scene::Init(){
+void Scene::InCtor() const{
+	if(im_InCtor){
+		im_InCtor();
+	}
+}
+
+void Scene::InDtor() const{
+	if(im_InDtor){
+		im_InDtor();
+	}
+}
+
+void Scene::Init() const{
 	if(im_Init){
 		im_Init();
 	}
 }
 
-void Scene::FixedUpdate(float dt){
+void Scene::FixedUpdate(float dt) const{
 	if(im_FixedUpdate){
 		im_FixedUpdate(dt);
 	}
 }
 
-void Scene::Update(float dt){
+void Scene::Update(float dt) const{
 	if(im_Update){
 		im_Update(dt);
 	}
 }
 
-void Scene::LateUpdate(float dt){
+void Scene::LateUpdate(float dt) const{
 	if(im_LateUpdate){
 		im_LateUpdate(dt);
 	}
 }
 
-void Scene::PreRender(){
+void Scene::PreRender() const{
 	if(im_PreRender){
 		im_PreRender();
 	}
 }
 
-void Scene::Render(){
+void Scene::Render() const{
 	if(im_Render){
 		im_Render();
 	}
 }
 
-void Scene::PostRender(){
+void Scene::PostRender() const{
 	if(im_PostRender){
 		im_PostRender();
 	}

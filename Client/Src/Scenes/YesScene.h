@@ -1,13 +1,17 @@
 #pragma once
 
+#include "Global/GlobalFuncs.h"
+
 class YesScene final{ //Static class
 	YesScene() = delete;
 	~YesScene() = delete;
-	YesScene(const YesScene& yesScene) = default;
-	YesScene(YesScene&& yesScene) noexcept = default;
-	YesScene& operator=(const YesScene& yesScene) = default;
-	YesScene& operator=(YesScene&& yesScene) noexcept = default;
+	YesScene(const YesScene&) = delete;
+	YesScene(YesScene&&) noexcept = delete;
+	YesScene& operator=(const YesScene&) = delete;
+	YesScene& operator=(YesScene&&) noexcept = delete;
 public:
+	static void InCtor();
+	static void InDtor();
 	static void Init();
 	static void FixedUpdate(float dt);
 	static void Update(float dt);
@@ -15,4 +19,36 @@ public:
 	static void PreRender();
 	static void Render();
 	static void PostRender();
+private:
+	enum struct FBO{
+		GeoPass,
+		LightingPass,
+		PingPong0,
+		PingPong1,
+		Amt
+	};
+	enum struct Tex{
+		Pos,
+		Colours,
+		Normals,
+		Spec,
+		Reflection,
+		Lit,
+		Bright,
+		PingPong0,
+		PingPong1,
+		Amt
+	};
+
+	static bool fullscreen;
+
+	static float elapsedTime;
+	static float lastFrameTime;
+
+	static const GLFWvidmode* mode;
+	static GLFWwindow* win;
+
+	static uint FBORefIDs[(int)FBO::Amt];
+	static uint texRefIDs[(int)Tex::Amt];
+	static uint RBORefIDs[1];
 };

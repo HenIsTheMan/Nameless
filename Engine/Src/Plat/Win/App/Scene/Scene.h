@@ -7,12 +7,14 @@ class Scene final{
 public:
 	Scene();
 	~Scene() = default;
-	Scene(const Scene& scene) = default;
-	Scene(Scene&& scene) noexcept = default;
-	Scene& operator=(const Scene& scene) = default;
-	Scene& operator=(Scene&& scene) noexcept = default;
+	Scene(const Scene&) = default;
+	Scene(Scene&&) noexcept = default;
+	Scene& operator=(const Scene&) = default;
+	Scene& operator=(Scene&&) noexcept = default;
 
 	///Setters
+	void SetInCtor(void (*inCtor)());
+	void SetInDtor(void (*inDtor)());
 	void SetInit(void (*init)());
 	void SetFixedUpdate(void (*fixedUpdate)(float dt));
 	void SetUpdate(void (*update)(float dt));
@@ -21,6 +23,8 @@ public:
 	void SetRender(void (*render)());
 	void SetPostRender(void (*postRender)());
 private:
+	void (*im_InCtor)();
+	void (*im_InDtor)();
 	void (*im_Init)();
 	void (*im_FixedUpdate)(float dt);
 	void (*im_Update)(float dt);
@@ -29,11 +33,13 @@ private:
 	void (*im_Render)();
 	void (*im_PostRender)();
 
-	void Init();
-	void FixedUpdate(float dt);
-	void Update(float dt);
-	void LateUpdate(float dt);
-	void PreRender();
-	void Render();
-	void PostRender();
+	void InCtor() const;
+	void InDtor() const;
+	void Init() const;
+	void FixedUpdate(float dt) const;
+	void Update(float dt) const;
+	void LateUpdate(float dt) const;
+	void PreRender() const;
+	void Render() const;
+	void PostRender() const;
 };

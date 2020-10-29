@@ -194,6 +194,7 @@
   <ItemGroup>
     <ClCompile Include="Src\Client.cpp" />
     <ClCompile Include="Src\Scenes\MyScene.cpp" />
+    <ClCompile Include="Src\Scenes\YesScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Blur.fs" />
@@ -209,7 +210,6 @@
     <None Include="Shaders\Screen.fs" />
     <None Include="Shaders\Text.fs" />
     <None Include="Shaders\Text.vs" />
-    <None Include="Src\Scenes\YesScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Scenes\MyScene.h" />
