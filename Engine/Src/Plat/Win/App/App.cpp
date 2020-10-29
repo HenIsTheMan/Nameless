@@ -2,33 +2,26 @@
 
 extern float dt;
 
-App::App():
-	scene(new Scene())
-{
-	scene->InCtor();
+App::App(){
+	Scene::InCtor();
 }
 
 App::~App(){
-	scene->InDtor();
-	delete scene;
+	Scene::InDtor();
 }
 
 void App::Init(){
-	scene->Init();
+	Scene::Init();
 }
 
 void App::Update(){
-	//scene->FixedUpdate(dt);
-	scene->Update(dt);
-	scene->LateUpdate(dt);
+	//Scene::FixedUpdate(dt);
+	Scene::Update(dt);
+	Scene::LateUpdate(dt);
 }
 
 void App::Render(){
-	scene->PreRender();
-	scene->Render();
-	scene->PostRender();
-}
-
-Scene* const& App::RetrieveScene(){
-	return scene;
+	Scene::PreRender();
+	Scene::Render();
+	Scene::PostRender();
 }

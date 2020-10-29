@@ -10,8 +10,4 @@ public:
 	void Init();
 	void Update();
 	void Render();
-
-	Scene* const& RetrieveScene();
-private:
-	Scene* scene;
 };

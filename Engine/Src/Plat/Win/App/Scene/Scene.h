@@ -2,44 +2,44 @@
 
 class App;
 
-class Scene final{
+class Scene final{ //Static class
+	Scene() = delete;
+	~Scene() = delete;
+	Scene(const Scene&) = delete;
+	Scene(Scene&&) noexcept = delete;
+	Scene& operator=(const Scene&) = delete;
+	Scene& operator=(Scene&&) noexcept = delete;
+
 	friend App;
 public:
-	Scene();
-	~Scene() = default;
-	Scene(const Scene&) = default;
-	Scene(Scene&&) noexcept = default;
-	Scene& operator=(const Scene&) = default;
-	Scene& operator=(Scene&&) noexcept = default;
-
 	///Setters
-	void SetInCtor(void (*inCtor)());
-	void SetInDtor(void (*inDtor)());
-	void SetInit(void (*init)());
-	void SetFixedUpdate(void (*fixedUpdate)(float dt));
-	void SetUpdate(void (*update)(float dt));
-	void SetLateUpdate(void (*lateUpdate)(float dt));
-	void SetPreRender(void (*preRender)());
-	void SetRender(void (*render)());
-	void SetPostRender(void (*postRender)());
+	static void SetInCtor(void (*inCtor)());
+	static void SetInDtor(void (*inDtor)());
+	static void SetInit(void (*init)());
+	static void SetFixedUpdate(void (*fixedUpdate)(float dt));
+	static void SetUpdate(void (*update)(float dt));
+	static void SetLateUpdate(void (*lateUpdate)(float dt));
+	static void SetPreRender(void (*preRender)());
+	static void SetRender(void (*render)());
+	static void SetPostRender(void (*postRender)());
 private:
-	void (*im_InCtor)();
-	void (*im_InDtor)();
-	void (*im_Init)();
-	void (*im_FixedUpdate)(float dt);
-	void (*im_Update)(float dt);
-	void (*im_LateUpdate)(float dt);
-	void (*im_PreRender)();
-	void (*im_Render)();
-	void (*im_PostRender)();
+	static void (*im_InCtor)();
+	static void (*im_InDtor)();
+	static void (*im_Init)();
+	static void (*im_FixedUpdate)(float dt);
+	static void (*im_Update)(float dt);
+	static void (*im_LateUpdate)(float dt);
+	static void (*im_PreRender)();
+	static void (*im_Render)();
+	static void (*im_PostRender)();
 
-	void InCtor() const;
-	void InDtor() const;
-	void Init() const;
-	void FixedUpdate(float dt) const;
-	void Update(float dt) const;
-	void LateUpdate(float dt) const;
-	void PreRender() const;
-	void Render() const;
-	void PostRender() const;
+	static void InCtor();
+	static void InDtor();
+	static void Init();
+	static void FixedUpdate(float dt);
+	static void Update(float dt);
+	static void LateUpdate(float dt);
+	static void PreRender();
+	static void Render();
+	static void PostRender();
 };

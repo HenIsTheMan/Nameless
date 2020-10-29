@@ -5,19 +5,18 @@
 extern bool endLoop;
 
 void MainProcess(){
+	Scene::SetInCtor(YesScene::InCtor);
+	Scene::SetInDtor(YesScene::InDtor);
+	Scene::SetInit(YesScene::Init);
+	Scene::SetFixedUpdate(YesScene::FixedUpdate);
+	Scene::SetUpdate(YesScene::Update);
+	Scene::SetLateUpdate(YesScene::LateUpdate);
+	Scene::SetPreRender(YesScene::PreRender);
+	Scene::SetRender(YesScene::Render);
+	Scene::SetPostRender(YesScene::PostRender);
+
 	App* app = new App();
 	app->Init();
-	Scene* const& scene = app->RetrieveScene();
-
-	scene->SetInCtor(YesScene::InCtor);
-	scene->SetInDtor(YesScene::InDtor);
-	scene->SetInit(YesScene::Init);
-	scene->SetFixedUpdate(YesScene::FixedUpdate);
-	scene->SetUpdate(YesScene::Update);
-	scene->SetLateUpdate(YesScene::LateUpdate);
-	scene->SetPreRender(YesScene::PreRender);
-	scene->SetRender(YesScene::Render);
-	scene->SetPostRender(YesScene::PostRender);
 
 	while(!endLoop){
 		app->Update();
