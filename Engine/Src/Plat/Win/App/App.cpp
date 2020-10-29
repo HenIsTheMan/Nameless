@@ -16,7 +16,7 @@ App::App():
 	fullscreen(false),
 	elapsedTime(0.f),
 	lastFrameTime(0.f),
-	scene(),
+	scene(nullptr),
 	FBORefIDs(),
 	texRefIDs(),
 	RBORefIDs()
@@ -29,9 +29,12 @@ App::App():
 }
 
 App::~App(){
+	delete scene;
+
 	glDeleteTextures(sizeof(texRefIDs) / sizeof(texRefIDs[0]), texRefIDs);
 	glDeleteRenderbuffers(sizeof(RBORefIDs) / sizeof(RBORefIDs[0]), RBORefIDs);
 	glDeleteFramebuffers(sizeof(FBORefIDs) / sizeof(FBORefIDs[0]), FBORefIDs);
+
 	glfwTerminate(); //Clean/Del all GLFW's resources that were allocated
 }
 
@@ -96,11 +99,12 @@ void App::Init(){
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	(void)InitOptions();
+	InitOptions();
 	glPointSize(10.f);
 	glLineWidth(5.f);
 
-	//scene->Init();
+	scene = new Scene();
+	scene->Init();
 }
 
 void App::Update(){
@@ -126,12 +130,13 @@ void App::Update(){
 		toggleFullscreenBT = elapsedTime + .5f;
 	}
 
-	//scene->Update(dt);
-	//scene->LateUpdate(dt);
+	//scene->FixedUpdate(dt);
+	scene->Update(dt);
+	scene->LateUpdate(dt);
 }
 
 void App::PreRender() const{
-	//scene->PreRender();
+	scene->PreRender();
 
 	//glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE); //Frags update stencil buffer with their ref value when... //++params and options??
 	//glBlendFuncSeparate(GL_ONE, GL_ZERO, GL_DST_ALPHA, GL_DST_ALPHA);
@@ -139,6 +144,8 @@ void App::PreRender() const{
 }
 
 void App::Render(){
+	//scene->Render();
+
 	//glViewport(0, 0, 2048, 2048);
 
 	//glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)FBO::GeoPass]);
@@ -181,13 +188,13 @@ void App::Render(){
 }
 
 void App::PostRender() const{
-	//scene->PostRender();
+	scene->PostRender();
 
 	glfwSwapBuffers(win); //Swap the large 2D colour buffer containing colour values for each pixel in GLFW's window
 	glfwPollEvents(); //Check for triggered events and call corresponding functions registered via callback methods
 }
 
-bool App::InitOptions() const{
+void App::InitOptions() const{
 	//Stencil buffer usually contains 8 bits per stencil value that amts to 256 diff stencil values per pixel
 	//Use stencil buffer operations to write to the stencil buffer when rendering frags (read stencil values in the same or following frame(s) to pass or discard frags based on their stencil value)
 	glEnable(GL_STENCIL_TEST); //Discard frags based on frags of other drawn objs in the scene
@@ -205,6 +212,4 @@ bool App::InitOptions() const{
 
 	//glEnable(GL_FRAMEBUFFER_SRGB); //Colours from sRGB colour space are gamma corrected after each frag shader run before they are stored in colour buffers of all framebuffers
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
-
-	return true;
 }

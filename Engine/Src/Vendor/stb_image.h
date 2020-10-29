@@ -326,6 +326,14 @@ RECENT REVISION HISTORY:
 
 #define STBI_VERSION 1
 
+
+#pragma warning(push)
+#pragma warning(disable: 6011)
+#pragma warning(disable: 6262)
+#pragma warning(disable: 6308)
+#pragma warning(disable: 28182)
+
+
 enum
 {
    STBI_default = 0, // only used for desired_channels

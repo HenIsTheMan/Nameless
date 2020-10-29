@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../../../Core.h"
 #include "../../../Global/GlobalFuncs.h"
 #include "Scene/Scene.h"
 
@@ -47,5 +46,5 @@ private:
 	uint texRefIDs[(int)Tex::Amt];
 	uint RBORefIDs[1];
 
-	bool InitOptions() const;
+	void InitOptions() const;
 };
