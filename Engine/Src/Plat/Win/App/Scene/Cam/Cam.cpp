@@ -3,25 +3,6 @@
 #include "../../../../../Global/GlobalFuncs.h"
 #include "../../../../../Global/GlobalVars.h"
 
-static glm::quat QuatBetweenVecs(const glm::vec3& src, const glm::vec3& dst){
-	const glm::vec3 srcNormalised = glm::normalize(src);
-	const glm::vec3 dstNormalised = glm::normalize(dst);
-	const float cosTheta = glm::dot(srcNormalised, dstNormalised);
-	glm::vec3 axis;
-
-	if(cosTheta < -1.0f + glm::epsilon<float>()){ //If src and dst are in opp dirs (no ideal axis so guess 1, curr implementation favours rotation arnd y-axis)...
-		axis = glm::cross(glm::vec3(0.0f, 0.0f, 1.0f), src);
-		if(glm::dot(axis, axis) < glm::epsilon<float>()){ //If src and vec3(0, 0, 1) are parallel...
-			axis = glm::cross(glm::vec3(1.0f, 0.0f, 0.0f), src);
-		}
-		return glm::angleAxis(180.0f, glm::normalize(axis));
-	}
-
-	axis = glm::cross(src, dst);
-	const float qty = (float)sqrt((1.0f + cosTheta) * 2.0f);
-	return glm::quat(qty * 0.5f, axis / qty);
-}
-
 Cam::Cam():
 	aspectRatio(0.f),
 	spd(0.f),
@@ -48,17 +29,18 @@ Cam::Cam(const glm::vec3& pos, const glm::vec3& target, const float& aspectRatio
 
 glm::vec3 Cam::CalcFront(const bool& normalised) const{
 	const glm::vec3 camFront = target - pos;
-	return normalised && camFront != glm::vec3(0.f) ? glm::normalize(camFront) : camFront;
+	return normalised && camFront != glm::vec3(0.f) ? glm::normalize(camFront) : glm::vec3(0.0f, 0.0f, -1.0f);
 }
 
 glm::vec3 Cam::CalcRight() const{
-	const glm::vec3 camRight = QuatBetweenVecs(glm::vec3(0.0f, 0.0f, -1.0f), CalcFront()) * glm::vec3(1.0f, 0.0f, 0.0f);
-	return camRight != glm::vec3(0.f) ? glm::normalize(camRight) : camRight;
+	const glm::vec3 front = CalcFront();
+	const glm::vec3 camRight = glm::cross(front, {0.0f, 1.0f * -front.z / abs(front.z), 0.0f});
+	return camRight != glm::vec3(0.f) ? glm::normalize(camRight) : glm::vec3(1.0f, 0.0f, 0.0f);
 }
 
 glm::vec3 Cam::CalcUp() const{
-	const glm::vec3 camUp = QuatBetweenVecs(glm::vec3(0.0f, 0.0f, -1.0f), CalcFront()) * glm::vec3(0.0f, 1.0f, 0.0f);
-	return camUp != glm::vec3(0.f) ? glm::normalize(camUp) : camUp;
+	const glm::vec3 camUp = glm::cross(CalcRight(), CalcFront());
+	return camUp != glm::vec3(0.f) ? glm::normalize(camUp) : glm::vec3(0.0f, 1.0f, 0.0f);
 }
 
 glm::mat4 Cam::LookAt() const{
@@ -84,18 +66,20 @@ void Cam::Update(float dt, const int& up, const int& down, const int& left, cons
 	if(xzCamFront != glm::vec3(0.f)){
 		xzCamFront = glm::normalize(xzCamFront);
 	}
+	if(glm::dot(glm::vec3(0.0f, 0.0f, -1.0f), camFront) < 0.0f){
+		xzCamFront = -xzCamFront;
+	}
 
-	glm::vec3 change = frontBack * xzCamFront + glm::vec3(0.f, upDown, 0.f) + leftRight * -CalcRight() + float(LMB - RMB) * camFront;
+	glm::vec3&& change = frontBack * xzCamFront + glm::vec3(0.f, upDown, 0.f) + leftRight * -CalcRight() + float(LMB - RMB) * camFront;
 	if(change != glm::vec3(0.f)){
 		change = normalize(change);
 	}
 	pos += camSpd * change;
 	target = pos + camFront;
 
-	glm::quat pitchQuat = glm::angleAxis(glm::radians(yaw), CalcUp());
-	glm::quat yawQuat = glm::angleAxis(glm::radians(pitch), CalcRight());
-	glm::quat pitchYaw = glm::normalize(glm::slerp(pitchQuat, yawQuat, 0.5f));
-	target = pos + pitchYaw * camFront;
+	glm::quat pitchQuat = glm::angleAxis(glm::radians(pitch), CalcRight());
+	glm::quat yawQuat = glm::angleAxis(glm::radians(yaw), glm::vec3(0.0f, 1.0f, 0.0f));
+	target = pos + yawQuat * pitchQuat * camFront;
 	yaw = pitch = 0.f;
 }
 

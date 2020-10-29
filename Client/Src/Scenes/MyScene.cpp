@@ -133,7 +133,7 @@ bool MyScene::Init(){
 	soundEngine->setRolloffFactor(10.f);
 	soundEngine->setDopplerEffectParameters(10.f, 10.f);
 
-	for(int i = 0; i < 99999; ++i){
+	for(int i = 0; i < 99; ++i){
 		PushModel({
 			Translate(glm::vec3(PseudorandMinMax(-2000.f, 2000.f), PseudorandMinMax(-2000.f, 2000.f), -5.f)),
 			Rotate(glm::vec4(0.f, 1.f, 0.f, -45.f)),
