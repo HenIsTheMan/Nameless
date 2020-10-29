@@ -13,7 +13,7 @@ extern int winHeight;
 glm::vec3 Light::globalAmbient = glm::vec3(.2f);
 
 MyScene::MyScene():
-	cam(glm::vec3(0.f, 0.f, 5.f), glm::vec3(0.f), glm::vec3(0.f, 1.f, 0.f), 0.f, 150.f),
+	cam(glm::vec3(0.f, 0.f, 5.f), glm::vec3(0.f), 0.f, 150.f),
 	soundEngine(nullptr),
 	music(nullptr),
 	soundFX(nullptr),

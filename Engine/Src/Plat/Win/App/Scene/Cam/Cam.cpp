@@ -3,31 +3,46 @@
 #include "../../../../../Global/GlobalFuncs.h"
 #include "../../../../../Global/GlobalVars.h"
 
+static glm::quat QuatBetweenVecs(const glm::vec3& src, const glm::vec3& dst){
+	const glm::vec3 srcNormalised = glm::normalize(src);
+	const glm::vec3 dstNormalised = glm::normalize(dst);
+	const float cosTheta = glm::dot(srcNormalised, dstNormalised);
+	glm::vec3 axis;
+
+	if(cosTheta < -1.0f + glm::epsilon<float>()){ //If src and dst are in opp dirs (no ideal axis so guess 1, curr implementation favours rotation arnd y-axis)...
+		axis = glm::cross(glm::vec3(0.0f, 0.0f, 1.0f), src);
+		if(glm::dot(axis, axis) < glm::epsilon<float>()){ //If src and vec3(0, 0, 1) are parallel...
+			axis = glm::cross(glm::vec3(1.0f, 0.0f, 0.0f), src);
+		}
+		return glm::angleAxis(180.0f, glm::normalize(axis));
+	}
+
+	axis = glm::cross(src, dst);
+	const float qty = (float)sqrt((1.0f + cosTheta) * 2.0f);
+	return glm::quat(qty * 0.5f, axis / qty);
+}
+
 Cam::Cam():
 	aspectRatio(0.f),
 	spd(0.f),
 	pos(glm::vec3(0.f)),
 	target(glm::vec3(0.f)),
-	up(glm::vec3(0.f)),
 	defaultAspectRatio(0.f),
 	defaultSpd(0.f),
 	defaultPos(glm::vec3(0.f)),
-	defaultTarget(glm::vec3(0.f)),
-	defaultUp(glm::vec3(0.f))
+	defaultTarget(glm::vec3(0.f))
 {
 }
 
-Cam::Cam(const glm::vec3& pos, const glm::vec3& target, const glm::vec3& up, const float& aspectRatio, const float& spd):
+Cam::Cam(const glm::vec3& pos, const glm::vec3& target, const float& aspectRatio, const float& spd):
 	aspectRatio(aspectRatio),
 	spd(spd),
 	pos(pos),
 	target(target),
-	up(up),
 	defaultAspectRatio(aspectRatio),
 	defaultSpd(spd),
 	defaultPos(pos),
-	defaultTarget(target),
-	defaultUp(up)
+	defaultTarget(target)
 {
 }
 
@@ -37,12 +52,12 @@ glm::vec3 Cam::CalcFront(const bool& normalised) const{
 }
 
 glm::vec3 Cam::CalcRight() const{
-	const glm::vec3 camRight = glm::cross(CalcFront(), up);
+	const glm::vec3 camRight = QuatBetweenVecs(glm::vec3(0.0f, 0.0f, -1.0f), CalcFront()) * glm::vec3(1.0f, 0.0f, 0.0f);
 	return camRight != glm::vec3(0.f) ? glm::normalize(camRight) : camRight;
 }
 
 glm::vec3 Cam::CalcUp() const{
-	const glm::vec3 camUp = glm::cross(CalcRight(), CalcFront());
+	const glm::vec3 camUp = QuatBetweenVecs(glm::vec3(0.0f, 0.0f, -1.0f), CalcFront()) * glm::vec3(0.0f, 1.0f, 0.0f);
 	return camUp != glm::vec3(0.f) ? glm::normalize(camUp) : camUp;
 }
 
@@ -64,22 +79,23 @@ void Cam::Update(float dt, const int& up, const int& down, const int& left, cons
 	float leftRight = float(Key(left) - Key(right));
 	float frontBack = float(Key(front) - Key(back));
 
-	const glm::vec3&& camFront = CalcFront();
+	const glm::vec3 camFront = CalcFront();
 	glm::vec3&& xzCamFront = glm::vec3(camFront.x, 0.f, camFront.z);
 	if(xzCamFront != glm::vec3(0.f)){
 		xzCamFront = glm::normalize(xzCamFront);
 	}
 
-	glm::vec3&& change = frontBack * xzCamFront + glm::vec3(0.f, upDown, 0.f) + leftRight * -CalcRight() + float(LMB - RMB) * camFront;
+	glm::vec3 change = frontBack * xzCamFront + glm::vec3(0.f, upDown, 0.f) + leftRight * -CalcRight() + float(LMB - RMB) * camFront;
 	if(change != glm::vec3(0.f)){
 		change = normalize(change);
 	}
 	pos += camSpd * change;
 	target = pos + camFront;
 
-	glm::mat4 yawPitch = glm::rotate(glm::rotate(glm::mat4(1.f), glm::radians(yaw), {0.f, 1.f, 0.f}), glm::radians(pitch), CalcRight());
-	target = pos + glm::vec3(yawPitch * glm::vec4(camFront, 0.f));
-	this->up = glm::vec3(yawPitch * glm::vec4(this->up, 0.f));
+	glm::quat pitchQuat = glm::angleAxis(glm::radians(yaw), CalcUp());
+	glm::quat yawQuat = glm::angleAxis(glm::radians(pitch), CalcRight());
+	glm::quat pitchYaw = glm::normalize(glm::slerp(pitchQuat, yawQuat, 0.5f));
+	target = pos + pitchYaw * camFront;
 	yaw = pitch = 0.f;
 }
 
@@ -88,7 +104,6 @@ void Cam::Reset(){
 	spd = defaultSpd;
 	pos = defaultPos;
 	target = defaultTarget;
-	up = defaultUp;
 }
 
 void Cam::ResetAspectRatio(){
@@ -107,10 +122,6 @@ void Cam::ResetTarget(){
 	target = defaultTarget;
 }
 
-void Cam::ResetUp(){
-	up = defaultUp;
-}
-
 const float& Cam::GetAspectRatio() const{
 	return aspectRatio;
 }
@@ -125,10 +136,6 @@ const glm::vec3& Cam::GetPos() const{
 
 const glm::vec3& Cam::GetTarget() const{
 	return target;
-}
-
-const glm::vec3& Cam::GetUp() const{
-	return up;
 }
 
 const float& Cam::GetDefaultAspectRatio() const{
@@ -147,10 +154,6 @@ const glm::vec3& Cam::GetDefaultTarget() const{
 	return defaultTarget;
 }
 
-const glm::vec3& Cam::GetDefaultUp() const{
-	return defaultUp;
-}
-
 void Cam::SetAspectRatio(const float& aspectRatio){
 	this->aspectRatio = aspectRatio;
 }
@@ -167,10 +170,6 @@ void Cam::SetTarget(const glm::vec3& target){
 	this->target = target;
 }
 
-void Cam::SetUp(const glm::vec3& up){
-	this->up = up;
-}
-
 void Cam::SetDefaultAspectRatio(const float& defaultAspectRatio){
 	this->defaultAspectRatio = defaultAspectRatio;
 }
@@ -185,8 +184,4 @@ void Cam::SetDefaultPos(const glm::vec3& defaultPos){
 
 void Cam::SetDefaultTarget(const glm::vec3& defaultTarget){
 	this->defaultTarget = defaultTarget;
-}
-
-void Cam::SetDefaultUp(const glm::vec3& defaultUp){
-	this->defaultUp = defaultUp;
 }

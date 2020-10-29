@@ -10,6 +10,7 @@
 #include <GLM/gtc/matrix_transform.hpp>
 #include <GLM/gtc/type_ptr.hpp>
 #include <GLM/gtx/color_space.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include <IRRKLANG/irrKlang.h>
 #include <ft2build.h>
 #include FT_FREETYPE_H
