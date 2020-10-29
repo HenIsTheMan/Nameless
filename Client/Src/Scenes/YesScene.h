@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Global/GlobalFuncs.h"
-#include "MyScene.h" //Scuffed??
+#include "MyScene.h"
 
 class YesScene final{ //Static class
 	YesScene() = delete;
@@ -52,5 +52,5 @@ private:
 	static uint texRefIDs[(int)Tex::Amt];
 	static uint RBORefIDs[1];
 
-	static MyScene scene; //Scuffed??
+	static MyScene* scene;
 };
