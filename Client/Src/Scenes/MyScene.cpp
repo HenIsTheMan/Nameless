@@ -7,7 +7,6 @@
 #include "Math/Pseudorand.h"
 
 extern float angularFOV;
-extern float dt;
 extern int winWidth;
 extern int winHeight;
 
@@ -162,13 +161,13 @@ bool MyScene::Init(){
 	return true;
 }
 
-void MyScene::Update(){
+void MyScene::Update(float dt){
 	elapsedTime += dt;
 	if(winHeight){ //Avoid division by 0 when win is minimised
 		cam.SetDefaultAspectRatio(float(winWidth) / float(winHeight));
 		cam.ResetAspectRatio();
 	}
-	cam.Update(GLFW_KEY_Q, GLFW_KEY_E, GLFW_KEY_A, GLFW_KEY_D, GLFW_KEY_W, GLFW_KEY_S);
+	cam.Update(dt, GLFW_KEY_Q, GLFW_KEY_E, GLFW_KEY_A, GLFW_KEY_D, GLFW_KEY_W, GLFW_KEY_S);
 	view = cam.LookAt();
 	projection = glm::perspective(glm::radians(angularFOV), cam.GetAspectRatio(), .1f, 9999.f);
 
@@ -184,7 +183,7 @@ void MyScene::Update(){
 	static_cast<Spotlight*>(spotlights[0])->cosInnerCutoff = cosf(glm::radians(12.5f));
 	static_cast<Spotlight*>(spotlights[0])->cosOuterCutoff = cosf(glm::radians(17.5f));
 
-	static_cast<SpriteAni*>(meshes[(int)MeshType::SpriteAni])->Update();
+	static_cast<SpriteAni*>(meshes[(int)MeshType::SpriteAni])->Update(dt);
 
 	static float polyModeBT = 0.f;
 	static float distortionBT = 0.f;
@@ -494,15 +493,6 @@ void MyScene::ForwardRender(){
 		75.f,
 		1.f,
 		glm::vec4(1.f),
-		0,
-		TextChief::TextAlignment::Center
-	});
-	textChief.RenderText(textSP, {
-		"FPS: " + std::to_string(1.f / dt),
-		(float)winWidth / 2.f,
-		0.0f,
-		1.f,
-		glm::vec4(1.f, 1.f, 0.f, 1.f),
 		0,
 		TextChief::TextAlignment::Center
 	});

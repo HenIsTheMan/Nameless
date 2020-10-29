@@ -4,7 +4,6 @@ bool endLoop = false;
 bool firstCall = 1;
 bool LMB = false;
 bool RMB = false;
-float dt = 0.f;
 float pitch = 0.f;
 float yaw = 0.f;
 float lastX = 0.f;

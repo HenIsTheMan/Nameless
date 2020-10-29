@@ -58,7 +58,7 @@ glm::mat4 Cam::LookAt() const{
 	return rotation * translation;
 }
 
-void Cam::Update(const int& up, const int& down, const int& left, const int& right, const int& front, const int& back){
+void Cam::Update(float dt, const int& up, const int& down, const int& left, const int& right, const int& front, const int& back){
 	const float camSpd = spd * dt;
 	float upDown = float(Key(up) - Key(down));
 	float leftRight = float(Key(left) - Key(right));

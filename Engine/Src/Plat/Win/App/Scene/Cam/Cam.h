@@ -11,7 +11,7 @@ public:
 	glm::vec3 CalcRight() const;
 	glm::vec3 CalcUp() const;
 	glm::mat4 LookAt() const;
-	void Update(const int& up, const int& down, const int& left, const int& right, const int& front, const int& back);
+	void Update(float dt, const int& up, const int& down, const int& left, const int& right, const int& front, const int& back);
 
 	void Reset();
 	void ResetAspectRatio();

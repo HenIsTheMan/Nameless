@@ -38,7 +38,7 @@ public:
 	void AddAni(const str& name, const int& start, const int& end);
 	void AddSequenceAni(const str& name, const ::std::initializer_list<int>& frames);
 	void Create();
-	void Update();
+	void Update(float dt);
 	void Render(ShaderProg& SP, const bool& autoConfig = true) override;
 private:
 	float currTime;

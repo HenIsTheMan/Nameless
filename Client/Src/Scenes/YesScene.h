@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Global/GlobalFuncs.h"
+#include "MyScene.h" //Scuffed??
 
 class YesScene final{ //Static class
 	YesScene() = delete;
@@ -43,7 +44,6 @@ private:
 	static bool fullscreen;
 
 	static float elapsedTime;
-	static float lastFrameTime;
 
 	static const GLFWvidmode* mode;
 	static GLFWwindow* win;
@@ -51,4 +51,6 @@ private:
 	static uint FBORefIDs[(int)FBO::Amt];
 	static uint texRefIDs[(int)Tex::Amt];
 	static uint RBORefIDs[1];
+
+	static MyScene scene; //Scuffed??
 };

@@ -1,8 +1,11 @@
 #include "App.h"
 
-extern float dt;
+#include "../../../Core.h"
 
-App::App(){
+App::App():
+	dt(0.0f),
+	lastFrameTime(0.0f)
+{
 	Scene::InCtor();
 }
 
@@ -15,6 +18,10 @@ void App::Init(){
 }
 
 void App::Update(){
+	float currFrameTime = (float)glfwGetTime();
+	dt = currFrameTime - lastFrameTime;
+	lastFrameTime = currFrameTime;
+
 	//Scene::FixedUpdate(dt);
 	Scene::Update(dt);
 	Scene::LateUpdate(dt);

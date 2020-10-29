@@ -3,8 +3,6 @@
 
 ///Can be improved
 
-extern float dt;
-
 SpriteAni::SpriteAni(): SpriteAni(0, 0){}
 
 SpriteAni::SpriteAni(const int& rows, const int& cols):
@@ -111,7 +109,7 @@ void SpriteAni::Create(){
 	}
 }
 
-void SpriteAni::Update(){
+void SpriteAni::Update(float dt){
 	if(allAnis[currAni]->active){ //Check if the curr Ani is active
 		currTime += dt;
 		int numFrame = (int)allAnis[currAni]->frames.size();

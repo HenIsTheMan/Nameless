@@ -10,4 +10,7 @@ public:
 	void Init();
 	void Update();
 	void Render();
+private:
+	float dt;
+	float lastFrameTime;
 };

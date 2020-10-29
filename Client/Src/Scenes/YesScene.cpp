@@ -3,7 +3,6 @@
 bool YesScene::fullscreen = false;
 
 float YesScene::elapsedTime = 0.0f;
-float YesScene::lastFrameTime = 0.0f;
 
 const GLFWvidmode* YesScene::mode = nullptr;
 GLFWwindow* YesScene::win = nullptr;
@@ -11,6 +10,8 @@ GLFWwindow* YesScene::win = nullptr;
 uint YesScene::FBORefIDs[(int)FBO::Amt]{};
 uint YesScene::texRefIDs[(int)Tex::Amt]{};
 uint YesScene::RBORefIDs[1]{};
+
+MyScene YesScene::scene = MyScene();
 
 extern bool endLoop;
 extern int optimalWinXPos;
@@ -116,6 +117,8 @@ void YesScene::Init(){
 		glBindTexture(GL_TEXTURE_2D, currTexRefID);
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	scene.Init();
 }
 
 void YesScene::FixedUpdate(float dt){
@@ -126,10 +129,6 @@ void YesScene::Update(float dt){
 		endLoop = true;
 		return;
 	}
-
-	float currFrameTime = (float)glfwGetTime();
-	dt = currFrameTime - lastFrameTime;
-	lastFrameTime = currFrameTime;
 
 	elapsedTime += dt;
 	static float toggleFullscreenBT = 0.f;
@@ -143,6 +142,8 @@ void YesScene::Update(float dt){
 		}
 		toggleFullscreenBT = elapsedTime + .5f;
 	}
+
+	scene.Update(dt);
 }
 
 void YesScene::LateUpdate(float dt){
@@ -155,45 +156,45 @@ void YesScene::PreRender(){
 }
 
 void YesScene::Render(){
-	//glViewport(0, 0, 2048, 2048);
+	glViewport(0, 0, 2048, 2048);
 
-	//glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)FBO::GeoPass]);
-	//for(uint i = 0; i < 5; ++i){
-	//	glDrawBuffer(GL_COLOR_ATTACHMENT0 + i);
-	//	i == 1 ? glClearColor(.5f, 0.32f, 0.86f, 1.f) : glClearColor(0.f, 0.f, 0.f, 1.f); //State-setting func
-	//	glClear(GL_COLOR_BUFFER_BIT);
-	//}
-	//uint arr1[5]{GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4};
-	//glDrawBuffers(sizeof(arr1) / sizeof(arr1[0]), arr1);
-	//glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); //State-using func
-	//scene.GeoRenderPass();
+	glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)FBO::GeoPass]);
+	for(uint i = 0; i < 5; ++i){
+		glDrawBuffer(GL_COLOR_ATTACHMENT0 + i);
+		i == 1 ? glClearColor(.5f, 0.32f, 0.86f, 1.f) : glClearColor(0.f, 0.f, 0.f, 1.f); //State-setting func
+		glClear(GL_COLOR_BUFFER_BIT);
+	}
+	uint arr1[5]{GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4};
+	glDrawBuffers(sizeof(arr1) / sizeof(arr1[0]), arr1);
+	glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); //State-using func
+	scene.GeoRenderPass();
 
-	//glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)FBO::LightingPass]);
-	//uint arr2[2]{GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
-	//glDrawBuffers(sizeof(arr2) / sizeof(arr2[0]), arr2);
-	//scene.LightingRenderPass(texRefIDs[(int)Tex::Pos], texRefIDs[(int)Tex::Colours], texRefIDs[(int)Tex::Normals], texRefIDs[(int)Tex::Spec], texRefIDs[(int)Tex::Reflection]);
+	glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)FBO::LightingPass]);
+	uint arr2[2]{GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+	glDrawBuffers(sizeof(arr2) / sizeof(arr2[0]), arr2);
+	scene.LightingRenderPass(texRefIDs[(int)Tex::Pos], texRefIDs[(int)Tex::Colours], texRefIDs[(int)Tex::Normals], texRefIDs[(int)Tex::Spec], texRefIDs[(int)Tex::Reflection]);
 
-	//bool horizontal = true;
-	//const short amt = 12;
-	//for(short i = 0; i < amt; ++i){ //Blur... amt / 2 times horizontally and amt / 2 times vertically
-	//	glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[int(FBO::PingPong0) + int(horizontal)]);
-	//	scene.BlurRender(!i ? texRefIDs[(int)Tex::Bright] : texRefIDs[int(Tex::PingPong0) + int(horizontal)], horizontal);
-	//	horizontal = !horizontal;
-	//}
+	bool horizontal = true;
+	const short amt = 12;
+	for(short i = 0; i < amt; ++i){ //Blur... amt / 2 times horizontally and amt / 2 times vertically
+		glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[int(FBO::PingPong0) + int(horizontal)]);
+		scene.BlurRender(!i ? texRefIDs[(int)Tex::Bright] : texRefIDs[int(Tex::PingPong0) + int(horizontal)], horizontal);
+		horizontal = !horizontal;
+	}
 
-	//glViewport(0, 0, winWidth, winHeight);
-	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	//glClearColor(1.f, 0.82f, 0.86f, 1.f);
-	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//scene.DefaultRender(texRefIDs[(int)Tex::Lit], texRefIDs[int(Tex::PingPong0) + int(!horizontal)]);
+	glViewport(0, 0, winWidth, winHeight);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glClearColor(1.f, 0.82f, 0.86f, 1.f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	scene.DefaultRender(texRefIDs[(int)Tex::Lit], texRefIDs[int(Tex::PingPong0) + int(!horizontal)]);
 
-	//glViewport(0, 0, 2048, 2048);
-	//glBindFramebuffer(GL_READ_FRAMEBUFFER, FBORefIDs[(int)FBO::GeoPass]);
-	//glViewport(0, 0, winWidth, winHeight);
-	//glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	//glBlitFramebuffer(0, 0, 2048, 2048, 0, 0, winWidth, winHeight, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
-	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	//scene.ForwardRender();
+	glViewport(0, 0, 2048, 2048);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, FBORefIDs[(int)FBO::GeoPass]);
+	glViewport(0, 0, winWidth, winHeight);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	glBlitFramebuffer(0, 0, 2048, 2048, 0, 0, winWidth, winHeight, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	scene.ForwardRender();
 }
 
 void YesScene::PostRender(){
