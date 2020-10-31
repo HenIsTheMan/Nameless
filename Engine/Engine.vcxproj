@@ -182,6 +182,7 @@
     <ClInclude Include="Src\Geo\Mesh.h" />
     <ClInclude Include="Src\Geo\Vertex.h" />
     <ClInclude Include="Src\Graphics\Light.h" />
+    <ClInclude Include="Src\Graphics\ModelStack.h" />
     <ClInclude Include="Src\Graphics\ShaderProg.h" />
     <ClInclude Include="Src\Graphics\TextChief.h" />
     <ClInclude Include="Src\Math\Pseudorand.h" />
@@ -196,6 +197,7 @@
     <ClCompile Include="Src\Geo\Terrain.cpp" />
     <ClCompile Include="Src\Global\GlobalFuncs.cpp" />
     <ClCompile Include="Src\Geo\Mesh.cpp" />
+    <ClCompile Include="Src\Graphics\ModelStack.cpp" />
     <ClCompile Include="Src\Graphics\ShaderProg.cpp" />
     <ClCompile Include="Src\Graphics\TextChief.cpp" />
     <ClCompile Include="Src\Plat\Win\App\App.cpp" />

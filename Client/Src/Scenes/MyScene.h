@@ -3,6 +3,7 @@
 #include "Plat/Win/App/Scene/Cam/Cam.h"
 #include "Geo/Model.h"
 #include "Graphics/Light.h"
+#include "Graphics/ModelStack.h"
 #include "Graphics/ShaderProg.h"
 #include "Graphics/TextChief.h"
 
@@ -60,11 +61,5 @@ private:
 
 	float elapsedTime;
 	int polyMode;
-	mutable std::stack<glm::mat4> modelStack;
-	glm::mat4 Translate(const glm::vec3& translate);
-	glm::mat4 Rotate(const glm::vec4& rotate);
-	glm::mat4 Scale(const glm::vec3& scale);
-	glm::mat4 GetTopModel() const;
-	void PushModel(const std::vector<glm::mat4>& vec) const;
-	void PopModel() const;
+	ModelStack modelStack;
 };

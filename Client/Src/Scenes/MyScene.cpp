@@ -134,20 +134,20 @@ bool MyScene::Init(){
 	soundEngine->setDopplerEffectParameters(10.f, 10.f);
 
 	for(int i = 0; i < 99; ++i){
-		PushModel({
-			Translate(glm::vec3(PseudorandMinMax(-2000.f, 2000.f), PseudorandMinMax(-2000.f, 2000.f), -5.f)),
-			Rotate(glm::vec4(0.f, 1.f, 0.f, -45.f)),
+		modelStack.PushModel({
+			modelStack.Translate(glm::vec3(PseudorandMinMax(-2000.f, 2000.f), PseudorandMinMax(-2000.f, 2000.f), -5.f)),
+			modelStack.Rotate(glm::vec4(0.f, 1.f, 0.f, -45.f)),
 		});
-			meshes[(int)MeshType::Quad]->AddModelMat(GetTopModel());
-		PopModel();
+			meshes[(int)MeshType::Quad]->AddModelMat(modelStack.GetTopModel());
+		modelStack.PopModel();
 	}
 	for(int i = 0; i < 999; ++i){
-		PushModel({
-			Translate(glm::vec3(PseudorandMinMax(-100.f, 100.f), PseudorandMinMax(-100.f, 100.f), -5.f)),
-			Rotate(glm::vec4(0.f, 1.f, 0.f, -45.f)),
+		modelStack.PushModel({
+			modelStack.Translate(glm::vec3(PseudorandMinMax(-100.f, 100.f), PseudorandMinMax(-100.f, 100.f), -5.f)),
+			modelStack.Rotate(glm::vec4(0.f, 1.f, 0.f, -45.f)),
 		});
-			models[(int)ModelType::Suit]->AddModelMatForAll(GetTopModel());
-		PopModel();
+			models[(int)ModelType::Suit]->AddModelMatForAll(modelStack.GetTopModel());
+		modelStack.PopModel();
 	}
 
 	meshes[(int)MeshType::SpriteAni]->AddTexMap({"Imgs/Fire.png", Mesh::TexType::Diffuse, 0});
@@ -234,12 +234,12 @@ void MyScene::GeoRenderPass(){
 	glDepthFunc(GL_LEQUAL); //Modify comparison operators used for depth test such that frags with depth <= 1.f are shown
 	glCullFace(GL_FRONT);
 	geoPassSP.Set1i("sky", 1);
-	PushModel({
-		Rotate(glm::vec4(0.f, 1.f, 0.f, glfwGetTime())),
+	modelStack.PushModel({
+		modelStack.Rotate(glm::vec4(0.f, 1.f, 0.f, glfwGetTime())),
 	});
-		meshes[(int)MeshType::Sphere]->SetModel(GetTopModel());
+		meshes[(int)MeshType::Sphere]->SetModel(modelStack.GetTopModel());
 		meshes[(int)MeshType::Sphere]->Render(geoPassSP);
-	PopModel();
+	modelStack.PopModel();
 	geoPassSP.Set1i("sky", 0);
 	glCullFace(GL_BACK);
 	glDepthFunc(GL_LESS);
@@ -247,60 +247,60 @@ void MyScene::GeoRenderPass(){
 	geoPassSP.SetMat4fv("PV", &(projection * view)[0][0]);
 
 	///Terrain
-	PushModel({
-		Scale(glm::vec3(500.f, 100.f, 500.f)),
+	modelStack.PushModel({
+		modelStack.Scale(glm::vec3(500.f, 100.f, 500.f)),
 	});
-		meshes[(int)MeshType::Terrain]->SetModel(GetTopModel());
+		meshes[(int)MeshType::Terrain]->SetModel(modelStack.GetTopModel());
 		meshes[(int)MeshType::Terrain]->Render(geoPassSP);
-	PopModel();
+	modelStack.PopModel();
 
 	///Nanosuits
-	PushModel({
-		Translate(glm::vec3(0.f, 200.f, 0.f)),
-		Rotate(glm::vec4(0.f, 1.f, 0.f, 0.f)),
-		Scale(glm::vec3(5.f)),
+	modelStack.PushModel({
+		modelStack.Translate(glm::vec3(0.f, 200.f, 0.f)),
+		modelStack.Rotate(glm::vec4(0.f, 1.f, 0.f, 0.f)),
+		modelStack.Scale(glm::vec3(5.f)),
 	});
-		models[(int)ModelType::Suit]->SetModelForAll(GetTopModel());
+		models[(int)ModelType::Suit]->SetModelForAll(modelStack.GetTopModel());
 		models[(int)ModelType::Suit]->Render(geoPassSP);
-	PopModel();
-	PushModel({
-		Translate(glm::vec3(0.f, 100.f, 0.f)),
-		Rotate(glm::vec4(0.f, 1.f, 0.f, 0.f)),
-		Scale(glm::vec3(.5f)),
+	modelStack.PopModel();
+	modelStack.PushModel({
+		modelStack.Translate(glm::vec3(0.f, 100.f, 0.f)),
+		modelStack.Rotate(glm::vec4(0.f, 1.f, 0.f, 0.f)),
+		modelStack.Scale(glm::vec3(.5f)),
 	});
-		models[(int)ModelType::Suit]->SetModelForAll(GetTopModel());
+		models[(int)ModelType::Suit]->SetModelForAll(modelStack.GetTopModel());
 		models[(int)ModelType::Suit]->InstancedRender(geoPassSP);
-	PopModel();
+	modelStack.PopModel();
 
 	///Shapes
-	PushModel({
-		Translate(glm::vec3(0.f, 100.f, 0.f)),
-		Scale(glm::vec3(10.f)),
+	modelStack.PushModel({
+		modelStack.Translate(glm::vec3(0.f, 100.f, 0.f)),
+		modelStack.Scale(glm::vec3(10.f)),
 	});
-		PushModel({
-			Translate(glm::vec3(6.f, 0.f, 0.f)),
+		modelStack.PushModel({
+			modelStack.Translate(glm::vec3(6.f, 0.f, 0.f)),
 		});
 			geoPassSP.Set1i("noNormals", 1);
 			geoPassSP.Set1i("useCustomColour", 1);
 			geoPassSP.Set4fv("customColour", glm::vec4(glm::vec3(5.f), 1.f));
-			meshes[(int)MeshType::Quad]->SetModel(GetTopModel());
+			meshes[(int)MeshType::Quad]->SetModel(modelStack.GetTopModel());
 			meshes[(int)MeshType::Quad]->Render(geoPassSP);
 			geoPassSP.Set1i("useCustomColour", 0);
 			geoPassSP.Set1i("noNormals", 0);
-			PushModel({
-				Translate(glm::vec3(0.f, 0.f, 5.f)),
+			modelStack.PushModel({
+				modelStack.Translate(glm::vec3(0.f, 0.f, 5.f)),
 			});
-				meshes[(int)MeshType::Sphere]->SetModel(GetTopModel());
+				meshes[(int)MeshType::Sphere]->SetModel(modelStack.GetTopModel());
 				meshes[(int)MeshType::Sphere]->Render(geoPassSP);
-			PopModel();
-			PushModel({
-				Translate(glm::vec3(0.f, 0.f, -5.f)),
+			modelStack.PopModel();
+			modelStack.PushModel({
+				modelStack.Translate(glm::vec3(0.f, 0.f, -5.f)),
 			});
-				meshes[(int)MeshType::Cylinder]->SetModel(GetTopModel());
+				meshes[(int)MeshType::Cylinder]->SetModel(modelStack.GetTopModel());
 				meshes[(int)MeshType::Cylinder]->Render(geoPassSP);
-			PopModel();
-		PopModel();
-	PopModel();
+			modelStack.PopModel();
+		modelStack.PopModel();
+	modelStack.PopModel();
 }
 
 void MyScene::LightingRenderPass(const uint& posTexRefID, const uint& coloursTexRefID, const uint& normalsTexRefID, const uint& specTexRefID, const uint& reflectionTexRefID){
@@ -350,7 +350,7 @@ void MyScene::LightingRenderPass(const uint& posTexRefID, const uint& coloursTex
 		lightingPassSP.Set1f(("spotlights[" + std::to_string(i) + "].cosOuterCutoff").c_str(), spotlight->cosOuterCutoff);
 	}
 
-	meshes[(int)MeshType::Quad]->SetModel(GetTopModel());
+	meshes[(int)MeshType::Quad]->SetModel(modelStack.GetTopModel());
 	meshes[(int)MeshType::Quad]->Render(lightingPassSP, false);
 	lightingPassSP.ResetTexUnits();
 }
@@ -359,7 +359,7 @@ void MyScene::BlurRender(const uint& brightTexRefID, const bool& horizontal){
 	blurSP.Use();
 	blurSP.Set1i("horizontal", horizontal);
 	blurSP.UseTex("texSampler", brightTexRefID);
-	meshes[(int)MeshType::Quad]->SetModel(GetTopModel());
+	meshes[(int)MeshType::Quad]->SetModel(modelStack.GetTopModel());
 	meshes[(int)MeshType::Quad]->Render(blurSP, false);
 	blurSP.ResetTexUnits();
 }
@@ -369,7 +369,7 @@ void MyScene::DefaultRender(const uint& screenTexRefID, const uint& blurTexRefID
 	screenSP.Set1f("exposure", 1.2f);
 	screenSP.UseTex("screenTexSampler", screenTexRefID);
 	screenSP.UseTex("blurTexSampler", blurTexRefID);
-	meshes[(int)MeshType::Quad]->SetModel(GetTopModel());
+	meshes[(int)MeshType::Quad]->SetModel(modelStack.GetTopModel());
 	meshes[(int)MeshType::Quad]->Render(screenSP, false);
 	screenSP.ResetTexUnits();
 }
@@ -420,54 +420,54 @@ void MyScene::ForwardRender(){
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	///Shapes
-	PushModel({
-		Translate(glm::vec3(0.f, 100.f, 0.f)),
-		Scale(glm::vec3(10.f)),
+	modelStack.PushModel({
+		modelStack.Translate(glm::vec3(0.f, 100.f, 0.f)),
+		modelStack.Scale(glm::vec3(10.f)),
 	});
 		forwardSP.Set1i("useCustomColour", 1);
 		forwardSP.Set4fv("customColour", glm::vec4(glm::rgbColor(glm::vec3(1.f, PseudorandMinMax(0.f, 255.f), 1.f)) * .5f, .5f));
-		meshes[(int)MeshType::Cylinder]->SetModel(GetTopModel());
+		meshes[(int)MeshType::Cylinder]->SetModel(modelStack.GetTopModel());
 		meshes[(int)MeshType::Cylinder]->Render(forwardSP);
 		forwardSP.Set1i("useCustomColour", 0);
-		PushModel({
-			Translate(glm::vec3(-3.f, 0.f, 0.f)),
+		modelStack.PushModel({
+			modelStack.Translate(glm::vec3(-3.f, 0.f, 0.f)),
 		});
 			forwardSP.Set1i("useCustomColour", 1);
 			forwardSP.Set4fv("customColour", glm::vec4(glm::rgbColor(glm::vec3(1.f, 1.f, PseudorandMinMax(0.f, 255.f))) * 7.f, .3f));
 			forwardSP.Set1i("useCustomDiffuseTexIndex", 1);
 			forwardSP.Set1i("customDiffuseTexIndex", -1);
-			meshes[(int)MeshType::Sphere]->SetModel(GetTopModel());
+			meshes[(int)MeshType::Sphere]->SetModel(modelStack.GetTopModel());
 			meshes[(int)MeshType::Sphere]->Render(forwardSP);
 			forwardSP.Set1i("useCustomDiffuseTexIndex", 0);
 			forwardSP.Set1i("useCustomColour", 0);
-		PopModel();
-		PushModel({
-			Translate(glm::vec3(3.f, 0.f, 0.f)),
+		modelStack.PopModel();
+		modelStack.PushModel({
+			modelStack.Translate(glm::vec3(3.f, 0.f, 0.f)),
 		});
 			forwardSP.Set1i("useCustomColour", 1);
 			forwardSP.Set4fv("customColour", glm::vec4(glm::rgbColor(glm::vec3(PseudorandMinMax(0.f, 255.f), 1.f, 1.f)) * .5f, .7f));
 			forwardSP.Set1i("useCustomDiffuseTexIndex", 1);
 			forwardSP.Set1i("customDiffuseTexIndex", -1);
-			meshes[(int)MeshType::Cube]->SetModel(GetTopModel());
+			meshes[(int)MeshType::Cube]->SetModel(modelStack.GetTopModel());
 			meshes[(int)MeshType::Cube]->Render(forwardSP);
 			forwardSP.Set1i("useCustomDiffuseTexIndex", 0);
 			forwardSP.Set1i("useCustomColour", 0);
-		PopModel();
-	PopModel();
+		modelStack.PopModel();
+	modelStack.PopModel();
 
 	///SpriteAni
-	PushModel({
-		Translate(glm::vec3(0.f, 50.f, 0.f)),
-		Scale(glm::vec3(20.f, 40.f, 20.f)),
+	modelStack.PushModel({
+		modelStack.Translate(glm::vec3(0.f, 50.f, 0.f)),
+		modelStack.Scale(glm::vec3(20.f, 40.f, 20.f)),
 	});
 		forwardSP.Set1i("noNormals", 1);
 		forwardSP.Set1i("useCustomColour", 1);
 		forwardSP.Set4fv("customColour", glm::vec4(glm::vec3(1.f), 1.f));
-		meshes[(int)MeshType::SpriteAni]->SetModel(GetTopModel());
+		meshes[(int)MeshType::SpriteAni]->SetModel(modelStack.GetTopModel());
 		meshes[(int)MeshType::SpriteAni]->Render(forwardSP);
 		forwardSP.Set1i("useCustomColour", 0);
 		forwardSP.Set1i("noNormals", 0);
-	PopModel();
+	modelStack.PopModel();
 
 	textChief.RenderText(textSP, {
 		"AA",
@@ -501,35 +501,5 @@ void MyScene::ForwardRender(){
 
 	if(music && music->getIsPaused()){
 		music->setIsPaused(false);
-	}
-}
-
-glm::mat4 MyScene::Translate(const glm::vec3& translate){
-	return glm::translate(glm::mat4(1.f), translate);
-}
-
-glm::mat4 MyScene::Rotate(const glm::vec4& rotate){
-	return glm::rotate(glm::mat4(1.f), glm::radians(rotate.w), glm::vec3(rotate));
-}
-
-glm::mat4 MyScene::Scale(const glm::vec3& scale){
-	return glm::scale(glm::mat4(1.f), scale);
-}
-
-glm::mat4 MyScene::GetTopModel() const{
-	return modelStack.empty() ? glm::mat4(1.f) : modelStack.top();
-}
-
-void MyScene::PushModel(const std::vector<glm::mat4>& vec) const{
-	modelStack.push(modelStack.empty() ? glm::mat4(1.f) : modelStack.top());
-	const size_t& size = vec.size();
-	for(size_t i = 0; i < size; ++i){
-		modelStack.top() *= vec[i];
-	}
-}
-
-void MyScene::PopModel() const{
-	if(!modelStack.empty()){
-		modelStack.pop();
 	}
 }
