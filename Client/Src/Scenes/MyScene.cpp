@@ -191,7 +191,7 @@ void MyScene::Update(float dt){
 	static float wavesReverbBT = 0.f;
 	static float resetSoundFXBT = 0.f;
 
-	if(Key(GLFW_KEY_F2) && polyModeBT <= elapsedTime){
+	if(Key(VK_F2) && polyModeBT <= elapsedTime){
 		polyMode += polyMode == GL_FILL ? -2 : 1;
 		glPolygonMode(GL_FRONT_AND_BACK, polyMode);
 		polyModeBT = elapsedTime + .5f;
