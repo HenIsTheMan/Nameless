@@ -111,16 +111,17 @@ MyScene::~MyScene(){
 bool MyScene::Init(){
 	glGetIntegerv(GL_POLYGON_MODE, &polyMode);
 
-	soundEngine = createIrrKlangDevice(ESOD_AUTO_DETECT, ESEO_MULTI_THREADED | ESEO_LOAD_PLUGINS | ESEO_USE_3D_BUFFERS | ESEO_PRINT_DEBUG_INFO_TO_DEBUGGER);
+	soundEngine = createIrrKlangDevice(ESOD_AUTO_DETECT, ESEO_DEFAULT_OPTIONS & ~ESEO_PRINT_DEBUG_INFO_TO_DEBUGGER);
 	if(!soundEngine){
 		(void)puts("Failed to init soundEngine!\n");
 	}
+	soundEngine->setSoundVolume(0.0f);
 	//soundEngine->play2D("Audio/Music/YellowCafe.mp3", true);
 
 	music = soundEngine->play3D("Audio/Music/YellowCafe.mp3", vec3df(0.f, 0.f, 0.f), true, true, true, ESM_AUTO_DETECT, true);
 	if(music){
 		music->setMinDistance(5.f);
-		music->setVolume(0);
+		music->setVolume(0.0f);
 
 		soundFX = music->getSoundEffectControl();
 		if(!soundFX){
