@@ -59,6 +59,7 @@ MyScene::MyScene():
 	spotlights({}),
 	view(glm::mat4(1.f)),
 	projection(glm::mat4(1.f)),
+	FPS(0.0f),
 	elapsedTime(0.f),
 	polyMode(0),
 	modelStack()
@@ -163,6 +164,7 @@ bool MyScene::Init(){
 }
 
 void MyScene::Update(float dt){
+	FPS = 1.0f / dt;
 	elapsedTime += dt;
 	if(winHeight){ //Avoid division by 0 when win is minimised
 		cam.SetDefaultAspectRatio(float(winWidth) / float(winHeight));
@@ -471,7 +473,7 @@ void MyScene::ForwardRender(){
 	modelStack.PopModel();
 
 	textChief.RenderText(textSP, {
-		"AA",
+		(str)"FPS: " + std::to_string(FPS).substr(0, std::to_string((int)FPS).length() + 3),
 		(float)winWidth,
 		225.f,
 		1.f,

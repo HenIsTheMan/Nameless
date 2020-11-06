@@ -59,6 +59,7 @@ private:
 	glm::mat4 projection;
 	//std::vector<Mesh::BatchRenderParams> params;
 
+	float FPS;
 	float elapsedTime;
 	int polyMode;
 	ModelStack modelStack;
