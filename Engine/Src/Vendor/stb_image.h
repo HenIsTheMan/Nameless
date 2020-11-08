@@ -356,6 +356,12 @@ enum
 typedef unsigned char stbi_uc;
 typedef unsigned short stbi_us;
 
+#pragma warning(push)
+#pragma warning(disable: 6011)
+#pragma warning(disable: 6262)
+#pragma warning(disable: 6308)
+#pragma warning(disable: 28182)
+
 #ifdef __cplusplus
 extern "C" {
 #endif
