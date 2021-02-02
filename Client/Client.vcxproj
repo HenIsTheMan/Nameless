@@ -121,8 +121,7 @@
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>copy /Y "$(SolutionDir)Engine\DLLs\" "$(TargetDir)"</Command>
     </PostBuildEvent>
     <PreLinkEvent>
       <Command>
@@ -148,8 +147,7 @@
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>copy /Y "$(SolutionDir)Engine\DLLs\" "$(TargetDir)"</Command>
     </PostBuildEvent>
     <PreLinkEvent>
       <Command>
