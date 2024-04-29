@@ -233,6 +233,16 @@ void MyScene::GeoRenderPass(){
 	geoPassSP.Use();
 	geoPassSP.SetMat4fv("PV", &(projection * glm::mat4(glm::mat3(view)))[0][0]);
 
+
+
+
+	int maxTexImgUnits;
+	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxTexImgUnits);
+	geoPassSP.Set1i("maxTexImgUnits", maxTexImgUnits);
+
+
+
+
 	///Sky
 	glDepthFunc(GL_LEQUAL); //Modify comparison operators used for depth test such that frags with depth <= 1.f are shown
 	glCullFace(GL_FRONT);
@@ -379,6 +389,7 @@ void MyScene::DefaultRender(const uint& screenTexRefID, const uint& blurTexRefID
 
 void MyScene::ForwardRender(){
 	forwardSP.Use();
+
 	const int& pAmt = 0;
 	const int& dAmt = 0;
 	const int& sAmt = 0;
@@ -389,6 +400,15 @@ void MyScene::ForwardRender(){
 	forwardSP.Set1i("pAmt", pAmt);
 	forwardSP.Set1i("dAmt", dAmt);
 	forwardSP.Set1i("sAmt", sAmt);
+
+
+
+	int maxTexImgUnits;
+	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxTexImgUnits);
+	forwardSP.Set1i("maxTexImgUnits", maxTexImgUnits);
+
+
+
 
 	int i;
 	for(i = 0; i < pAmt; ++i){

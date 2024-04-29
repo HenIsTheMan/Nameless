@@ -29,10 +29,12 @@ ShaderProg::~ShaderProg(){
 int ShaderProg::GetUniLocation(cstr const& uniName){
 	if(!uniLocationCache.count(str{uniName})){ //If not cached...
 		uniLocationCache[str{uniName}] = glGetUniformLocation(refID, uniName); //Query location of uni
+
 		if(uniLocationCache[str{uniName}] == -1){
-			(void)printf("%u: Failed to find uni '%s'\n", this->refID, uniName);
+			(void)printf("%u: Failed to find uni '%s'\n", refID, uniName);
 		}
 	}
+
 	return uniLocationCache[str{uniName}];
 }
 
@@ -106,12 +108,16 @@ void ShaderProg::Use(){
 
 void ShaderProg::UseTex(const cstr& samplerName, const uint& texRefID, const int& texTarget){
 	const int size = (int)texTargets.size();
-	if(size == 32){
-		return (void)puts("Exceeded 32 texs in draw call!\n");
+
+	if(size == 32){ //??
+		return (void)puts("Exceeded 32 texs in draw call!\n"); //??
 	}
+
 	glActiveTexture(GL_TEXTURE0 + size);
 	glBindTexture(texTarget, texRefID);
+
 	Set1i(samplerName, size); //Make sure each shader sampler uni corresponds to the correct tex unit
+
 	texTargets.emplace_back(texTarget);
 }
 

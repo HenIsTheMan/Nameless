@@ -1,4 +1,4 @@
-#version 330 core
+#version 400 core
 out vec4 fragColour;
 
 in myInterface{
@@ -63,7 +63,26 @@ uniform bool useSpecMap;
 uniform bool useEmissionMap;
 uniform bool useReflectionMap;
 
-uniform sampler2D diffuseMaps[29];
+
+
+
+uniform int maxTexImgUnits;
+
+#if (maxTexImgUnits >= 32)
+    #define MAX_TEX_IMG_UNITS 28 //32 - 4
+#else
+    #define MAX_TEX_IMG_UNITS 12 //16 - 4
+#endif
+
+#ifdef MAX_TEX_IMG_UNITS
+    uniform sampler2D diffuseMaps[MAX_TEX_IMG_UNITS];
+#endif
+
+
+
+
+
+
 uniform sampler2D specMap;
 uniform sampler2D emissionMap;
 uniform sampler2D reflectionMap;
