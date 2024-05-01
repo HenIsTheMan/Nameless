@@ -1,14 +1,48 @@
 #pragma once
 
-#include "Geo/Mesh.h"
-#include "Geo/Model.h"
-#include "Geo/SpriteAni.h"
-#include "Geo/Terrain.h"
+#include "Constructs/AppConstruct/AppConstruct.h"
 
 #include "Global/GlobalFuncs.h"
 
-#include "Graphics/Light.h"
-#include "Graphics/ShaderProg.h"
-#include "Graphics/TextChief.h"
+extern bool endLoop;
 
-#include "Math/Pseudorand.h"
+static void User(const int argc, const char* const* const argv); //Forward declaration
+
+///Hmmmm
+static int myArgc;
+static const char* const* myArgv;
+
+static void MainProcess(){
+	User(myArgc, myArgv);
+
+	AppConstruct::InCtor();
+
+	AppConstruct::Init();
+
+	while(!endLoop){
+		AppConstruct::Update();
+		AppConstruct::Render();
+	}
+
+	AppConstruct::InDtor();
+}
+
+int main(const int argc, const char* const* const argv){
+	if(!InitConsole()){
+		return;
+	}
+
+	myArgc = argc;
+	myArgv = argv;
+
+	std::thread worker(&MainProcess);
+
+	while(!endLoop){
+		if(Key(VK_ESCAPE)){
+			endLoop = true;
+			break;
+		}
+	}
+
+	worker.join();
+}

@@ -1,44 +1,37 @@
-#include "App/App.h"
+#include "Engine.h"
 
-#include "Scenes/YesScene.h"
+#include "Constructs/SceneConstruct/SceneConstruct.h"
 
-extern bool endLoop;
+#include "MyApp/MyApp.h"
+#include "Scenes/MyScene/MyScene.h"
 
-void MainProcess(){
-	SceneConstruct::SetInCtor(YesScene::InCtor);
-	SceneConstruct::SetInDtor(YesScene::InDtor);
-	SceneConstruct::SetInit(YesScene::Init);
-	SceneConstruct::SetFixedUpdate(YesScene::FixedUpdate);
-	SceneConstruct::SetUpdate(YesScene::Update);
-	SceneConstruct::SetLateUpdate(YesScene::LateUpdate);
-	SceneConstruct::SetPreRender(YesScene::PreRender);
-	SceneConstruct::SetRender(YesScene::Render);
-	SceneConstruct::SetPostRender(YesScene::PostRender);
+void User(const int argc, const char* const* const argv){
+	MyApp* myApp = new MyApp();
+	MyScene* myScene = new MyScene();
 
-	App* app = new App();
-	app->Init();
+	AppConstruct::SetInCtor(&myApp->MyApp::InCtor);
+	AppConstruct::SetInDtor(MyApp::InDtor);
+	AppConstruct::SetInit(MyApp::Init);
+	AppConstruct::SetUpdate(MyApp::Update);
+	AppConstruct::SetRender(MyApp::Render);
 
-	while(!endLoop){
-		app->Update();
-		app->Render();
+	SceneConstruct::SetInCtor(myScene->InCtor);
+	SceneConstruct::SetInDtor(void (*inDtor)());
+	SceneConstruct::SetInit(void (*init)());
+	SceneConstruct::SetFixedUpdate(void (*fixedUpdate)(const float dt));
+	SceneConstruct::SetUpdate(void (*update)(const float dt));
+	SceneConstruct::SetLateUpdate(void (*lateUpdate)(const float dt));
+	SceneConstruct::SetPreRender(void (*preRender)());
+	SceneConstruct::SetRender(void (*render)());
+	SceneConstruct::SetPostRender(void (*postRender)());
+
+	if(myApp != nullptr){
+		delete myApp;
+		myApp = nullptr;
 	}
 
-	delete app;
-}
-
-int main(const int&, const char* const* const&){
-	if(!InitConsole()){
-		return -1;
+	if(myScene != nullptr){
+		delete myScene;
+		myScene = nullptr;
 	}
-
-	std::thread worker(&MainProcess);
-
-	while(!endLoop){
-		if(Key(VK_ESCAPE)){
-			endLoop = true;
-			break;
-		}
-	}
-
-	worker.join();
 }

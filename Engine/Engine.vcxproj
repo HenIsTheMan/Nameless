@@ -186,9 +186,9 @@
     <ClInclude Include="Src\Graphics\ShaderProg.h" />
     <ClInclude Include="Src\Graphics\TextChief.h" />
     <ClInclude Include="Src\Math\Pseudorand.h" />
-    <ClInclude Include="Src\App\App.h" />
+    <ClInclude Include="Src\Constructs\AppConstruct\AppConstruct.h" />
     <ClInclude Include="Src\Graphics\Cam.h" />
-    <ClInclude Include="Src\SceneConstruct\SceneConstruct.h" />
+    <ClInclude Include="Src\Constructs\SceneConstruct\SceneConstruct.h" />
     <ClInclude Include="Src\Vendor\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
@@ -200,9 +200,9 @@
     <ClCompile Include="Src\Geo\ModelStack.cpp" />
     <ClCompile Include="Src\Graphics\ShaderProg.cpp" />
     <ClCompile Include="Src\Graphics\TextChief.cpp" />
-    <ClCompile Include="Src\App\App.cpp" />
+    <ClCompile Include="Src\Constructs\AppConstruct\AppConstruct.cpp" />
     <ClCompile Include="Src\Graphics\Cam.cpp" />
-    <ClCompile Include="Src\SceneConstruct\SceneConstruct.cpp" />
+    <ClCompile Include="Src\Constructs\SceneConstruct\SceneConstruct.cpp" />
     <ClCompile Include="Src\Vendor\glad.c" />
   </ItemGroup>
   <ItemGroup>

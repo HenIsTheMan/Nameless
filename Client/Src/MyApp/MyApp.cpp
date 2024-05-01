@@ -1,17 +1,6 @@
-#include "YesScene.h"
+#include "MyApp.h"
 
-bool YesScene::fullscreen = false;
-
-float YesScene::elapsedTime = 0.0f;
-
-const GLFWvidmode* YesScene::mode = nullptr;
-GLFWwindow* YesScene::win = nullptr;
-
-uint YesScene::FBORefIDs[(int)FBO::Amt]{};
-uint YesScene::texRefIDs[(int)Tex::Amt]{};
-uint YesScene::RBORefIDs[1]{};
-
-MyScene* YesScene::scene = new MyScene();
+#include "Constructs/SceneConstruct/SceneConstruct.h"
 
 extern bool endLoop;
 extern int optimalWinXPos;
@@ -21,15 +10,28 @@ extern int optimalWinHeight;
 extern int winWidth;
 extern int winHeight;
 
-void YesScene::InCtor(){
+MyApp::MyApp():
+	fullscreen(false),
+	elapsedTime(0.0f),
+	mode(nullptr),
+	win(nullptr),
+	FBORefIDs{},
+	texRefIDs{},
+	RBORefIDs()
+{
+}
+
+void MyApp::InCtor(){
 	if(!InitAPI(win)){
 		(void)puts("Failed to init API\n");
 		endLoop = true;
 	}
+
+	SceneConstruct::InCtor();
 }
 
-void YesScene::InDtor(){
-	delete scene;
+void MyApp::InDtor(){
+	SceneConstruct::InDtor();
 
 	glDeleteTextures(sizeof(texRefIDs) / sizeof(texRefIDs[0]), texRefIDs);
 	glDeleteRenderbuffers(sizeof(RBORefIDs) / sizeof(RBORefIDs[0]), RBORefIDs);
@@ -38,7 +40,7 @@ void YesScene::InDtor(){
 	glfwTerminate(); //Clean/Del all GLFW's resources that were allocated
 }
 
-void YesScene::Init(){
+void MyApp::Init(){
 	//Stencil buffer usually contains 8 bits per stencil value that amts to 256 diff stencil values per pixel
 	//Use stencil buffer operations to write to the stencil buffer when rendering frags (read stencil values in the same or following frame(s) to pass or discard frags based on their stencil value)
 	glEnable(GL_STENCIL_TEST); //Discard frags based on frags of other drawn objs in the scene
@@ -122,13 +124,10 @@ void YesScene::Init(){
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	scene->Init();
+	SceneConstruct::Init();
 }
 
-void YesScene::FixedUpdate(float dt){
-}
-
-void YesScene::Update(float dt){
+void MyApp::Update(float dt){
 	if(glfwWindowShouldClose(win)){
 		endLoop = true;
 		return;
@@ -147,19 +146,14 @@ void YesScene::Update(float dt){
 		toggleFullscreenBT = elapsedTime + .5f;
 	}
 
-	scene->Update(dt);
+	SceneConstruct::Update(dt);
 }
 
-void YesScene::LateUpdate(float dt){
-}
-
-void YesScene::PreRender(){
+void MyApp::Render(){
 	//glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE); //Frags update stencil buffer with their ref value when... //++params and options??
 	//glBlendFuncSeparate(GL_ONE, GL_ZERO, GL_DST_ALPHA, GL_DST_ALPHA);
 	//glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_SUBTRACT);
-}
 
-void YesScene::Render(){
 	glViewport(0, 0, 2048, 2048);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)FBO::GeoPass]);
@@ -199,9 +193,7 @@ void YesScene::Render(){
 	glBlitFramebuffer(0, 0, 2048, 2048, 0, 0, winWidth, winHeight, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	scene->ForwardRender();
-}
 
-void YesScene::PostRender(){
 	glfwSwapBuffers(win); //Swap the large 2D colour buffer containing colour values for each pixel in GLFW's window
 	glfwPollEvents(); //Check for triggered events and call corresponding functions registered via callback methods
 }

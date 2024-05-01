@@ -1,5 +1,6 @@
 #include "SpriteAni.h"
-#include "../Engine.h"
+
+#include "../Global/GlobalFuncs.h"
 
 ///Can be improved
 

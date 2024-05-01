@@ -163,7 +163,7 @@ bool MyScene::Init(){
 	return true;
 }
 
-void MyScene::Update(float dt){
+void MyScene::Update(const float dt){
 	FPS = 1.0f / dt;
 	elapsedTime += dt;
 	if(winHeight){ //Avoid division by 0 when win is minimised
@@ -316,7 +316,13 @@ void MyScene::GeoRenderPass(){
 	modelStack.PopModel();
 }
 
-void MyScene::LightingRenderPass(const uint& posTexRefID, const uint& coloursTexRefID, const uint& normalsTexRefID, const uint& specTexRefID, const uint& reflectionTexRefID){
+void MyScene::LightingRenderPass(
+	const uint& posTexRefID,
+	const uint& coloursTexRefID,
+	const uint& normalsTexRefID,
+	const uint& specTexRefID,
+	const uint& reflectionTexRefID
+){
 	lightingPassSP.Use();
 	const int& pAmt = (int)ptLights.size();
 	const int& dAmt = (int)directionalLights.size();

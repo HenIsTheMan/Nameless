@@ -14,9 +14,15 @@ public:
 	MyScene();
 	~MyScene();
 	bool Init();
-	void Update(float dt);
+	void Update(const float dt);
 	void GeoRenderPass();
-	void LightingRenderPass(const uint& posTexRefID, const uint& coloursTexRefID, const uint& normalsTexRefID, const uint& specTexRefID, const uint& reflectionTexRefID);
+	void LightingRenderPass(
+		const uint& posTexRefID,
+		const uint& coloursTexRefID,
+		const uint& normalsTexRefID,
+		const uint& specTexRefID,
+		const uint& reflectionTexRefID
+	);
 	void BlurRender(const uint& brightTexRefID, const bool& horizontal);
 	void DefaultRender(const uint& screenTexRefID, const uint& blurTexRefID);
 	void ForwardRender();

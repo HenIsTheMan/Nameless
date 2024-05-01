@@ -3,9 +3,9 @@
 void (*SceneConstruct::sm_InCtor)() = nullptr;
 void (*SceneConstruct::sm_InDtor)() = nullptr;
 void (*SceneConstruct::sm_Init)() = nullptr;
-void (*SceneConstruct::sm_FixedUpdate)(float dt) = nullptr;
-void (*SceneConstruct::sm_Update)(float dt) = nullptr;
-void (*SceneConstruct::sm_LateUpdate)(float dt) = nullptr;
+void (*SceneConstruct::sm_FixedUpdate)(const float dt) = nullptr;
+void (*SceneConstruct::sm_Update)(const float dt) = nullptr;
+void (*SceneConstruct::sm_LateUpdate)(const float dt) = nullptr;
 void (*SceneConstruct::sm_PreRender)() = nullptr;
 void (*SceneConstruct::sm_Render)() = nullptr;
 void (*SceneConstruct::sm_PostRender)() = nullptr;
@@ -22,15 +22,15 @@ void SceneConstruct::SetInit(void (*init)()){
 	sm_Init = init;
 }
 
-void SceneConstruct::SetFixedUpdate(void (*fixedUpdate)(float dt)){
+void SceneConstruct::SetFixedUpdate(void (*fixedUpdate)(const float dt)){
 	sm_FixedUpdate = fixedUpdate;
 }
 
-void SceneConstruct::SetUpdate(void (*update)(float dt)){
+void SceneConstruct::SetUpdate(void (*update)(const float dt)){
 	sm_Update = update;
 }
 
-void SceneConstruct::SetLateUpdate(void (*lateUpdate)(float dt)){
+void SceneConstruct::SetLateUpdate(void (*lateUpdate)(const float dt)){
 	sm_LateUpdate = lateUpdate;
 }
 
@@ -64,19 +64,19 @@ void SceneConstruct::Init(){
 	}
 }
 
-void SceneConstruct::FixedUpdate(float dt){
+void SceneConstruct::FixedUpdate(const float dt){
 	if(sm_FixedUpdate){
 		sm_FixedUpdate(dt);
 	}
 }
 
-void SceneConstruct::Update(float dt){
+void SceneConstruct::Update(const float dt){
 	if(sm_Update){
 		sm_Update(dt);
 	}
 }
 
-void SceneConstruct::LateUpdate(float dt){
+void SceneConstruct::LateUpdate(const float dt){
 	if(sm_LateUpdate){
 		sm_LateUpdate(dt);
 	}
