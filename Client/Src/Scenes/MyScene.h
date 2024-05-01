@@ -1,9 +1,11 @@
 #pragma once
 
-#include "Plat/Win/App/Scene/Cam/Cam.h"
+#include "Graphics/Cam.h"
+
 #include "Geo/Model.h"
+#include "Geo/ModelStack.h"
+
 #include "Graphics/Light.h"
-#include "Graphics/ModelStack.h"
 #include "Graphics/ShaderProg.h"
 #include "Graphics/TextChief.h"
 

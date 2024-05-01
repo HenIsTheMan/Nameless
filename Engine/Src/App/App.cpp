@@ -1,6 +1,6 @@
 #include "App.h"
 
-#include "../../../Core.h"
+#include "../Core.h"
 
 App::App():
 	dt(0.0f),

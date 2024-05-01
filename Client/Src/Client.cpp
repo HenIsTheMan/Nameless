@@ -1,4 +1,4 @@
-#include "Plat/Win/App/App.h"
+#include "App/App.h"
 
 #include "Scenes/YesScene.h"
 
