@@ -6,15 +6,15 @@ App::App():
 	dt(0.0f),
 	lastFrameTime(0.0f)
 {
-	Scene::InCtor();
+	SceneConstruct::InCtor();
 }
 
 App::~App(){
-	Scene::InDtor();
+	SceneConstruct::InDtor();
 }
 
 void App::Init(){
-	Scene::Init();
+	SceneConstruct::Init();
 }
 
 void App::Update(){
@@ -22,13 +22,13 @@ void App::Update(){
 	dt = currFrameTime - lastFrameTime;
 	lastFrameTime = currFrameTime;
 
-	//Scene::FixedUpdate(dt);
-	Scene::Update(dt);
-	Scene::LateUpdate(dt);
+	//SceneConstruct::FixedUpdate(dt);
+	SceneConstruct::Update(dt);
+	SceneConstruct::LateUpdate(dt);
 }
 
 void App::Render(){
-	Scene::PreRender();
-	Scene::Render();
-	Scene::PostRender();
+	SceneConstruct::PreRender();
+	SceneConstruct::Render();
+	SceneConstruct::PostRender();
 }

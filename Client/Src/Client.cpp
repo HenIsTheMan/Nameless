@@ -5,15 +5,15 @@
 extern bool endLoop;
 
 void MainProcess(){
-	Scene::SetInCtor(YesScene::InCtor);
-	Scene::SetInDtor(YesScene::InDtor);
-	Scene::SetInit(YesScene::Init);
-	Scene::SetFixedUpdate(YesScene::FixedUpdate);
-	Scene::SetUpdate(YesScene::Update);
-	Scene::SetLateUpdate(YesScene::LateUpdate);
-	Scene::SetPreRender(YesScene::PreRender);
-	Scene::SetRender(YesScene::Render);
-	Scene::SetPostRender(YesScene::PostRender);
+	SceneConstruct::SetInCtor(YesScene::InCtor);
+	SceneConstruct::SetInDtor(YesScene::InDtor);
+	SceneConstruct::SetInit(YesScene::Init);
+	SceneConstruct::SetFixedUpdate(YesScene::FixedUpdate);
+	SceneConstruct::SetUpdate(YesScene::Update);
+	SceneConstruct::SetLateUpdate(YesScene::LateUpdate);
+	SceneConstruct::SetPreRender(YesScene::PreRender);
+	SceneConstruct::SetRender(YesScene::Render);
+	SceneConstruct::SetPostRender(YesScene::PostRender);
 
 	App* app = new App();
 	app->Init();

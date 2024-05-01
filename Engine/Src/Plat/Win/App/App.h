@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Scene/Scene.h"
+#include "Scene/SceneConstruct.h"
 
 class App final{
 public:

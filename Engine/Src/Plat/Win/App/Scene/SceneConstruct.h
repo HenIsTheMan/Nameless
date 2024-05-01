@@ -2,13 +2,13 @@
 
 class App;
 
-class Scene final{ //Static class
-	Scene() = delete;
-	~Scene() = delete;
-	Scene(const Scene&) = delete;
-	Scene(Scene&&) noexcept = delete;
-	Scene& operator=(const Scene&) = delete;
-	Scene& operator=(Scene&&) noexcept = delete;
+class SceneConstruct final{ //Static class
+	SceneConstruct() = delete;
+	~SceneConstruct() = delete;
+	SceneConstruct(const SceneConstruct&) = delete;
+	SceneConstruct(SceneConstruct&&) noexcept = delete;
+	SceneConstruct& operator=(const SceneConstruct&) = delete;
+	SceneConstruct& operator=(SceneConstruct&&) noexcept = delete;
 
 	friend App;
 public:
