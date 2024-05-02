@@ -12,23 +12,47 @@ class AppConstruct final{ //Static class
 
 	friend static void MainProcess();
 public:
-	static void SetInCtor(void (*inCtor)());
-	static void SetInDtor(void (*inDtor)());
-	static void SetInit(void (*init)());
-	static void SetUpdate(void (*update)(const float dt));
-	static void SetRender(void (*render)());
+	template <class T>
+	static void SetInCtor(void (T::*inCtor)());
+
+	template <class T>
+	static void SetInDtor(void (T::*inDtor)());
+
+	template <class T>
+	static void SetInit(void (T::*init)());
+
+	template <class T>
+	static void SetUpdate(void (T::*update)(const float dt));
+
+	template <class T>
+	static void SetRender(void (T::*render)());
 private:
-	static void (*sm_InCtor)();
-	static void (*sm_InDtor)();
-	static void (*sm_Init)();
-	static void (*sm_Update)(const float dt);
-	static void (*sm_Render)();
+	template <class T>
+	static void (T::*sm_InCtor)();
+
+	template <class T>
+	static void (T::*sm_InDtor)();
+
+	template <class T>
+	static void (T::*sm_Init)();
+
+	template <class T>
+	static void (T::*sm_Update)(const float dt);
+
+	template <class T>
+	static void (T::*sm_Render)();
 
 	static void InCtor();
+
 	static void InDtor();
+
 	static void Init();
+
 	static void Update();
+
 	static void Render();
 
 	static float lastFrameTime;
 };
+
+#include "AppConstruct.inl"
