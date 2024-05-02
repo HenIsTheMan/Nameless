@@ -53,12 +53,15 @@ private:
 	Model* models[(int)ModelType::Amt];
 
 	ShaderProg blurSP;
-	ShaderProg forwardSP;
-	ShaderProg geoPassSP;
 	ShaderProg lightingPassSP;
 	ShaderProg normalsSP;
 	ShaderProg screenSP;
 	ShaderProg textSP;
+
+
+	ShaderProg* forwardSP;
+	ShaderProg* geoPassSP;
+
 
 	std::vector<Light*> ptLights;
 	std::vector<Light*> directionalLights;

@@ -48,8 +48,8 @@ MyScene::MyScene():
 		}),
 	},
 	blurSP{"Shaders/Quad.vs", "Shaders/Blur.fs"},
-	forwardSP{"Shaders/Forward.vs", "Shaders/Forward.fs"},
-	geoPassSP{"Shaders/GeoPass.vs", "Shaders/GeoPass.fs"},
+	forwardSP(nullptr),
+	geoPassSP(nullptr),
 	lightingPassSP{"Shaders/Quad.vs", "Shaders/LightingPass.fs"},
 	normalsSP{"Shaders/Normals.vs", "Shaders/Normals.fs", "Shaders/Normals.gs"}, //??
 	screenSP{"Shaders/Quad.vs", "Shaders/Screen.fs"},
@@ -67,6 +67,16 @@ MyScene::MyScene():
 }
 
 MyScene::~MyScene(){
+	if(forwardSP != nullptr){
+		delete forwardSP;
+		forwardSP = nullptr;
+	}
+
+	if(geoPassSP != nullptr){
+		delete geoPassSP;
+		geoPassSP = nullptr;
+	}
+
 	const size_t& pSize = ptLights.size();
 	const size_t& dSize = directionalLights.size();
 	const size_t& sSize = spotlights.size();
@@ -111,6 +121,19 @@ MyScene::~MyScene(){
 
 bool MyScene::Init(){
 	glGetIntegerv(GL_POLYGON_MODE, &polyMode);
+
+
+	int maxTexImgUnits;
+	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxTexImgUnits);
+
+	if(maxTexImgUnits >= 32){
+		forwardSP = new ShaderProg("Shaders/Forward.vs", "Shaders/Forward28.fs");
+		geoPassSP = new ShaderProg("Shaders/GeoPass.vs", "Shaders/GeoPass28.fs");
+	} else{
+		forwardSP = new ShaderProg("Shaders/Forward.vs", "Shaders/Forward12.fs");
+		geoPassSP = new ShaderProg("Shaders/GeoPass.vs", "Shaders/GeoPass12.fs");
+	}
+
 
 	soundEngine = createIrrKlangDevice(ESOD_AUTO_DETECT, ESEO_DEFAULT_OPTIONS & ~ESEO_PRINT_DEBUG_INFO_TO_DEBUGGER);
 	if(!soundEngine){
@@ -230,41 +253,31 @@ void MyScene::Update(const float dt){
 }
 
 void MyScene::GeoRenderPass(){
-	geoPassSP.Use();
-	geoPassSP.SetMat4fv("PV", &(projection * glm::mat4(glm::mat3(view)))[0][0]);
-
-
-
-
-	int maxTexImgUnits;
-	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxTexImgUnits);
-	geoPassSP.Set1i("maxTexImgUnits", maxTexImgUnits);
-
-
-
+	geoPassSP->Use();
+	geoPassSP->SetMat4fv("PV", &(projection * glm::mat4(glm::mat3(view)))[0][0]);
 
 	///Sky
 	glDepthFunc(GL_LEQUAL); //Modify comparison operators used for depth test such that frags with depth <= 1.f are shown
 	glCullFace(GL_FRONT);
-	geoPassSP.Set1i("sky", 1);
+	geoPassSP->Set1i("sky", 1);
 	modelStack.PushModel({
 		modelStack.Rotate(glm::vec4(0.f, 1.f, 0.f, glfwGetTime())),
 	});
 		meshes[(int)MeshType::Sphere]->SetModel(modelStack.GetTopModel());
-		meshes[(int)MeshType::Sphere]->Render(geoPassSP);
+		meshes[(int)MeshType::Sphere]->Render(*geoPassSP);
 	modelStack.PopModel();
-	geoPassSP.Set1i("sky", 0);
+	geoPassSP->Set1i("sky", 0);
 	glCullFace(GL_BACK);
 	glDepthFunc(GL_LESS);
 
-	geoPassSP.SetMat4fv("PV", &(projection * view)[0][0]);
+	geoPassSP->SetMat4fv("PV", &(projection * view)[0][0]);
 
 	///Terrain
 	modelStack.PushModel({
 		modelStack.Scale(glm::vec3(500.f, 100.f, 500.f)),
 	});
 		meshes[(int)MeshType::Terrain]->SetModel(modelStack.GetTopModel());
-		meshes[(int)MeshType::Terrain]->Render(geoPassSP);
+		meshes[(int)MeshType::Terrain]->Render(*geoPassSP);
 	modelStack.PopModel();
 
 	///Nanosuits
@@ -274,7 +287,7 @@ void MyScene::GeoRenderPass(){
 		modelStack.Scale(glm::vec3(5.f)),
 	});
 		models[(int)ModelType::Suit]->SetModelForAll(modelStack.GetTopModel());
-		models[(int)ModelType::Suit]->Render(geoPassSP);
+		models[(int)ModelType::Suit]->Render(*geoPassSP);
 	modelStack.PopModel();
 	modelStack.PushModel({
 		modelStack.Translate(glm::vec3(0.f, 100.f, 0.f)),
@@ -282,7 +295,7 @@ void MyScene::GeoRenderPass(){
 		modelStack.Scale(glm::vec3(.5f)),
 	});
 		models[(int)ModelType::Suit]->SetModelForAll(modelStack.GetTopModel());
-		models[(int)ModelType::Suit]->InstancedRender(geoPassSP);
+		models[(int)ModelType::Suit]->InstancedRender(*geoPassSP);
 	modelStack.PopModel();
 
 	///Shapes
@@ -293,24 +306,24 @@ void MyScene::GeoRenderPass(){
 		modelStack.PushModel({
 			modelStack.Translate(glm::vec3(6.f, 0.f, 0.f)),
 		});
-			geoPassSP.Set1i("noNormals", 1);
-			geoPassSP.Set1i("useCustomColour", 1);
-			geoPassSP.Set4fv("customColour", glm::vec4(glm::vec3(5.f), 1.f));
+			geoPassSP->Set1i("noNormals", 1);
+			geoPassSP->Set1i("useCustomColour", 1);
+			geoPassSP->Set4fv("customColour", glm::vec4(glm::vec3(5.f), 1.f));
 			meshes[(int)MeshType::Quad]->SetModel(modelStack.GetTopModel());
-			meshes[(int)MeshType::Quad]->Render(geoPassSP);
-			geoPassSP.Set1i("useCustomColour", 0);
-			geoPassSP.Set1i("noNormals", 0);
+			meshes[(int)MeshType::Quad]->Render(*geoPassSP);
+			geoPassSP->Set1i("useCustomColour", 0);
+			geoPassSP->Set1i("noNormals", 0);
 			modelStack.PushModel({
 				modelStack.Translate(glm::vec3(0.f, 0.f, 5.f)),
 			});
 				meshes[(int)MeshType::Sphere]->SetModel(modelStack.GetTopModel());
-				meshes[(int)MeshType::Sphere]->Render(geoPassSP);
+				meshes[(int)MeshType::Sphere]->Render(*geoPassSP);
 			modelStack.PopModel();
 			modelStack.PushModel({
 				modelStack.Translate(glm::vec3(0.f, 0.f, -5.f)),
 			});
 				meshes[(int)MeshType::Cylinder]->SetModel(modelStack.GetTopModel());
-				meshes[(int)MeshType::Cylinder]->Render(geoPassSP);
+				meshes[(int)MeshType::Cylinder]->Render(*geoPassSP);
 			modelStack.PopModel();
 		modelStack.PopModel();
 	modelStack.PopModel();
@@ -394,58 +407,49 @@ void MyScene::DefaultRender(const uint& screenTexRefID, const uint& blurTexRefID
 }
 
 void MyScene::ForwardRender(){
-	forwardSP.Use();
+	forwardSP->Use();
 
 	const int& pAmt = 0;
 	const int& dAmt = 0;
 	const int& sAmt = 0;
 
-	forwardSP.Set1f("shininess", 32.f); //More light scattering if lower
-	forwardSP.Set3fv("globalAmbient", Light::globalAmbient);
-	forwardSP.Set3fv("camWorldSpacePos", cam.GetPos());
-	forwardSP.Set1i("pAmt", pAmt);
-	forwardSP.Set1i("dAmt", dAmt);
-	forwardSP.Set1i("sAmt", sAmt);
-
-
-
-	int maxTexImgUnits;
-	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxTexImgUnits);
-	forwardSP.Set1i("maxTexImgUnits", maxTexImgUnits);
-
-
-
+	forwardSP->Set1f("shininess", 32.f); //More light scattering if lower
+	forwardSP->Set3fv("globalAmbient", Light::globalAmbient);
+	forwardSP->Set3fv("camWorldSpacePos", cam.GetPos());
+	forwardSP->Set1i("pAmt", pAmt);
+	forwardSP->Set1i("dAmt", dAmt);
+	forwardSP->Set1i("sAmt", sAmt);
 
 	int i;
 	for(i = 0; i < pAmt; ++i){
 		const PtLight* const& ptLight = static_cast<PtLight*>(ptLights[i]);
-		forwardSP.Set3fv(("ptLights[" + std::to_string(i) + "].ambient").c_str(), ptLight->ambient);
-		forwardSP.Set3fv(("ptLights[" + std::to_string(i) + "].diffuse").c_str(), ptLight->diffuse);
-		forwardSP.Set3fv(("ptLights[" + std::to_string(i) + "].spec").c_str(), ptLight->spec);
-		forwardSP.Set3fv(("ptLights[" + std::to_string(i) + "].pos").c_str(), ptLight->pos);
-		forwardSP.Set1f(("ptLights[" + std::to_string(i) + "].constant").c_str(), ptLight->constant);
-		forwardSP.Set1f(("ptLights[" + std::to_string(i) + "].linear").c_str(), ptLight->linear);
-		forwardSP.Set1f(("ptLights[" + std::to_string(i) + "].quadratic").c_str(), ptLight->quadratic);
+		forwardSP->Set3fv(("ptLights[" + std::to_string(i) + "].ambient").c_str(), ptLight->ambient);
+		forwardSP->Set3fv(("ptLights[" + std::to_string(i) + "].diffuse").c_str(), ptLight->diffuse);
+		forwardSP->Set3fv(("ptLights[" + std::to_string(i) + "].spec").c_str(), ptLight->spec);
+		forwardSP->Set3fv(("ptLights[" + std::to_string(i) + "].pos").c_str(), ptLight->pos);
+		forwardSP->Set1f(("ptLights[" + std::to_string(i) + "].constant").c_str(), ptLight->constant);
+		forwardSP->Set1f(("ptLights[" + std::to_string(i) + "].linear").c_str(), ptLight->linear);
+		forwardSP->Set1f(("ptLights[" + std::to_string(i) + "].quadratic").c_str(), ptLight->quadratic);
 	}
 	for(i = 0; i < dAmt; ++i){
 		const DirectionalLight* const& directionalLight = static_cast<DirectionalLight*>(directionalLights[i]);
-		forwardSP.Set3fv(("directionalLights[" + std::to_string(i) + "].ambient").c_str(), directionalLight->ambient);
-		forwardSP.Set3fv(("directionalLights[" + std::to_string(i) + "].diffuse").c_str(), directionalLight->diffuse);
-		forwardSP.Set3fv(("directionalLights[" + std::to_string(i) + "].spec").c_str(), directionalLight->spec);
-		forwardSP.Set3fv(("directionalLights[" + std::to_string(i) + "].dir").c_str(), directionalLight->dir);
+		forwardSP->Set3fv(("directionalLights[" + std::to_string(i) + "].ambient").c_str(), directionalLight->ambient);
+		forwardSP->Set3fv(("directionalLights[" + std::to_string(i) + "].diffuse").c_str(), directionalLight->diffuse);
+		forwardSP->Set3fv(("directionalLights[" + std::to_string(i) + "].spec").c_str(), directionalLight->spec);
+		forwardSP->Set3fv(("directionalLights[" + std::to_string(i) + "].dir").c_str(), directionalLight->dir);
 	}
 	for(i = 0; i < sAmt; ++i){
 		const Spotlight* const& spotlight = static_cast<Spotlight*>(spotlights[i]);
-		forwardSP.Set3fv(("spotlights[" + std::to_string(i) + "].ambient").c_str(), spotlight->ambient);
-		forwardSP.Set3fv(("spotlights[" + std::to_string(i) + "].diffuse").c_str(), spotlight->diffuse);
-		forwardSP.Set3fv(("spotlights[" + std::to_string(i) + "].spec").c_str(), spotlight->spec);
-		forwardSP.Set3fv(("spotlights[" + std::to_string(i) + "].pos").c_str(), spotlight->pos);
-		forwardSP.Set3fv(("spotlights[" + std::to_string(i) + "].dir").c_str(), spotlight->dir);
-		forwardSP.Set1f(("spotlights[" + std::to_string(i) + "].cosInnerCutoff").c_str(), spotlight->cosInnerCutoff);
-		forwardSP.Set1f(("spotlights[" + std::to_string(i) + "].cosOuterCutoff").c_str(), spotlight->cosOuterCutoff);
+		forwardSP->Set3fv(("spotlights[" + std::to_string(i) + "].ambient").c_str(), spotlight->ambient);
+		forwardSP->Set3fv(("spotlights[" + std::to_string(i) + "].diffuse").c_str(), spotlight->diffuse);
+		forwardSP->Set3fv(("spotlights[" + std::to_string(i) + "].spec").c_str(), spotlight->spec);
+		forwardSP->Set3fv(("spotlights[" + std::to_string(i) + "].pos").c_str(), spotlight->pos);
+		forwardSP->Set3fv(("spotlights[" + std::to_string(i) + "].dir").c_str(), spotlight->dir);
+		forwardSP->Set1f(("spotlights[" + std::to_string(i) + "].cosInnerCutoff").c_str(), spotlight->cosInnerCutoff);
+		forwardSP->Set1f(("spotlights[" + std::to_string(i) + "].cosOuterCutoff").c_str(), spotlight->cosOuterCutoff);
 	}
 
-	forwardSP.SetMat4fv("PV", &(projection * view)[0][0]);
+	forwardSP->SetMat4fv("PV", &(projection * view)[0][0]);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	///Shapes
@@ -453,34 +457,34 @@ void MyScene::ForwardRender(){
 		modelStack.Translate(glm::vec3(0.f, 100.f, 0.f)),
 		modelStack.Scale(glm::vec3(10.f)),
 	});
-		forwardSP.Set1i("useCustomColour", 1);
-		forwardSP.Set4fv("customColour", glm::vec4(glm::rgbColor(glm::vec3(1.f, PseudorandMinMax(0.f, 255.f), 1.f)) * .5f, .5f));
+		forwardSP->Set1i("useCustomColour", 1);
+		forwardSP->Set4fv("customColour", glm::vec4(glm::rgbColor(glm::vec3(1.f, PseudorandMinMax(0.f, 255.f), 1.f)) * .5f, .5f));
 		meshes[(int)MeshType::Cylinder]->SetModel(modelStack.GetTopModel());
-		meshes[(int)MeshType::Cylinder]->Render(forwardSP);
-		forwardSP.Set1i("useCustomColour", 0);
+		meshes[(int)MeshType::Cylinder]->Render(*forwardSP);
+		forwardSP->Set1i("useCustomColour", 0);
 		modelStack.PushModel({
 			modelStack.Translate(glm::vec3(-3.f, 0.f, 0.f)),
 		});
-			forwardSP.Set1i("useCustomColour", 1);
-			forwardSP.Set4fv("customColour", glm::vec4(glm::rgbColor(glm::vec3(1.f, 1.f, PseudorandMinMax(0.f, 255.f))) * 7.f, .3f));
-			forwardSP.Set1i("useCustomDiffuseTexIndex", 1);
-			forwardSP.Set1i("customDiffuseTexIndex", -1);
+			forwardSP->Set1i("useCustomColour", 1);
+			forwardSP->Set4fv("customColour", glm::vec4(glm::rgbColor(glm::vec3(1.f, 1.f, PseudorandMinMax(0.f, 255.f))) * 7.f, .3f));
+			forwardSP->Set1i("useCustomDiffuseTexIndex", 1);
+			forwardSP->Set1i("customDiffuseTexIndex", -1);
 			meshes[(int)MeshType::Sphere]->SetModel(modelStack.GetTopModel());
-			meshes[(int)MeshType::Sphere]->Render(forwardSP);
-			forwardSP.Set1i("useCustomDiffuseTexIndex", 0);
-			forwardSP.Set1i("useCustomColour", 0);
+			meshes[(int)MeshType::Sphere]->Render(*forwardSP);
+			forwardSP->Set1i("useCustomDiffuseTexIndex", 0);
+			forwardSP->Set1i("useCustomColour", 0);
 		modelStack.PopModel();
 		modelStack.PushModel({
 			modelStack.Translate(glm::vec3(3.f, 0.f, 0.f)),
 		});
-			forwardSP.Set1i("useCustomColour", 1);
-			forwardSP.Set4fv("customColour", glm::vec4(glm::rgbColor(glm::vec3(PseudorandMinMax(0.f, 255.f), 1.f, 1.f)) * .5f, .7f));
-			forwardSP.Set1i("useCustomDiffuseTexIndex", 1);
-			forwardSP.Set1i("customDiffuseTexIndex", -1);
+			forwardSP->Set1i("useCustomColour", 1);
+			forwardSP->Set4fv("customColour", glm::vec4(glm::rgbColor(glm::vec3(PseudorandMinMax(0.f, 255.f), 1.f, 1.f)) * .5f, .7f));
+			forwardSP->Set1i("useCustomDiffuseTexIndex", 1);
+			forwardSP->Set1i("customDiffuseTexIndex", -1);
 			meshes[(int)MeshType::Cube]->SetModel(modelStack.GetTopModel());
-			meshes[(int)MeshType::Cube]->Render(forwardSP);
-			forwardSP.Set1i("useCustomDiffuseTexIndex", 0);
-			forwardSP.Set1i("useCustomColour", 0);
+			meshes[(int)MeshType::Cube]->Render(*forwardSP);
+			forwardSP->Set1i("useCustomDiffuseTexIndex", 0);
+			forwardSP->Set1i("useCustomColour", 0);
 		modelStack.PopModel();
 	modelStack.PopModel();
 
@@ -489,13 +493,13 @@ void MyScene::ForwardRender(){
 		modelStack.Translate(glm::vec3(0.f, 50.f, 0.f)),
 		modelStack.Scale(glm::vec3(20.f, 40.f, 20.f)),
 	});
-		forwardSP.Set1i("noNormals", 1);
-		forwardSP.Set1i("useCustomColour", 1);
-		forwardSP.Set4fv("customColour", glm::vec4(glm::vec3(1.f), 1.f));
+		forwardSP->Set1i("noNormals", 1);
+		forwardSP->Set1i("useCustomColour", 1);
+		forwardSP->Set4fv("customColour", glm::vec4(glm::vec3(1.f), 1.f));
 		meshes[(int)MeshType::SpriteAni]->SetModel(modelStack.GetTopModel());
-		meshes[(int)MeshType::SpriteAni]->Render(forwardSP);
-		forwardSP.Set1i("useCustomColour", 0);
-		forwardSP.Set1i("noNormals", 0);
+		meshes[(int)MeshType::SpriteAni]->Render(*forwardSP);
+		forwardSP->Set1i("useCustomColour", 0);
+		forwardSP->Set1i("noNormals", 0);
 	modelStack.PopModel();
 
 	textChief.RenderText(textSP, {
