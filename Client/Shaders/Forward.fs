@@ -66,12 +66,12 @@ uniform bool useReflectionMap;
 
 
 
-flat in int myMaxTextImgUnits;
+uniform int maxTexImgUnits;
 
-#if (myMaxTextImgUnits >= 32)
+#if (maxTexImgUnits >= 32)
     #define MAX_TEX_IMG_UNITS 28 //32 - 4
 #else
-    #define MAX_TEX_IMG_UNITS 29 //16 - 4
+    #define MAX_TEX_IMG_UNITS 12 //16 - 4
 #endif
 
 #ifdef MAX_TEX_IMG_UNITS

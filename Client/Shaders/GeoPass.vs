@@ -15,13 +15,6 @@ out myInterface{
 	flat int diffuseTexIndex;
 } vsOut;
 
-
-
-flat out int myMaxTexImgUnits;
-uniform int maxTexImgUnits;
-
-
-
 uniform mat4 PV;
 uniform mat4 model;
 
@@ -33,10 +26,6 @@ uniform bool noNormals;
 uniform bool sky;
 
 void main(){
-	myMaxTexImgUnits = maxTexImgUnits;
-
-
-
 	vsOut.pos = vec3((instancing ? model * modelMat : model) * vec4(pos, 1.f));
 	vsOut.colour = colour;
 	vsOut.texCoords = texCoords;
