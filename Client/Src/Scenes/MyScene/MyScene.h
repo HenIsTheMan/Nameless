@@ -13,6 +13,7 @@ class MyScene final{
 public:
 	MyScene();
 	~MyScene();
+
 	bool Init();
 	void Update(const float dt);
 	void GeoRenderPass();

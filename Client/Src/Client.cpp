@@ -1,37 +1,26 @@
 #include "Engine.h"
 
-#include "Constructs/SceneConstruct/SceneConstruct.h"
-
 #include "MyApp/MyApp.h"
-#include "Scenes/MyScene/MyScene.h"
 
-void User(const int argc, const char* const* const argv){
-	MyApp* myApp = new MyApp();
-	MyScene* myScene = new MyScene();
+static MyApp* myAppPtr;
 
-	AppConstruct::SetInCtor(MyApp::InCtor);
-	AppConstruct::SetInDtor(MyApp::InDtor);
-	AppConstruct::SetInit(MyApp::Init);
-	AppConstruct::SetUpdate(MyApp::Update);
-	AppConstruct::SetRender(MyApp::Render);
+void AppInit(){
+	myAppPtr = new MyApp();
 
-	//SceneConstruct::SetInCtor(myScene->InCtor);
-	//SceneConstruct::SetInDtor(void (*inDtor)());
-	//SceneConstruct::SetInit(void (*init)());
-	//SceneConstruct::SetFixedUpdate(void (*fixedUpdate)(const float dt));
-	//SceneConstruct::SetUpdate(void (*update)(const float dt));
-	//SceneConstruct::SetLateUpdate(void (*lateUpdate)(const float dt));
-	//SceneConstruct::SetPreRender(void (*preRender)());
-	//SceneConstruct::SetRender(void (*render)());
-	//SceneConstruct::SetPostRender(void (*postRender)());
+	myAppPtr->Init();
+}
 
-	if(myApp != nullptr){
-		delete myApp;
-		myApp = nullptr;
-	}
+void AppUpdate(const float dt){
+	myAppPtr->Update(dt);
+}
 
-	if(myScene != nullptr){
-		delete myScene;
-		myScene = nullptr;
+void AppRender(){
+	myAppPtr->Render();
+}
+
+void AppTerminate(){
+	if(myAppPtr != nullptr){
+		delete myAppPtr;
+		myAppPtr = nullptr;
 	}
 }

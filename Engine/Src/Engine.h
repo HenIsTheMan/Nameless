@@ -1,35 +1,42 @@
 #pragma once
 
-#include "Constructs/AppConstruct/AppConstruct.h"
-
 #include "Global/GlobalFuncs.h"
 
 extern bool endLoop;
+extern int myArgc;
+extern const char* const* myArgv;
 
-static void User(const int argc, const char* const* const argv); //Forward declaration
-
-///Hmmmm
-static int myArgc;
-static const char* const* myArgv;
+//* Forward declarations
+static void AppInit();
+static void AppUpdate(const float dt);
+static void AppRender();
+static void AppTerminate();
+//*/
 
 static void MainProcess(){
-	User(myArgc, myArgv);
+	AppInit();
 
-	AppConstruct::InCtor();
-
-	AppConstruct::Init();
+	float currFrameTime;
+	float dt;
+	float lastFrameTime = 0.0f;
 
 	while(!endLoop){
-		AppConstruct::Update();
-		AppConstruct::Render();
+		currFrameTime = (float)glfwGetTime();
+
+		dt = currFrameTime - lastFrameTime;
+
+		lastFrameTime = currFrameTime;
+
+		AppUpdate(dt);
+		AppRender();
 	}
 
-	AppConstruct::InDtor();
+	AppTerminate();
 }
 
 int main(const int argc, const char* const* const argv){
 	if(!InitConsole()){
-		return;
+		return -1;
 	}
 
 	myArgc = argc;

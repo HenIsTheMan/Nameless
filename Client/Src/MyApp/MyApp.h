@@ -2,14 +2,15 @@
 
 #include "Global/GlobalFuncs.h"
 
+#include "../Scenes/MyScene/MyScene.h"
+
 class MyApp final{
 public:
 	MyApp();
+	~MyApp();
 
-	void InCtor();
-	void InDtor();
 	void Init();
-	void Update(float dt);
+	void Update(const float dt);
 	void Render();
 private:
 	enum struct FBO{
@@ -43,4 +44,6 @@ private:
 	uint FBORefIDs[(int)FBO::Amt];
 	uint texRefIDs[(int)Tex::Amt];
 	uint RBORefIDs[1];
+
+	MyScene* myScenePtr;
 };

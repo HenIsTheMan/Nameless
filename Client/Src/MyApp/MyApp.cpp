@@ -1,7 +1,5 @@
 #include "MyApp.h"
 
-#include "Constructs/SceneConstruct/SceneConstruct.h"
-
 extern bool endLoop;
 extern int optimalWinXPos;
 extern int optimalWinYPos;
@@ -17,21 +15,20 @@ MyApp::MyApp():
 	win(nullptr),
 	FBORefIDs{},
 	texRefIDs{},
-	RBORefIDs()
+	RBORefIDs(),
+	myScenePtr(new MyScene())
 {
-}
-
-void MyApp::InCtor(){
 	if(!InitAPI(win)){
 		(void)puts("Failed to init API\n");
 		endLoop = true;
 	}
-
-	SceneConstruct::InCtor();
 }
 
-void MyApp::InDtor(){
-	SceneConstruct::InDtor();
+MyApp::~MyApp(){
+	if(myScenePtr != nullptr){
+		delete myScenePtr;
+		myScenePtr = nullptr;
+	}
 
 	glDeleteTextures(sizeof(texRefIDs) / sizeof(texRefIDs[0]), texRefIDs);
 	glDeleteRenderbuffers(sizeof(RBORefIDs) / sizeof(RBORefIDs[0]), RBORefIDs);
@@ -124,10 +121,10 @@ void MyApp::Init(){
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	SceneConstruct::Init();
+	myScenePtr->Init();
 }
 
-void MyApp::Update(float dt){
+void MyApp::Update(const float dt){
 	if(glfwWindowShouldClose(win)){
 		endLoop = true;
 		return;
@@ -146,7 +143,7 @@ void MyApp::Update(float dt){
 		toggleFullscreenBT = elapsedTime + .5f;
 	}
 
-	SceneConstruct::Update(dt);
+	myScenePtr->Update(dt);
 }
 
 void MyApp::Render(){
@@ -165,18 +162,24 @@ void MyApp::Render(){
 	uint arr1[5]{GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4};
 	glDrawBuffers(sizeof(arr1) / sizeof(arr1[0]), arr1);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); //State-using func
-	scene->GeoRenderPass();
+	myScenePtr->GeoRenderPass();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[(int)FBO::LightingPass]);
 	uint arr2[2]{GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
 	glDrawBuffers(sizeof(arr2) / sizeof(arr2[0]), arr2);
-	scene->LightingRenderPass(texRefIDs[(int)Tex::Pos], texRefIDs[(int)Tex::Colours], texRefIDs[(int)Tex::Normals], texRefIDs[(int)Tex::Spec], texRefIDs[(int)Tex::Reflection]);
+	myScenePtr->LightingRenderPass(
+		texRefIDs[(int)Tex::Pos],
+		texRefIDs[(int)Tex::Colours],
+		texRefIDs[(int)Tex::Normals],
+		texRefIDs[(int)Tex::Spec],
+		texRefIDs[(int)Tex::Reflection]
+	);
 
 	bool horizontal = true;
 	const short amt = 12;
 	for(short i = 0; i < amt; ++i){ //Blur... amt / 2 times horizontally and amt / 2 times vertically
 		glBindFramebuffer(GL_FRAMEBUFFER, FBORefIDs[int(FBO::PingPong0) + int(horizontal)]);
-		scene->BlurRender(!i ? texRefIDs[(int)Tex::Bright] : texRefIDs[int(Tex::PingPong0) + int(horizontal)], horizontal);
+		myScenePtr->BlurRender(!i ? texRefIDs[(int)Tex::Bright] : texRefIDs[int(Tex::PingPong0) + int(horizontal)], horizontal);
 		horizontal = !horizontal;
 	}
 
@@ -184,7 +187,7 @@ void MyApp::Render(){
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClearColor(1.f, 0.82f, 0.86f, 1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	scene->DefaultRender(texRefIDs[(int)Tex::Lit], texRefIDs[int(Tex::PingPong0) + int(!horizontal)]);
+	myScenePtr->DefaultRender(texRefIDs[(int)Tex::Lit], texRefIDs[int(Tex::PingPong0) + int(!horizontal)]);
 
 	glViewport(0, 0, 2048, 2048);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, FBORefIDs[(int)FBO::GeoPass]);
@@ -192,7 +195,7 @@ void MyApp::Render(){
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glBlitFramebuffer(0, 0, 2048, 2048, 0, 0, winWidth, winHeight, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	scene->ForwardRender();
+	myScenePtr->ForwardRender();
 
 	glfwSwapBuffers(win); //Swap the large 2D colour buffer containing colour values for each pixel in GLFW's window
 	glfwPollEvents(); //Check for triggered events and call corresponding functions registered via callback methods

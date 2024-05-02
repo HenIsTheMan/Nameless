@@ -16,10 +16,8 @@
     <ClInclude Include="Src\Graphics\TextChief.h" />
     <ClInclude Include="Src\Vendor\stb_image.h" />
     <ClInclude Include="Src\Math\Pseudorand.h" />
-    <ClInclude Include="Src\Constructs\SceneConstruct\SceneConstruct.h" />
     <ClInclude Include="Src\Graphics\Cam.h" />
     <ClInclude Include="Src\Geo\ModelStack.h" />
-    <ClInclude Include="Src\Constructs\AppConstruct\AppConstruct.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\Geo\Mesh.cpp" />
@@ -31,11 +29,9 @@
     <ClCompile Include="Src\Graphics\TextChief.cpp" />
     <ClCompile Include="Src\Vendor\glad.c" />
     <ClCompile Include="Src\Graphics\Cam.cpp" />
-    <ClCompile Include="Src\Constructs\SceneConstruct\SceneConstruct.cpp" />
     <ClCompile Include="Src\Geo\ModelStack.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Src\Math\Pseudorand.inl" />
-    <None Include="Src\Constructs\AppConstruct\AppConstruct.inl" />
   </ItemGroup>
 </Project>
