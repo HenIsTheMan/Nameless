@@ -9,8 +9,8 @@ extern bool LMB;
 extern bool RMB;
 extern float pitch;
 extern float yaw;
-extern float lastX;
-extern float lastY;
+extern double lastX;
+extern double lastY;
 extern float SENS;
 extern float angularFOV;
 extern int optimalWinXPos;
@@ -144,20 +144,20 @@ static void FramebufferSizeCallback(GLFWwindow* window, int width, int height){ 
 }
 
 static void InitialCursorPosCallback(GLFWwindow* window, double xPos, double yPos){
-    lastX = float(xPos);
-    lastY = float(yPos);
+    lastX = xPos;
+    lastY = yPos;
 
     glfwSetCursorPosCallback(window, CursorPosCallback);
 }
 
 static void CursorPosCallback(GLFWwindow* window, double xPos, double yPos){
     //* Add mouse movement offset between last frame and curr frame
-    yaw -= (float(xPos) - lastX) * SENS;
-    pitch -= (float(yPos) - lastY) * SENS;
+    yaw += float((xPos - lastX) * SENS);
+    pitch += float((yPos - lastY) * SENS);
     //*/
 
-    lastX = float(xPos);
-    lastY = float(yPos);
+    lastX = xPos;
+    lastY = yPos;
 }
 
 static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods){ //For mouse buttons

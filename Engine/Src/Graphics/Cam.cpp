@@ -3,19 +3,19 @@
 #include "../Global/GlobalFuncs.h"
 #include "../Global/GlobalVars.h"
 
+///Not to be used
 Cam::Cam():
-	aspectRatio(0.f),
-	spd(0.f),
-	pos(glm::vec3(0.f)),
-	target(glm::vec3(0.f)),
-	defaultAspectRatio(0.f),
-	defaultSpd(0.f),
-	defaultPos(glm::vec3(0.f)),
-	defaultTarget(glm::vec3(0.f))
+	Cam(
+		glm::vec3(0.0f),
+		glm::vec3(0.0f),
+		0.0f,
+		0.0f
+	)
 {
+	assert(false);
 }
 
-Cam::Cam(const glm::vec3& pos, const glm::vec3& target, const float& aspectRatio, const float& spd):
+Cam::Cam(const glm::vec3& pos, const glm::vec3& target, const float aspectRatio, const float spd):
 	aspectRatio(aspectRatio),
 	spd(spd),
 	pos(pos),
@@ -27,36 +27,31 @@ Cam::Cam(const glm::vec3& pos, const glm::vec3& target, const float& aspectRatio
 {
 }
 
-glm::vec3 Cam::CalcFront(const bool& normalised) const{
-	const glm::vec3 camFront = target - pos;
-	return normalised && camFront != glm::vec3(0.f) ? glm::normalize(camFront) : glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 Cam::CalcFront() const{
+	return glm::normalize(target - pos);
 }
 
 glm::vec3 Cam::CalcRight() const{
-	const glm::vec3 front = CalcFront();
-	const glm::vec3 camRight = glm::cross(front, {0.0f, -front.z / abs(front.z), 0.0f});
-	return camRight != glm::vec3(0.f) ? glm::normalize(camRight) : glm::vec3(1.0f, 0.0f, 0.0f);
+	return glm::cross(CalcFront(), glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
 glm::vec3 Cam::CalcUp() const{
-	const glm::vec3 camUp = glm::cross(CalcRight(), CalcFront());
-	return camUp != glm::vec3(0.f) ? glm::normalize(camUp) : glm::vec3(0.0f, 1.0f, 0.0f);
+	return glm::cross(CalcFront(), CalcRight());
 }
 
 glm::mat4 Cam::LookAt() const{
-	glm::vec3 vecArr[]{CalcRight(), CalcUp(), -CalcFront()};
-	glm::mat4 translation = glm::mat4(1.f), rotation = glm::mat4(1.f);
-	for(short i = 0; i < 3; ++i){ //Access elements as mat[col][row] due to column-major order
-		translation[3][i] = -pos[i];
-		for(short j = 0; j < 3; ++j){
-			rotation[i][j] = (vecArr[j])[i];
-		}
-	}
-	return rotation * translation;
+	return glm::lookAt(pos, target, glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
-void Cam::Update(float dt, const int& up, const int& down, const int& left, const int& right, const int& front, const int& back){
-	const float camSpd = spd * dt;
+void Cam::Update(
+	const float dt,
+	const int up,
+	const int down,
+	const int left,
+	const int right,
+	const int front,
+	const int back
+){
 	float upDown = float(Key(up) - Key(down));
 	float leftRight = float(Key(left) - Key(right));
 	float frontBack = float(Key(front) - Key(back));
@@ -74,13 +69,16 @@ void Cam::Update(float dt, const int& up, const int& down, const int& left, cons
 	if(change != glm::vec3(0.f)){
 		change = normalize(change);
 	}
-	pos += camSpd * change;
+	pos += spd * dt * change;
 	target = pos + camFront;
 
-	glm::quat pitchQuat = glm::angleAxis(glm::radians(pitch), CalcRight());
-	glm::quat yawQuat = glm::angleAxis(glm::radians(yaw), glm::vec3(0.0f, camFront.z < 0.0f ? 1.0f : -1.0f, 0.0f));
-	target = pos + yawQuat * pitchQuat * camFront;
-	yaw = pitch = 0.f;
+	glm::highp_vec3 rotatedCamFront = glm::rotate(glm::angleAxis(-glm::radians(pitch), CalcRight()), camFront);
+	rotatedCamFront = glm::rotate(glm::angleAxis(glm::radians(yaw), CalcUp()), rotatedCamFront);
+
+	target = pos + rotatedCamFront;
+
+	yaw = 0.0f;
+	pitch = 0.0f;
 }
 
 void Cam::Reset(){
@@ -106,11 +104,11 @@ void Cam::ResetTarget(){
 	target = defaultTarget;
 }
 
-const float& Cam::GetAspectRatio() const{
+float Cam::GetAspectRatio() const{
 	return aspectRatio;
 }
 
-const float& Cam::GetSpd() const{
+float Cam::GetSpd() const{
 	return spd;
 }
 
@@ -122,11 +120,11 @@ const glm::vec3& Cam::GetTarget() const{
 	return target;
 }
 
-const float& Cam::GetDefaultAspectRatio() const{
+float Cam::GetDefaultAspectRatio() const{
 	return defaultAspectRatio;
 }
 
-const float& Cam::GetDefaultSpd() const{
+float Cam::GetDefaultSpd() const{
 	return defaultSpd;
 }
 
@@ -138,11 +136,11 @@ const glm::vec3& Cam::GetDefaultTarget() const{
 	return defaultTarget;
 }
 
-void Cam::SetAspectRatio(const float& aspectRatio){
+void Cam::SetAspectRatio(const float aspectRatio){
 	this->aspectRatio = aspectRatio;
 }
 
-void Cam::SetSpd(const float& spd){
+void Cam::SetSpd(const float spd){
 	this->spd = spd;
 }
 
@@ -154,11 +152,11 @@ void Cam::SetTarget(const glm::vec3& target){
 	this->target = target;
 }
 
-void Cam::SetDefaultAspectRatio(const float& defaultAspectRatio){
+void Cam::SetDefaultAspectRatio(const float defaultAspectRatio){
 	this->defaultAspectRatio = defaultAspectRatio;
 }
 
-void Cam::SetDefaultSpd(const float& defaultSpd){
+void Cam::SetDefaultSpd(const float defaultSpd){
 	this->defaultSpd = defaultSpd;
 }
 

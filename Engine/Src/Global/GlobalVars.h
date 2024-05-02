@@ -6,12 +6,12 @@ const char* const* myArgv;
 
 bool LMB = false;
 bool RMB = false;
-float pitch = 0.f;
-float yaw = 0.f;
-float lastX = 0.f;
-float lastY = 0.f;
-float SENS = .05f;
-float angularFOV = 45.f;
+float pitch = 0.0f;
+float yaw = 0.0f;
+double lastX = 0.0;
+double lastY = 0.0;
+float SENS = 0.05f;
+float angularFOV = 45.0f;
 int optimalWinXPos;
 int optimalWinYPos;
 int optimalWinWidth;
