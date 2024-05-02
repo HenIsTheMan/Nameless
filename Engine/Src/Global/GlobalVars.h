@@ -4,7 +4,6 @@ bool endLoop = false;
 int myArgc;
 const char* const* myArgv;
 
-bool firstCall = 1;
 bool LMB = false;
 bool RMB = false;
 float pitch = 0.f;

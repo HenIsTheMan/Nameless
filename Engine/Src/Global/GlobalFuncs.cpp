@@ -28,7 +28,7 @@ bool Key(const int& key){
     return GetAsyncKeyState(key) & 0x8000;
 }
 
-bool InitAPI(GLFWwindow*& win){
+bool InitAPI(GLFWwindow*& window){
     glfwInit();
     //glfwWindowHint(GLFW_SAMPLES, 4); //4 subsamples in a general pattern per set of screen coords of a pixel to determine pixel coverage //Better pixel coverage precision but more performance reduction with more sample pts as they cause size of... buffers to rise by...
     //Super Sample Anti-Aliasing (SSAA, draw more frags, sample pt in the center of each pixel determines if each pixel is influenced by any frag shader or not) temporarily uses a much higher resolution render buffer to render to and the resolution is downsampled back to normal after the scene is rendered
@@ -52,25 +52,30 @@ bool InitAPI(GLFWwindow*& win){
     );
     optimalWinWidth = winWidth = int((GetSystemMetrics(SM_CXFULLSCREEN) - float(mode->width - GetSystemMetrics(SM_CXFULLSCREEN)) / 2.f) * 5.f / 6.f);
     optimalWinHeight = winHeight = GetSystemMetrics(SM_CYFULLSCREEN) - int(float(mode->height - GetSystemMetrics(SM_CYFULLSCREEN)) / 2.f);
-    win = glfwCreateWindow(winWidth, winHeight, "Nameless Engine", nullptr, nullptr);
+    window = glfwCreateWindow(winWidth, winHeight, "Nameless Engine", nullptr, nullptr);
     optimalWinXPos = int(float(mode->width - GetSystemMetrics(SM_CXFULLSCREEN)) / 2.f);
     optimalWinYPos = int(float(mode->height - GetSystemMetrics(SM_CYFULLSCREEN)) / 2.f);
-    glfwSetWindowPos(win, optimalWinXPos, optimalWinYPos);
+    glfwSetWindowPos(window, optimalWinXPos, optimalWinYPos);
 
-    if(win == 0){ //Get a handle to the created window obj
+    if(window == 0){ //Get a handle to the created window obj
         (void)puts("Failed to create GLFW win\n");
         return false;
     }
-    glfwMakeContextCurrent(win); //Make context of the window the main context on the curr thread
+    glfwMakeContextCurrent(window); //Make context of the window the main context on the curr thread
     if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)){
         (void)puts("Failed to init GLAD\n");
         return false;
     }
-    glfwSetFramebufferSizeCallback(win, &FramebufferSizeCallback);
-    glfwSetCursorPosCallback(win, CursorPosCallback);
-    glfwSetMouseButtonCallback(win, MouseButtonCallback);
-    glfwSetScrollCallback(win, ScrollCallback);
-    glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_DISABLED); //Hide and capture mouse cursor
+
+    glfwSetFramebufferSizeCallback(window, FramebufferSizeCallback);
+
+    glfwSetCursorPosCallback(window, InitialCursorPosCallback);
+
+    glfwSetMouseButtonCallback(window, MouseButtonCallback);
+
+    glfwSetScrollCallback(window, ScrollCallback);
+
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); //Hide and capture mouse cursor
 
     return true;
 }
@@ -133,28 +138,34 @@ void SetUpTex(const SetUpTexsParams& params, uint& texRefID){
     stbi_set_flip_vertically_on_load(false);
 }
 
-static void FramebufferSizeCallback(GLFWwindow*, int width, int height){ //Resize callback
+static void FramebufferSizeCallback(GLFWwindow* window, int width, int height){ //Resize callback
     winWidth = width;
     winHeight = height;
 }
 
-static void CursorPosCallback(GLFWwindow*, double xPos, double yPos){
-    if(firstCall){
-        firstCall = 0;
-    } else{ //Add mouse movement offset between last frame and curr frame
-        yaw -= (float(xPos) - lastX) * SENS;
-        pitch -= (float(yPos) - lastY) * SENS;
-    }
+static void InitialCursorPosCallback(GLFWwindow* window, double xPos, double yPos){
+    lastX = float(xPos);
+    lastY = float(yPos);
+
+    glfwSetCursorPosCallback(window, CursorPosCallback);
+}
+
+static void CursorPosCallback(GLFWwindow* window, double xPos, double yPos){
+    //* Add mouse movement offset between last frame and curr frame
+    yaw -= (float(xPos) - lastX) * SENS;
+    pitch -= (float(yPos) - lastY) * SENS;
+    //*/
+
     lastX = float(xPos);
     lastY = float(yPos);
 }
 
-static void MouseButtonCallback(GLFWwindow* win, int button, int action, int mods){ //For mouse buttons
-    LMB = glfwGetMouseButton(win, GLFW_MOUSE_BUTTON_LEFT);
-    RMB = glfwGetMouseButton(win, GLFW_MOUSE_BUTTON_RIGHT);
+static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods){ //For mouse buttons
+    LMB = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
+    RMB = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT);
 }
 
-static void ScrollCallback(GLFWwindow*, double xOffset, double yOffset){
+static void ScrollCallback(GLFWwindow* window, double xOffset, double yOffset){
     angularFOV -= float(xOffset) + float(yOffset);
     angularFOV = std::max(1.f, std::min(75.f, angularFOV));
 }
