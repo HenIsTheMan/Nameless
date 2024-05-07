@@ -9,11 +9,11 @@ public:
     Model(cstr const& fPath, const std::initializer_list<aiTextureType>& iL);
     ~Model();
 
-    void AddModelMatForAll(const glm::mat4& modelMat);
-    void ClearModelMatsForAll();
+    void AddModelMat4ForAll(const glm::mat4& modelMat4);
+    void ClearModelMat4VecForAll();
     void InstancedRender(ShaderProg& SP, const int& primitive = GL_TRIANGLES);
     void Render(ShaderProg& SP, const int& primitive = GL_TRIANGLES);
-    void SetModelForAll(const glm::mat4& model);
+    void SetModelMat4ForAll(const glm::mat4& modelMat4);
 private:
     bool storeIndices;
     cstr modelPath;
@@ -21,8 +21,8 @@ private:
     mutable std::vector<aiTextureType> texTypes;
     std::vector<Vertex> allVertices;
     std::vector<uint> allIndices;
-    glm::mat4 modelForAll;
-    std::vector<glm::mat4> modelMatsForAll;
+    glm::mat4 modelMat4ForAll;
+    std::vector<glm::mat4> modelMat4VecForAll;
     uint VAO;
     uint VBO;
     uint EBO;

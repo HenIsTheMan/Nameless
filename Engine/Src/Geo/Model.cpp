@@ -110,14 +110,14 @@ Mesh Model::ProcessMesh(const aiScene* const& scene, const aiMesh* const& meshOb
     return mesh;
 }
 
-void Model::AddModelMatForAll(const glm::mat4& modelMat){
-    modelMatsForAll.emplace_back(modelMat);
+void Model::AddModelMat4ForAll(const glm::mat4& modelMat4){
+    modelMat4VecForAll.emplace_back(modelMat4);
 }
 
-void Model::ClearModelMatsForAll(){
+void Model::ClearModelMat4VecForAll(){
     const size_t& size = meshes.size();
     for(size_t i = 0; i < size; ++i){
-        meshes[i].ClearModelMats();
+        meshes[i].ClearModelMat4Vec();
     }
 }
 
@@ -131,8 +131,8 @@ void Model::InstancedRender(ShaderProg& SP, const int& primitive){
     const size_t& size = meshes.size();
     for(size_t i = 0; i < size; ++i){
         meshes[i].primitive = primitive;
-        meshes[i].model = modelForAll;
-        meshes[i].modelMats = modelMatsForAll;
+        meshes[i].modelMat4 = modelMat4ForAll;
+        meshes[i].modelMat4Vec = modelMat4VecForAll;
         meshes[i].InstancedRender(SP);
     }
 }
@@ -147,11 +147,11 @@ void Model::Render(ShaderProg& SP, const int& primitive){
     const size_t& size = meshes.size();
     for(size_t i = 0; i < size; ++i){
         meshes[i].primitive = primitive;
-        meshes[i].model = modelForAll;
+        meshes[i].modelMat4 = modelMat4ForAll;
         meshes[i].Render(SP);
     }
 }
 
-void Model::SetModelForAll(const glm::mat4& model){
-    this->modelForAll = model;
+void Model::SetModelMat4ForAll(const glm::mat4& modelMat4){
+    this->modelMat4ForAll = modelMat4;
 }

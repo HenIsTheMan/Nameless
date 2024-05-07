@@ -143,7 +143,7 @@ void SpriteAni::Render(ShaderProg& SP, const bool& autoConfig){
 	}
 
 	SP.Use();
-	SP.SetMat4fv("model", &(model)[0][0]);
+	SP.SetMat4fv("model", &(modelMat4)[0][0]);
 	if(autoConfig){
 		SP.Set1i("instancing", 0);
 

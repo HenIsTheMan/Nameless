@@ -2,22 +2,7 @@
 #include "../Global/GlobalFuncs.h"
 
 Mesh::Mesh():
-	type(MeshType::Amt),
-	primitive(GL_TRIANGLES),
-	vertices(nullptr),
-	indices(nullptr),
-	texMaps({}),
-	modelMats({}),
-	batchVAO(0),
-	batchVBO(0),
-	batchEBO(0),
-	instancingVAO(0),
-	instancingVBO(0),
-	instancingEBO(0),
-	VAO(0),
-	VBO(0),
-	EBO(0),
-	model(glm::mat4(1.f))
+	Mesh(MeshType::Amt, GL_TRIANGLES, {})
 {
 }
 
@@ -27,7 +12,7 @@ Mesh::Mesh(const MeshType& type, const int& primitive, const std::initializer_li
 	vertices(nullptr),
 	indices(nullptr),
 	texMaps(iL),
-	modelMats({}),
+	modelMat4Vec({}),
 	batchVAO(0),
 	batchVBO(0),
 	batchEBO(0),
@@ -37,7 +22,7 @@ Mesh::Mesh(const MeshType& type, const int& primitive, const std::initializer_li
 	VAO(0),
 	VBO(0),
 	EBO(0),
-	model(glm::mat4(1.f))
+	modelMat4(glm::mat4(1.f))
 {
 }
 
@@ -60,7 +45,7 @@ Mesh& Mesh::operator=(const Mesh& mesh){
 		vertices = new std::vector<Vertex>(mesh.vertices->begin(), mesh.vertices->end());
 		indices = new std::vector<uint>{mesh.indices->begin(), mesh.indices->end()};
 		texMaps = mesh.texMaps;
-		modelMats = mesh.modelMats;
+		modelMat4Vec = mesh.modelMat4Vec;
 		batchVAO = mesh.batchVAO;
 		batchVBO = mesh.batchVBO;
 		batchEBO = mesh.batchEBO;
@@ -70,7 +55,7 @@ Mesh& Mesh::operator=(const Mesh& mesh){
 		VAO = mesh.VAO;
 		VBO = mesh.VBO;
 		EBO = mesh.EBO;
-		model = mesh.model;
+		modelMat4 = mesh.modelMat4;
 	}
 	return *this;
 }
@@ -82,7 +67,7 @@ Mesh& Mesh::operator=(Mesh&& mesh) noexcept{
 		vertices = new std::vector<Vertex>(mesh.vertices->begin(), mesh.vertices->end());
 		indices = new std::vector<uint>{mesh.indices->begin(), mesh.indices->end()};
 		texMaps = mesh.texMaps;
-		modelMats = mesh.modelMats;
+		modelMat4Vec = mesh.modelMat4Vec;
 		batchVAO = mesh.batchVAO;
 		batchVBO = mesh.batchVBO;
 		batchEBO = mesh.batchEBO;
@@ -92,7 +77,7 @@ Mesh& Mesh::operator=(Mesh&& mesh) noexcept{
 		VAO = mesh.VAO;
 		VBO = mesh.VBO;
 		EBO = mesh.EBO;
-		model = mesh.model;
+		modelMat4 = mesh.modelMat4;
 	}
 	return *this;
 }
@@ -144,7 +129,7 @@ void Mesh::InstancedRender(ShaderProg& SP, const bool& autoConfig){
 	}
 
 	SP.Use();
-	SP.SetMat4fv("model", &(model)[0][0]);
+	SP.SetMat4fv("model", &(modelMat4)[0][0]);
 	SP.Set1i("instancing", 1);
 	if(autoConfig){
 		SP.Set1i("useDiffuseMap", 0);
@@ -218,9 +203,9 @@ void Mesh::InstancedRender(ShaderProg& SP, const bool& autoConfig){
 		glBindVertexArray(instancingVAO);
 			glBindBuffer(GL_ARRAY_BUFFER, instancingVBO);
 
-			glBufferData(GL_ARRAY_BUFFER, vertices->size() * sizeof(Vertex) + modelMats.size() * sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, vertices->size() * sizeof(Vertex) + modelMat4Vec.size() * sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
 			glBufferSubData(GL_ARRAY_BUFFER, 0, vertices->size() * sizeof(Vertex), &(*vertices)[0]);
-			glBufferSubData(GL_ARRAY_BUFFER, vertices->size() * sizeof(Vertex), modelMats.size() * sizeof(glm::mat4), &(modelMats)[0]);
+			glBufferSubData(GL_ARRAY_BUFFER, vertices->size() * sizeof(Vertex), modelMat4Vec.size() * sizeof(glm::mat4), &(modelMat4Vec)[0]);
 
 			glEnableVertexAttribArray(0);
 			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, pos));
@@ -262,8 +247,12 @@ void Mesh::InstancedRender(ShaderProg& SP, const bool& autoConfig){
 		glBindVertexArray(instancingVAO);
 	}
 
-	indices ? glDrawElementsInstanced(primitive, (int)indices->size(), GL_UNSIGNED_INT, nullptr, (int)modelMats.size()) : glDrawArraysInstanced(primitive, 0, (int)vertices->size(), (int)modelMats.size());
+	indices
+		? glDrawElementsInstanced(primitive, (int)indices->size(), GL_UNSIGNED_INT, nullptr, (int)modelMat4Vec.size())
+		: glDrawArraysInstanced(primitive, 0, (int)vertices->size(), (int)modelMat4Vec.size());
+
 	glBindVertexArray(0);
+
 	if(autoConfig){
 		SP.ResetTexUnits();
 	}
@@ -275,7 +264,7 @@ void Mesh::Render(ShaderProg& SP, const bool& autoConfig){
 	}
 
 	SP.Use();
-	SP.SetMat4fv("model", &(model)[0][0]);
+	SP.SetMat4fv("model", &(modelMat4)[0][0]);
 	if(autoConfig){
 		SP.Set1i("instancing", 0);
 
@@ -384,25 +373,25 @@ const Mesh::MeshType& Mesh::GetMeshType() const{
 	return type;
 }
 
-void Mesh::AddModelMat(const glm::mat4& modelMat){
-	modelMats.emplace_back(modelMat);
+void Mesh::AddModelMat4(const glm::mat4& modelMat4){
+	modelMat4Vec.emplace_back(modelMat4);
 }
 
 void Mesh::AddTexMap(const std::tuple<str, TexType, uint>& texMap){
 	texMaps.emplace_back(texMap);
 }
 
-void Mesh::ClearModelMats(){
-	modelMats.clear();
+void Mesh::ClearModelMat4Vec(){
+	modelMat4Vec.clear();
 }
 
 void Mesh::ClearTexMaps(){
 	texMaps.clear();
 }
 
-void Mesh::RemoveModelMat(const size_t& index){
-	if(!modelMats.empty()){
-		modelMats.erase(modelMats.begin() + index);
+void Mesh::RemoveModelMat4(const size_t& index){
+	if(!modelMat4Vec.empty()){
+		modelMat4Vec.erase(modelMat4Vec.begin() + index);
 	}
 }
 
@@ -417,13 +406,13 @@ void Mesh::RemoveTexMap(str const& texPath){
 	}
 }
 
-void Mesh::SetModel(const glm::mat4& model){
-	this->model = model;
+void Mesh::SetModelMat4(const glm::mat4& modelMat4){
+	this->modelMat4 = modelMat4;
 }
 
-void Mesh::SetModelMat(const glm::mat4& modelMat, const ptrdiff_t& index){
-	if(index < (ptrdiff_t)modelMats.size()){
-		modelMats[index] = modelMat;
+void Mesh::SetModelMat4(const glm::mat4& modelMat4, const ptrdiff_t& index){
+	if(index < (ptrdiff_t)modelMat4Vec.size()){
+		modelMat4Vec[index] = modelMat4;
 	}
 }
 

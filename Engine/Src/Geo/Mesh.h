@@ -34,27 +34,27 @@ public:
 
 	const MeshType& GetMeshType() const;
 
-	void AddModelMat(const glm::mat4& modelMat);
+	void AddModelMat4(const glm::mat4& modelMat4);
 	void AddTexMap(const std::tuple<str, TexType, uint>& texMap);
 
-	void ClearModelMats();
+	void ClearModelMat4Vec();
 	void ClearTexMaps();
 
-	void RemoveModelMat(const size_t& index);
+	void RemoveModelMat4(const size_t& index);
 	void RemoveTexMap(str const& texPath);
 
-	void SetModelMat(const glm::mat4& modelMat, const ptrdiff_t& index);
+	void SetModelMat4(const glm::mat4& modelMat4, const ptrdiff_t& index);
 
 	void InstancedRender(ShaderProg& SP, const bool& autoConfig = true);
 	virtual void Render(ShaderProg& SP, const bool& autoConfig = true);
-	void SetModel(const glm::mat4& model);
+	void SetModelMat4(const glm::mat4& modelMat4);
 protected:
 	MeshType type;
 	int primitive;
 	std::vector<Vertex>* vertices;
 	std::vector<uint>* indices;
 	std::vector<std::tuple<str, TexType, uint>> texMaps;
-	std::vector<glm::mat4> modelMats;
+	std::vector<glm::mat4> modelMat4Vec;
 
 	uint batchVAO;
 	uint batchVBO;
@@ -66,7 +66,7 @@ protected:
 	uint VBO;
 	uint EBO;
 
-	glm::mat4 model;
+	glm::mat4 modelMat4;
 	void CreateLine(); //1x0
 	void CreateQuad(); //2x2
 	void CreateCube(); //2x2x2
