@@ -1,5 +1,7 @@
 #include "MyApp.h"
 
+#include <Vendor/stb_image.h>
+
 extern bool endLoop;
 extern int optimalWinXPos;
 extern int optimalWinYPos;
@@ -12,13 +14,13 @@ MyApp::MyApp():
 	fullscreen(false),
 	elapsedTime(0.0f),
 	mode(nullptr),
-	win(nullptr),
+	window(nullptr),
 	FBORefIDs{},
 	texRefIDs{},
 	RBORefIDs(),
 	myScenePtr(new MyScene())
 {
-	if(!InitAPI(win)){
+	if(!InitAPI(window)){
 		(void)puts("Failed to init API\n");
 		endLoop = true;
 	}
@@ -38,6 +40,14 @@ MyApp::~MyApp(){
 }
 
 void MyApp::Init(){
+	GLFWimage icons[1]{};
+
+	icons[0].pixels = stbi_load("Imgs/BoxAlbedo.png", &icons[0].width, &icons[0].height, 0, 0);
+
+	glfwSetWindowIcon(window, 1, icons);
+
+	stbi_image_free(icons[0].pixels);
+
 	//Stencil buffer usually contains 8 bits per stencil value that amts to 256 diff stencil values per pixel
 	//Use stencil buffer operations to write to the stencil buffer when rendering frags (read stencil values in the same or following frame(s) to pass or discard frags based on their stencil value)
 	glEnable(GL_STENCIL_TEST); //Discard frags based on frags of other drawn objs in the scene
@@ -125,7 +135,7 @@ void MyApp::Init(){
 }
 
 void MyApp::Update(const float dt){
-	if(glfwWindowShouldClose(win)){
+	if(glfwWindowShouldClose(window)){
 		endLoop = true;
 		return;
 	}
@@ -134,10 +144,10 @@ void MyApp::Update(const float dt){
 	static float toggleFullscreenBT = 0.f;
 	if(Key(VK_F1) && toggleFullscreenBT <= elapsedTime){
 		if(fullscreen){
-			glfwSetWindowMonitor(win, 0, optimalWinXPos, optimalWinYPos, optimalWinWidth, optimalWinHeight, GLFW_DONT_CARE);
+			glfwSetWindowMonitor(window, 0, optimalWinXPos, optimalWinYPos, optimalWinWidth, optimalWinHeight, GLFW_DONT_CARE);
 			fullscreen = false;
 		} else{
-			glfwSetWindowMonitor(win, glfwGetPrimaryMonitor(), 0, 0, mode->width, mode->height, GLFW_DONT_CARE);
+			glfwSetWindowMonitor(window, glfwGetPrimaryMonitor(), 0, 0, mode->width, mode->height, GLFW_DONT_CARE);
 			fullscreen = true;
 		}
 		toggleFullscreenBT = elapsedTime + .5f;
@@ -197,6 +207,6 @@ void MyApp::Render(){
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	myScenePtr->ForwardRender();
 
-	glfwSwapBuffers(win); //Swap the large 2D colour buffer containing colour values for each pixel in GLFW's window
+	glfwSwapBuffers(window); //Swap the large 2D colour buffer containing colour values for each pixel in GLFW's window
 	glfwPollEvents(); //Check for triggered events and call corresponding functions registered via callback methods
 }

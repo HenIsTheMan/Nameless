@@ -39,7 +39,7 @@ private:
 	float elapsedTime;
 
 	const GLFWvidmode* mode;
-	GLFWwindow* win;
+	GLFWwindow* window;
 
 	uint FBORefIDs[(int)FBO::Amt];
 	uint texRefIDs[(int)Tex::Amt];
